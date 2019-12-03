@@ -1,0 +1,20 @@
+# Virtual Environment
+venv/
+
+# Editor Configurations
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Output files, except requirements.txt
+*.txt
+!requirements.txt
+
+# Comma-Separated Values (CSV) Reports
+*.csv
