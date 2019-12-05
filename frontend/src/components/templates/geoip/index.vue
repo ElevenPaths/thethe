@@ -47,7 +47,9 @@
                   <v-flex>{{ resource.latitude }}</v-flex>
                   <v-flex>{{ resource.longitude }}</v-flex>
                   <v-flex v-if="resource.country_code">
-                    <country-flag :country="resource.country_code"></country-flag>
+                    <country-flag
+                      :country="resource.country_code"
+                    ></country-flag>
                   </v-flex>
                 </v-layout>
               </v-flex>
@@ -63,7 +65,12 @@
           <span class="subheading">OpenStreetMap</span>
         </v-card-title>
         <v-divider></v-divider>
-        <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height: 360px">
+        <l-map
+          :zoom="zoom"
+          :center="center"
+          :options="mapOptions"
+          style="height: 360px"
+        >
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker :lat-lng="withPopup"></l-marker>
         </l-map>

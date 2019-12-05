@@ -6,7 +6,9 @@
           <v-card class="elevation-12">
             <v-toolbar color="grey darken-3" dark flat>
               <v-spacer>
-                <v-toolbar-title>The Thread Enviroment Experience</v-toolbar-title>
+                <v-toolbar-title
+                  >The Thread Enviroment Experience</v-toolbar-title
+                >
               </v-spacer>
             </v-toolbar>
             <v-card-text>
@@ -31,14 +33,14 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn type="submit" color="primary" form="login-form">Login</v-btn>
+              <v-btn type="submit" color="primary" form="login-form"
+                >Login</v-btn
+              >
             </v-card-actions>
             <template v-if="auth_status === 'error'">
-              <v-alert
-                type="error"
-                dismissible
-                :value="true"
-              >User does not exist or Password is wrong</v-alert>
+              <v-alert type="error" dismissible :value="true"
+                >User does not exist or Password is wrong</v-alert
+              >
             </template>
           </v-card>
         </v-layout>

@@ -12,7 +12,8 @@
               :width="15"
               :value="resource.abuseConfidenceScore"
               :color="abuse_confidence_score_color"
-            >{{ resource.abuseConfidenceScore }}%</v-progress-circular>
+              >{{ resource.abuseConfidenceScore }}%</v-progress-circular
+            >
           </v-flex>
           <v-flex offset-lg1>
             <v-layout column>
@@ -30,10 +31,13 @@
               </v-layout>
               <v-layout align-center>
                 <v-flex lg2>Reported at</v-flex>
-                <v-flex>
+                <v-flex v-if="resource.lastReportedAt">
                   {{ new Date(resource.lastReportedAt).toLocaleDateString() }}
                   <v-chip>{{ days_ago }}</v-chip>
                   <span>days ago</span>
+                </v-flex>
+                <v-flex v-else>
+                  <span>N/D</span>
                 </v-flex>
               </v-layout>
             </v-layout>

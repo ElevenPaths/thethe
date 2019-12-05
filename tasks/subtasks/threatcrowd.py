@@ -7,6 +7,7 @@ URL_DOMAIN = "https://www.threatcrowd.org/searchApi/v2/domain/report/?domain={do
 URL_EMAIL = "https://www.threatcrowd.org/searchApi/v2/email/report/?email={email}"
 URL_HASH = "https://www.threatcrowd.org/searchApi/v2/file/report/?resource={hash}"
 
+
 def send_request(url):
     try:
         response = {}
@@ -16,7 +17,7 @@ def send_request(url):
             return None
         else:
             response = json.loads(threatcrowd_response.content)
-
+            print(response)
         return response
 
     except Exception as e:
@@ -24,17 +25,21 @@ def send_request(url):
         print("".join(tb1.format()))
         return None
 
+
 def threatcrowd_ip(ip):
     url = URL_IP.format(**{"ip": ip})
     send_request(url)
+
 
 def threatcrowd_domain(domain):
     url = URL_DOMAIN.format(**{"domain": domain})
     send_request(url)
 
+
 def threatcrowd_email(email):
     url = URL_EMAIL.format(**{"email": email})
     send_request(url)
+
 
 def threatcrowd_hash(hash):
     url = URL_HASH.format(**{"hash": hash})

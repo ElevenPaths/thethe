@@ -7,22 +7,26 @@
       >
         <v-card-title>
           <v-card-text>
-            <p class="headline blue--text text--lighten-2 text-xs-center">Project selection</p>
+            <p class="headline blue--text text--lighten-2 text-xs-center">
+              Project selection
+            </p>
           </v-card-text>
         </v-card-title>
         <v-data-table v-if="true" :headers="headers" :items="projects">
           <template v-slot:items="props">
             <tr
-              :class="{'selected':selected_project._id === props.item._id}"
+              :class="{ selected: selected_project._id === props.item._id }"
               @click.stop="select_project(props.item)"
             >
               <td
                 class="text-xs-left subheading"
                 v-on:dblclick="open_project()"
-              >{{ props.item.name }}</td>
-              <td
-                class="text-xs-left subheading"
-              >{{ new Date(props.item.creation_date*1000).toDateString() }}</td>
+              >
+                {{ props.item.name }}
+              </td>
+              <td class="text-xs-left subheading">
+                {{ new Date(props.item.creation_date * 1000).toDateString() }}
+              </td>
             </tr>
           </template>
         </v-data-table>
@@ -40,22 +44,25 @@
           class="font-weight-bold"
           small
           color="success"
-          @click="user_is_creating_project=!user_is_creating_project"
-        >New</v-btn>
+          @click="user_is_creating_project = !user_is_creating_project"
+          >New</v-btn
+        >
         <v-btn
           class="font-weight-bold"
           :disabled="!is_project_selected"
           small
           color="primary"
           @click="open_project"
-        >Open</v-btn>
+          >Open</v-btn
+        >
         <v-btn
           class="font-weight-bold"
           :disabled="!is_project_selected"
           small
           color="error"
           @click="delete_dialog = true"
-        >Delete</v-btn>
+          >Delete</v-btn
+        >
       </v-flex>
       <v-flex v-else>
         <v-form ref="new_project_form">
@@ -68,13 +75,20 @@
                 v-model.trim="new_project_name"
               ></v-text-field>
               <v-flex>
-                <v-btn class="font-weight-bold" small color="success" @click="create_project">Add</v-btn>
+                <v-btn
+                  class="font-weight-bold"
+                  small
+                  color="success"
+                  @click="create_project"
+                  >Add</v-btn
+                >
                 <v-btn
                   class="font-weight-bold"
                   small
                   color="warning"
-                  @click="user_is_creating_project=!user_is_creating_project"
-                >Cancel</v-btn>
+                  @click="user_is_creating_project = !user_is_creating_project"
+                  >Cancel</v-btn
+                >
               </v-flex>
             </v-layout>
           </v-container>
@@ -160,7 +174,7 @@ export default {
             type: "error"
           });
         })
-        .finally(resp => {
+        .finally(_ => {
           this.$refs.new_project_form.reset();
           this.user_is_creating_project = false;
         });

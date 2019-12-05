@@ -12,7 +12,9 @@
               v-for="domain_name in resource.domain_name"
               :key="domain_name"
               class="font-weight-bold"
-            >{{ domain_name }}</p>
+            >
+              {{ domain_name }}
+            </p>
           </v-card-text>
         </v-card>
         <v-divider class="pt-3"></v-divider>
@@ -81,7 +83,9 @@
             <v-layout>
               <v-flex>
                 <v-layout column>
-                  <v-flex v-for="email in resource.emails" :key="email">{{ email }}</v-flex>
+                  <v-flex v-for="email in resource.emails" :key="email">{{
+                    email
+                  }}</v-flex>
                 </v-layout>
               </v-flex>
             </v-layout>

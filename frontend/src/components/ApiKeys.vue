@@ -6,7 +6,12 @@
       <v-flex pt-2>Add/Change/Delete name,apikey pairs</v-flex>
       <v-flex>
         <v-card-text>
-          <v-textarea box class="body-1" rows="18" v-model="apikeys"></v-textarea>
+          <v-textarea
+            box
+            class="body-1"
+            rows="18"
+            v-model="apikeys"
+          ></v-textarea>
         </v-card-text>
       </v-flex>
       <v-spacer></v-spacer>
@@ -16,15 +21,17 @@
           <v-btn
             color="blue darken-1"
             flat
-            @click.stop="send_apikeys(),$emit('apikeys-closed')"
-          >Upload</v-btn>
-          <v-btn color="red darken-1" flat @click.stop="$emit('apikeys-closed')">Close</v-btn>
+            @click.stop="send_apikeys(), $emit('apikeys-closed')"
+            >Upload</v-btn
+          >
+          <v-btn color="red darken-1" flat @click.stop="$emit('apikeys-closed')"
+            >Close</v-btn
+          >
         </v-flex>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
-
 
 <script>
 import api_call from "../utils/api";

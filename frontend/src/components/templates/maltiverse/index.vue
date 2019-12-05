@@ -15,7 +15,8 @@
             <v-chip
               :color="classifier_color(resource.classification)"
               class="font-weight-bold"
-            >{{ resource.classification }}</v-chip>
+              >{{ resource.classification }}</v-chip
+            >
           </v-flex>
 
           <v-flex v-if="resource.entropy">
@@ -24,7 +25,9 @@
                 <v-label>Domain entropy</v-label>
               </v-flex>
               <v-flex>
-                <v-chip class="font-weight-bold">{{ resource.entropy }}</v-chip>
+                <v-chip class="font-weight-bold">{{
+                  resource.entropy.toFixed(2)
+                }}</v-chip>
               </v-flex>
             </v-layout>
           </v-flex>
@@ -35,13 +38,15 @@
             <v-flex lg1>
               <v-label>Description</v-label>
             </v-flex>
-            <v-flex lg2>
-              <v-chip class="font-weight-bold">{{ blacklist.description }}</v-chip>
+            <v-flex lg3>
+              <v-chip class="font-weight-bold">{{
+                blacklist.description
+              }}</v-chip>
             </v-flex>
             <v-flex offset-xs-1 lg1>
               <v-label>Source</v-label>
             </v-flex>
-            <v-flex lg2>
+            <v-flex lg3>
               <v-chip class="font-weight-bold">{{ blacklist.source }}</v-chip>
             </v-flex>
             <v-flex offset-xs-1 lg1>

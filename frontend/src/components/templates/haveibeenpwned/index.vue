@@ -7,14 +7,15 @@
             This account has been found leaked in
             <b>{{ resource.length }}</b> sites
           </span>
-          <span class="subheading" v-else>This account has not been found leaked in any site</span>
+          <span class="subheading" v-else
+            >This account has not been found leaked in any site</span
+          >
           <v-spacer></v-spacer>
           <v-chip class="body-1" label color="blue">
             Results brought thanks to&nbsp;
-            <a
-              href="https://haveibeenpwned.com/"
-              rel="noreferer noopener"
-            >haveibeenpwned.com</a>
+            <a href="https://haveibeenpwned.com/" rel="noreferer noopener"
+              >haveibeenpwned.com</a
+            >
           </v-chip>
         </v-card-title>
         <v-divider></v-divider>
@@ -39,12 +40,17 @@
               <v-layout column>
                 <v-flex>
                   <v-label>Breach date:</v-label>
-                  <span class="subheading">{{ formatted_time(site.BreachDate) }}</span>
+                  <span class="subheading">{{
+                    formatted_time(site.BreachDate)
+                  }}</span>
                 </v-flex>
                 <v-flex>
-                  <v-chip
-                    class="subheading"
-                  >{{ new Intl.NumberFormat().format(site.PwnCount) }} leaks</v-chip>
+                  <v-chip class="subheading"
+                    >{{
+                      new Intl.NumberFormat().format(site.PwnCount)
+                    }}
+                    leaks</v-chip
+                  >
                 </v-flex>
               </v-layout>
             </v-flex>
@@ -140,7 +146,8 @@
                     :key="index"
                     disabled
                     color="light-blue darken-4"
-                  >{{ _class }}</v-chip>
+                    >{{ _class }}</v-chip
+                  >
                 </v-flex>
               </v-layout>
             </v-card-text>

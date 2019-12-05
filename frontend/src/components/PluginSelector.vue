@@ -12,7 +12,10 @@
         <v-list-tile
           v-for="plugin in plugin_list"
           :key="plugin.name"
-          @click="launch(plugin); sheet = false"
+          @click="
+            launch(plugin);
+            sheet = false;
+          "
           two-line
         >
           <v-list-tile-avatar>

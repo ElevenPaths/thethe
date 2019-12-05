@@ -25,7 +25,10 @@ export default {
     edges: {
       type: Array,
       default: function() {
-        return [{ from: "1", to: "0" }, { from: "1", to: "2" }];
+        return [
+          { from: "1", to: "0" },
+          { from: "1", to: "2" }
+        ];
       }
     }
   },

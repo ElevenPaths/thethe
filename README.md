@@ -1,7 +1,5 @@
 # thethe
 
-Site: [https://thethe.e-paths.com](https://thethe.e-paths.com/)
-
 ## Install (development enviroment)
 
 - git clone ...
@@ -25,31 +23,21 @@ Frontend:
 
 ```bash
 cd frontend
-npm run dev
+npm run serve
 ```
 
 ### A complete docker image is scheduled to be released soon
 
-## Problems with Celery
-
----
-
-### Celery + Python 3.7
-
-Install Celery from github:
-
-pip install https://github.com/celery/celery
-
-## Adding the initial account
+## Setting up the initial account
 
 ---
 
 Create a collection (Mongodb) called "thethe".
 Create a document "users" with an entry:
 
-{username: "yourusername", password: "hash"}
+{username: "yourusername", password: "hash_of_the_password"}
 
-hash is (assuming python env is activated and requirements.txt are installed) gotten from a python interactive interpreter:
+_hash_ is (assuming python env is activated and requirements.txt are installed) gotten from a python interactive interpreter:
 
 ```python
 from passlib.apps import custom_app_context as pwd_context

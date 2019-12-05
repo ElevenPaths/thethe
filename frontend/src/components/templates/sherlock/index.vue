@@ -3,13 +3,13 @@
     <v-flex>
       <v-card>
         <v-card-title primary-title>
-          <span class="subheading">Found a user in {{ found_ones_length }} sites</span>
+          <span class="subheading"
+            >Found a user in {{ found_ones_length }} sites</span
+          >
           <v-spacer></v-spacer>
-          <v-chip
-            class="body-1"
-            label
-            color="amber darken-4"
-          >(be aware it might not be the same persona)</v-chip>
+          <v-chip class="body-1" label color="amber darken-4"
+            >(be aware it might not be the same persona)</v-chip
+          >
         </v-card-title>
         <v-divider></v-divider>
         <v-layout>
@@ -23,13 +23,16 @@
                   />
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                  <v-list-tile-title class="body-1">{{ entry.sitename }}</v-list-tile-title>
+                  <v-list-tile-title class="body-1">{{
+                    entry.sitename
+                  }}</v-list-tile-title>
                   <v-list-tile-sub-title class="body-2">
                     <a
                       target="_blank"
                       rel="noopener noreferer"
                       :href="entry.url_user"
-                    >{{ entry.url_user }}</a>
+                      >{{ entry.url_user }}</a
+                    >
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
               </v-list-tile>
@@ -45,13 +48,16 @@
                   />
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                  <v-list-tile-title class="body-1">{{ entry.sitename }}</v-list-tile-title>
+                  <v-list-tile-title class="body-1">{{
+                    entry.sitename
+                  }}</v-list-tile-title>
                   <v-list-tile-sub-title class="body-2">
                     <a
                       target="_blank"
                       rel="noopener noreferer"
                       :href="entry.url_user"
-                    >{{ entry.url_user }}</a>
+                      >{{ entry.url_user }}</a
+                    >
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
               </v-list-tile>
@@ -73,7 +79,9 @@
               <img :src="get_favicon(entry.sitename)" />
             </v-list-tile-avatar>
             <v-list-tile-content>
-              <v-list-tile-title class="body-1">{{ entry.sitename }}</v-list-tile-title>
+              <v-list-tile-title class="body-1">{{
+                entry.sitename
+              }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>

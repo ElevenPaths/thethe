@@ -1,13 +1,18 @@
 <template>
   <v-layout class="pa-1">
-    <v-flex :class="{[`lg${grid_space}`]: true}" v-if="there_are_resources_in_list || search">
+    <v-flex
+      :class="{ [`lg${grid_space}`]: true }"
+      v-if="there_are_resources_in_list || search"
+    >
       <v-card
         v-on:dismiss="remove_resource = !remove_resource"
         v-on:dodelete="remove_resource_with_confirmation"
       >
         <v-card-title class="pa-0">
           <v-card-text>
-            <v-flex class="subheading blue--text text--lighten-2 text-xs-center ma-0 pa-0">
+            <v-flex
+              class="subheading blue--text text--lighten-2 text-xs-center ma-0 pa-0"
+            >
               <v-flex>
                 <slot name="title"></slot>
                 ({{ resource_count }})
@@ -40,11 +45,15 @@
               avatar
               @click="select_resource(item)"
               active-class="selected"
-              :class="{'selected':selected_resource._id === item._id}"
+              :class="{ selected: selected_resource._id === item._id }"
             >
               <v-list-tile-content>
-                <v-list-tile-title v-text="item.canonical_name"></v-list-tile-title>
-                <v-list-tile-sub-title v-if="headers.length > 1">{{ item[headers[1].value] }}</v-list-tile-sub-title>
+                <v-list-tile-title
+                  v-text="item.canonical_name"
+                ></v-list-tile-title>
+                <v-list-tile-sub-title v-if="headers.length > 1">
+                  {{ item[headers[1].value] }}
+                </v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
           </v-list>
@@ -68,7 +77,13 @@
               <v-flex>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
-                    <v-btn icon flat color="orange" v-on="on" @click.stop="toggle_tags">
+                    <v-btn
+                      icon
+                      flat
+                      color="orange"
+                      v-on="on"
+                      @click.stop="toggle_tags"
+                    >
                       <v-icon>local_offer</v-icon>
                     </v-btn>
                   </template>
@@ -78,7 +93,13 @@
               <v-flex>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
-                    <v-btn icon flat color="green" v-on="on" @click.stop="copy_resource_to_json">
+                    <v-btn
+                      icon
+                      flat
+                      color="green"
+                      v-on="on"
+                      @click.stop="copy_resource_to_json"
+                    >
                       <v-icon>mdi-json</v-icon>
                     </v-btn>
                   </template>
@@ -108,7 +129,11 @@
         <v-flex>
           <v-flex v-if="a_resource_is_selected">
             <v-divider></v-divider>
-            <tags :resource="selected_resource" :show_tags="open_tags" @shake="tag_shake"></tags>
+            <tags
+              :resource="selected_resource"
+              :show_tags="open_tags"
+              @shake="tag_shake"
+            ></tags>
           </v-flex>
         </v-flex>
         <delete-dialog
@@ -148,7 +173,6 @@ import ResourceDetail from "./ResourceDetail";
 import PluginSelector from "./PluginSelector";
 import Tags from "./Tags";
 
-import api_call from "../utils/api";
 import { object_is_empty } from "../utils/utils";
 
 export default {

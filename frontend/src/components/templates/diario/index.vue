@@ -22,7 +22,9 @@
           <v-flex v-if="resource.document_type === 'excel'" lg1>
             <v-icon color="green">mdi-file-excel-box</v-icon>
           </v-flex>
-          <v-flex v-if="resource.document_type" lg2>{{ resource.document_type }}</v-flex>
+          <v-flex v-if="resource.document_type" lg2>{{
+            resource.document_type
+          }}</v-flex>
         </v-layout>
         <v-layout row align-start pa-2>
           <v-flex v-if="resource.prediction" lg2>
@@ -34,7 +36,9 @@
           <v-flex v-if="resource.prediction === 'Malware'" lg1>
             <v-icon color="red">thumb_down_alt</v-icon>
           </v-flex>
-          <v-flex v-if="resource.prediction" lg2>{{ resource.prediction }}</v-flex>
+          <v-flex v-if="resource.prediction" lg2>{{
+            resource.prediction
+          }}</v-flex>
         </v-layout>
         <v-layout row align-start pa-2>
           <v-flex v-if="resource.status" lg2>
@@ -55,18 +59,20 @@
       </v-flex>
     </v-layout>
     <v-divider v-if="resource.sub_documents"></v-divider>
-    <v-flex
-      v-if="resource.sub_documents"
-      subheading
-    >Number of macros/javascript {{ resource.sub_documents.length }}</v-flex>
+    <v-flex v-if="resource.sub_documents" subheading
+      >Number of macros/javascript {{ resource.sub_documents.length }}</v-flex
+    >
     <v-flex>
       <v-layout column>
-        <v-card v-for="(document, index) in resource.sub_documents" :key="index">
+        <v-card
+          v-for="(document, index) in resource.sub_documents"
+          :key="index"
+        >
           <v-expansion-panel>
             <v-expansion-panel-content>
               <template v-slot:header>
                 <v-card-title>
-                  <v-flex lg6>{{ document.hash }}</v-flex>
+                  <v-flex lg8>{{ document.hash }}</v-flex>
                   <v-flex>
                     <v-chip>{{ document.code.length }}</v-chip>
                     <span>bytes</span>
@@ -78,7 +84,12 @@
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                       <v-divider></v-divider>
-                      <v-btn flat color="grey" v-on="on" @click.stop="copy_content(index)">
+                      <v-btn
+                        flat
+                        color="grey"
+                        v-on="on"
+                        @click.stop="copy_content(index)"
+                      >
                         <v-icon>file_copy</v-icon>
                       </v-btn>
                     </template>

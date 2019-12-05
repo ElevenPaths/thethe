@@ -1,5 +1,9 @@
 <template>
-  <v-flex v-if="resource.response_code === 0" class="font-weight-medium" subheading>
+  <v-flex
+    v-if="resource.response_code === 0"
+    class="font-weight-medium"
+    subheading
+  >
     <v-card>
       <v-card-title>Resource is not in VirusTotal</v-card-title>
       <v-divider></v-divider>
@@ -28,7 +32,8 @@
               rel="noopener nofollow"
               target="_blank"
               :href="resource.permalink"
-            >{{ resource.permalink }}</a>
+              >{{ resource.permalink }}</a
+            >
           </v-flex>
         </v-layout>
         <v-divider></v-divider>
@@ -67,20 +72,22 @@
               :value="get_percentage()"
               :color="get_detection_color()"
             >
-              <span class="font-weight-bold">{{ get_percentage() }}&nbsp;%</span>
+              <span class="font-weight-bold"
+                >{{ get_percentage() }}&nbsp;%</span
+              >
             </v-progress-circular>
           </v-flex>
           <v-flex lg1>
             <v-layout column>
               <v-spacer></v-spacer>
               <v-layout>
-                <v-flex lg7>
+                <v-flex lg10>
                   <v-label>Positives</v-label>
                 </v-flex>
                 <v-flex>{{ resource.positives }}</v-flex>
               </v-layout>
               <v-layout>
-                <v-flex lg7>
+                <v-flex lg10>
                   <v-label>Total</v-label>
                 </v-flex>
                 <v-flex>{{ resource.total }}</v-flex>
@@ -97,7 +104,10 @@
       <v-divider></v-divider>
       <v-card-text>
         <v-list three-line>
-          <v-list-tile v-for="(results, engine, index) in resource.scans" :key="index">
+          <v-list-tile
+            v-for="(results, engine, index) in resource.scans"
+            :key="index"
+          >
             <v-list-tile-content>
               <v-list-tile-title v-html="engine"></v-list-tile-title>
               <v-list-tile-sub-title>
@@ -106,7 +116,9 @@
                     <span>Detected</span>
                   </v-flex>
                   <v-flex lg1>
-                    <v-chip :color="detected_color(results.detected)">{{ results.detected }}</v-chip>
+                    <v-chip :color="detected_color(results.detected)">{{
+                      results.detected
+                    }}</v-chip>
                   </v-flex>
                   <v-flex lg1>
                     <span>Result</span>

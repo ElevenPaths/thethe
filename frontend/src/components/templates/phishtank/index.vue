@@ -16,7 +16,7 @@
             target="_blank"
             rel="noopener noreferer"
             :href="resource.phish_detail_page"
-          >{{ resource.phish_detail_page}}</a>
+          >{{ resource.phish_detail_page }}</a>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -26,7 +26,11 @@
           <v-label>Verified</v-label>
         </v-flex>
         <v-flex>
-          <v-chip :color="what_color(resource.verified)">{{ resource.verified }}</v-chip>
+          <v-chip :color="what_color(resource.verified)">
+            {{
+            resource.verified
+            }}
+          </v-chip>
         </v-flex>
         <v-flex lg2>
           <v-label>Verified at</v-label>
@@ -42,7 +46,11 @@
           <v-label>Valid</v-label>
         </v-flex>
         <v-flex>
-          <v-chip :color="what_color(resource.valid)">{{ resource.valid }}</v-chip>
+          <v-chip :color="what_color(resource.valid)">
+            {{
+            resource.valid
+            }}
+          </v-chip>
         </v-flex>
       </v-layout>
     </v-flex>

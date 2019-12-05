@@ -87,7 +87,10 @@ import api_call from "../utils/api";
 export default {
   name: "Tags",
   props: {
-    resource: { type: Object, default: {} },
+    resource: {
+      type: Object,
+      default: {}
+    },
     show_tags: { type: Boolean, default: false }
   },
   data() {

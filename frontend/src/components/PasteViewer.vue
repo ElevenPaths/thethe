@@ -8,7 +8,14 @@
       </template>
       <span>Copy to clipboard</span>
     </v-tooltip>
-    <v-textarea v-model="textarea_value" readonly box rows="32" class="body-1" ref="paste_content"></v-textarea>
+    <v-textarea
+      v-model="textarea_value"
+      readonly
+      box
+      rows="32"
+      class="body-1"
+      ref="paste_content"
+    ></v-textarea>
   </v-flex>
 </template>
 

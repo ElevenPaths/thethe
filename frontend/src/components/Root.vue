@@ -1,4 +1,4 @@
-<template >
+<template>
   <v-app :dark="true">
     <v-toolbar class="grey darken-3" dark flat dense>
       <!-- <v-toolbar-title class="light-grey--text">TheehT</v-toolbar-title> -->
@@ -159,7 +159,7 @@
       <resource-input v-if="is_project_opened"></resource-input>
     </v-container>
     <status-bar></status-bar>
-    <notifications position="bottom right" ignoreDuplicates="true" />
+    <notifications position="bottom right" :ignoreDuplicates="true" />
   </v-app>
 </template>
 
@@ -171,11 +171,10 @@ import SimpleVisNetwork from "./SimpleVisNetwork";
 import ApiKeys from "./ApiKeys";
 
 import StatusBar from "./StatusBar";
-import Vue from "vue";
 
 import { AUTH_LOGOUT } from "../store/actions/auth";
 import { RESET_PROJECT } from "../store/actions/project";
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import compare_ip_addreses from "../utils/sort";
 
 export default {

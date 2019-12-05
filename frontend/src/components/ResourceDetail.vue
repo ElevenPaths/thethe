@@ -1,19 +1,32 @@
 <template>
-  <v-flex :class="{[`lg${12-grid_space}`]: true}">
+  <v-flex :class="{ [`lg${12 - grid_space}`]: true }">
     <v-card>
       <v-card-title primary-title v-if="resource" class="py-1">
         <v-card-text
           v-if="resource.resource_type === 'hash'"
           class="subheading text-xs-center pa-0"
-        >{{ resource.hash }}</v-card-text>
-        <v-card-text v-else class="subheading text-xs-center pa-0">{{ resource.canonical_name }}</v-card-text>
+          >{{ resource.hash }}</v-card-text
+        >
+        <v-card-text v-else class="subheading text-xs-center pa-0">{{
+          resource.canonical_name
+        }}</v-card-text>
       </v-card-title>
       <v-divider></v-divider>
-      <v-tabs slider-color="red" v-model="active" v-if="resource.plugins.length > 0">
-        <v-tab ripple v-for="entry in sorted_plugin_list" :key="entry.index">{{ entry.plugin.name }}</v-tab>
+      <v-tabs
+        slider-color="red"
+        v-model="active"
+        v-if="resource.plugins.length > 0"
+      >
+        <v-tab ripple v-for="entry in sorted_plugin_list" :key="entry.index">{{
+          entry.plugin.name
+        }}</v-tab>
         <v-tabs-items>
           <v-tab-item v-for="entry in sorted_plugin_list" :key="entry.index">
-            <dynamic-link :type="entry.plugin.name" :data="entry.plugin" :key="component_key"></dynamic-link>
+            <dynamic-link
+              :type="entry.plugin.name"
+              :data="entry.plugin"
+              :key="component_key"
+            ></dynamic-link>
             <v-divider></v-divider>
             <v-flex>
               <v-layout column>
@@ -22,12 +35,13 @@
                   lg3
                   caption
                   text-xs-left
-                >Created: {{ from_python_time(entry.plugin.creation_time) }}</v-flex>
-                <v-flex
-                  v-if="entry.plugin.update_time"
-                  caption
-                  text-xs-left
-                >Last update: {{ from_python_time(entry.plugin.update_time) }}</v-flex>
+                  >Created:
+                  {{ from_python_time(entry.plugin.creation_time) }}</v-flex
+                >
+                <v-flex v-if="entry.plugin.update_time" caption text-xs-left
+                  >Last update:
+                  {{ from_python_time(entry.plugin.update_time) }}</v-flex
+                >
               </v-layout>
             </v-flex>
           </v-tab-item>

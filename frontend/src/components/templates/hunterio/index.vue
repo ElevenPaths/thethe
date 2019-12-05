@@ -38,7 +38,10 @@
 
     <v-flex>
       <v-expansion-panel>
-        <v-expansion-panel-content v-for="email in resource.emails" :key="email.value">
+        <v-expansion-panel-content
+          v-for="email in resource.emails"
+          :key="email.value"
+        >
           <template v-slot:header>
             <v-layout align-center>
               <v-flex subheading lg3>{{ email.value }}</v-flex>
@@ -56,7 +59,8 @@
                   :width="15"
                   :value="email.confidence"
                   :color="confidence_score_color(email.confidence)"
-                >{{ email.confidence }}%</v-progress-circular>
+                  >{{ email.confidence }}%</v-progress-circular
+                >
               </v-flex>
               <v-flex lg1 subheading>
                 <v-layout column>
@@ -66,7 +70,8 @@
                       rel="noopener noreferer"
                       target="_blank"
                       :href="`https://linkedin.com/in/${email.linkedin}`"
-                    >{{ email.linkedin }}</a>
+                      >{{ email.linkedin }}</a
+                    >
                   </v-flex>
                   <v-flex v-if="email.twitter">
                     <v-icon color="blue lighten-2">mdi-twitter</v-icon>
@@ -74,7 +79,8 @@
                       rel="noopener noreferer"
                       target="_blank"
                       :href="`https://twitter.com/${email.twitter}`"
-                    >{{ email.twitter }}</a>
+                      >{{ email.twitter }}</a
+                    >
                   </v-flex>
                 </v-layout>
               </v-flex>
@@ -122,7 +128,8 @@
                         rel="noopener noreferer"
                         target="_blank"
                         :href="source.uri"
-                      >{{ source.uri }}</a>
+                        >{{ source.uri }}</a
+                      >
                     </v-flex>
                   </v-layout>
                 </v-flex>

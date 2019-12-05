@@ -11,7 +11,9 @@
             v-for="(hostname, index) in resource.results.hostnames"
             :key="index"
             class="font-weight-bold"
-          >{{ hostname }}</p>
+          >
+            {{ hostname }}
+          </p>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -52,21 +54,26 @@
           <v-chip>{{ resource.results.services.length }}</v-chip>
         </v-card-title>
         <v-divider></v-divider>
-        <v-card-text v-for="(service, index) in resource.results.services" :key="index">
+        <v-card-text
+          v-for="(service, index) in resource.results.services"
+          :key="index"
+        >
           <v-flex lg12>
-            <v-layout v-if="service.transport || service.port || service.timestamp">
+            <v-layout
+              v-if="service.transport || service.port || service.timestamp"
+            >
               <v-flex lg4 pt-0>
                 <v-chip label color="blue" class="font-weight-bold">
                   <v-icon left>call</v-icon>
-                  {{ service.transport }}/{{
-                  service.port
-                  }}
+                  {{ service.transport }}/{{ service.port }}
                 </v-chip>
               </v-flex>
               <v-flex lg1 v-if="service.timestamp">
                 <v-icon>access_time</v-icon>
               </v-flex>
-              <v-flex lg3 v-if="service.timestamp">{{ formatted_time(service.timestamp) }}</v-flex>
+              <v-flex lg3 v-if="service.timestamp">{{
+                formatted_time(service.timestamp)
+              }}</v-flex>
             </v-layout>
           </v-flex>
 
@@ -104,7 +111,12 @@
                   <v-expansion-panel-content>
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
-                        <v-btn flat color="grey" v-on="on" @click.stop="copy_content(service.data)">
+                        <v-btn
+                          flat
+                          color="grey"
+                          v-on="on"
+                          @click.stop="copy_content(service.data)"
+                        >
                           <v-icon>file_copy</v-icon>
                         </v-btn>
                       </template>
@@ -116,7 +128,12 @@
                     </template>
                     <v-card>
                       <v-card-text>
-                        <v-textarea :value="service.data" :readonly="true" rows="16" box></v-textarea>
+                        <v-textarea
+                          :value="service.data"
+                          :readonly="true"
+                          rows="16"
+                          box
+                        ></v-textarea>
                       </v-card-text>
                     </v-card>
                   </v-expansion-panel-content>

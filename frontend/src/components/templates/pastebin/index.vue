@@ -12,8 +12,12 @@
           <v-divider></v-divider>
           <v-card-text>
             <v-card v-for="(paste, index) in resource.results" :key="index">
-              <v-card-title v-if="paste.title" class="font-weight-bold">{{ paste.title }}</v-card-title>
-              <v-card-title v-else class="grey--text">Untitled paste</v-card-title>
+              <v-card-title v-if="paste.title" class="font-weight-bold">{{
+                paste.title
+              }}</v-card-title>
+              <v-card-title v-else class="grey--text"
+                >Untitled paste</v-card-title
+              >
               <v-divider></v-divider>
               <v-card-text class="pt-2">
                 <v-layout class="text-sm-left">
@@ -57,7 +61,8 @@
                         target="blank"
                         rel="noopener noreferer"
                         :href="get_paste_link(paste.paste_key)"
-                      >{{ get_paste_link(paste.paste_key) }}</a>
+                        >{{ get_paste_link(paste.paste_key) }}</a
+                      >
                     </span>
                   </v-flex>
                   <v-flex v-if="paste.expire" lg3>

@@ -15,7 +15,9 @@
                     v-for="a_register in resource.A"
                     :key="a_register"
                     class="font-weight-bold"
-                  >{{ a_register }}</p>
+                  >
+                    {{ a_register }}
+                  </p>
                 </v-card-text>
               </v-card>
             </v-flex>
@@ -26,7 +28,12 @@
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
-                  <p v-for="aaaa_register in resource.AAAA" :key="aaaa_register">{{ aaaa_register }}</p>
+                  <p
+                    v-for="aaaa_register in resource.AAAA"
+                    :key="aaaa_register"
+                  >
+                    {{ aaaa_register }}
+                  </p>
                 </v-card-text>
               </v-card>
             </v-flex>
@@ -41,7 +48,9 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-              <p v-for="ns_register in resource.NS" :key="ns_register">{{ ns_register }}</p>
+              <p v-for="ns_register in resource.NS" :key="ns_register">
+                {{ ns_register }}
+              </p>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -54,7 +63,9 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-              <p v-for="mx_register in resource.MX" :key="mx_register">{{ mx_register }}</p>
+              <p v-for="mx_register in resource.MX" :key="mx_register">
+                {{ mx_register }}
+              </p>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -66,7 +77,9 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <p v-for="srv_register in resource.SRV" :key="srv_register">{{ srv_register }}</p>
+            <p v-for="srv_register in resource.SRV" :key="srv_register">
+              {{ srv_register }}
+            </p>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -78,7 +91,9 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-              <p v-for="txt_register in resource.TXT" :key="txt_register">{{ txt_register }}</p>
+              <p v-for="txt_register in resource.TXT" :key="txt_register">
+                {{ txt_register }}
+              </p>
             </v-card-text>
           </v-card>
         </v-flex>

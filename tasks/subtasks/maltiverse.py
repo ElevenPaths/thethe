@@ -4,8 +4,14 @@ import hashlib
 import requests
 
 from maltiverse import Maltiverse
+from tasks.api_keys import KeyRing
+
+
+MALTIVERSE_EMAIL = KeyRing().get("maltiverse_email")
+MALTIVERSE_PASS = KeyRing().get("maltiverse_pass")
+
 api = Maltiverse()
-api.login(email="mawed68613@xmailweb.com", password="JohnDoe1")
+api.login(MALTIVERSE_EMAIL, password=MALTIVERSE_PASS)
 
 URL_IP = "https://api.maltiverse.com/ip/{ip}"
 URL_DOMAIN = "https://api.maltiverse.com/hostname/{hostname}"
