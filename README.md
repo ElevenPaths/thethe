@@ -1,15 +1,39 @@
 # thethe
 
+Site: [https://thethe.e-paths.com](https://thethe.e-paths.com/)
+
+### A complete docker image is scheduled to be released soon, meanwhile you can play with the dev enviroment
+
+---
+
 ## Install (development enviroment)
 
 - git clone ...
-- Create a Python virtual enviroment, activate it and pip -r requirements.txt
+
+## Creating a Python virtual enviroment
+
+- pip install venv
+- python3 -m venv venv
+
+## Pull docker images
+
 - docker-compose build
+
+## Install node packages
+
 - cd frontend and npm install
 
 ## Running (development enviroment)
 
-In a Python virtual enviroment activated (you can choose to run them in background or in separate panes):
+Activate the Python virtual enviroment (from the project root):
+
+```bash
+source venv/bin/activate
+```
+
+You can open two terminal sessions (with both virtual enviroments activated) or just put the following two commands in background.
+
+Backend:
 
 ```bash
 watchmedo auto-restart -d tasks -p '*.py' -- celery -A tasks.tasks:celery_app worker -l info
@@ -19,23 +43,40 @@ watchmedo auto-restart -d tasks -p '*.py' -- celery -A tasks.tasks:celery_app wo
 gunicorn server.main:app --reload
 ```
 
-Frontend:
+Frontend (you won't be able to operate until a user is added to the system):
 
 ```bash
 cd frontend
 npm run serve
 ```
 
-### A complete docker image is scheduled to be released soon
-
 ## Setting up the initial account
 
 ---
 
-Create a collection (Mongodb) called "thethe".
-Create a document "users" with an entry:
+You must open a session in the MongoDB (remember is a docker container):
 
-{username: "yourusername", password: "hash_of_the_password"}
+```bash
+docker exec -it thethe_mongo_1 /bin/bash
+```
+
+Create a collection (Mongodb) called "thethe" (of course, you MUST change docker-compose default passwords):
+
+```bash
+mongo -u MONGO_INITDB_ROOT_USERNAME -p MONGO_INITDB_ROOT_PASSWORD
+```
+
+Now, inside mongo shell:
+
+```bash
+use thethe
+```
+
+Create "users" and YOUR first user:
+
+```bash
+db.users.insert_one({"name": YOUR_NAME, "password": HASH})
+```
 
 _hash_ is (assuming python env is activated and requirements.txt are installed) gotten from a python interactive interpreter:
 
