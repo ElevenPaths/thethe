@@ -115,3 +115,4 @@ TODO
 sources
 Pipfile
 Pipfile.lock
+frontend/public/static/phishtank/*
