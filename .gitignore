@@ -115,5 +115,6 @@ sources
 Pipfile
 Pipfile.lock
 frontend/public/static/phishtank/*
-mongodb_data
 frontend/dist/*
+utils/db.dump
+utils/db.dump.gz
