@@ -12,9 +12,7 @@
               v-for="domain_name in resource.domain_name"
               :key="domain_name"
               class="font-weight-bold"
-            >
-              {{ domain_name }}
-            </p>
+            >{{ domain_name }}</p>
           </v-card-text>
         </v-card>
         <v-divider class="pt-3"></v-divider>
@@ -83,9 +81,11 @@
             <v-layout>
               <v-flex>
                 <v-layout column>
-                  <v-flex v-for="email in resource.emails" :key="email">{{
+                  <v-flex v-for="email in resource.emails" :key="email">
+                    {{
                     email
-                  }}</v-flex>
+                    }}
+                  </v-flex>
                 </v-layout>
               </v-flex>
             </v-layout>
@@ -180,7 +180,7 @@
                 <v-flex lg3>
                   <v-label>Country:</v-label>
                 </v-flex>
-                <v-flex>
+                <v-flex v-if="resource.country">
                   <v-layout column>
                     <v-flex>
                       <country-flag :country="resource.country"></country-flag>
@@ -207,7 +207,13 @@ export default {
   data: function() {
     return {};
   },
-  methods: {},
+  methods: {
+    is_country_code: function(code) {
+      if (code.length > 3) {
+        return false;
+      }
+    }
+  },
   computed: {
     resource: function() {
       let plugin_result = { ...this.plugin_data.results };
@@ -231,6 +237,8 @@ export default {
       plugin_result.emails = make_unique_list(plugin_result.emails);
 
       plugin_result.org = make_unique_list(plugin_result.org, false)[0];
+
+      plugin_result.country = this.is_country_code(plugin_result.country);
 
       return plugin_result;
     }

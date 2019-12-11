@@ -116,3 +116,4 @@ sources
 Pipfile
 Pipfile.lock
 frontend/public/static/phishtank/*
+mongodb_data

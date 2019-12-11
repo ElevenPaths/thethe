@@ -26,21 +26,13 @@ services:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
 
-  nginx:
-    build:
-      context: ./nginx
-    ports:
-      - 80:80
-    volumes:
-      - ./frontend/dist:/usr/share/nginx/html
-
   server:
     build: .
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
     ports:
-      - 8000
+      - 8000:8000
     depends_on:
       - mongo
       - redis

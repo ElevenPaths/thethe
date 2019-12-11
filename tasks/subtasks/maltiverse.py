@@ -3,7 +3,7 @@ import json
 import hashlib
 import requests
 
-from maltiverse import Maltiverse
+from tasks.deps.maltiverse import Maltiverse
 from tasks.api_keys import KeyRing
 
 

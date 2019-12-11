@@ -67,4 +67,3 @@ webencodings==0.5.1
 Werkzeug==0.15.3
 XlsxWriter==1.2.5
 zipp==0.6.0
-git+https://github.com/maltiverse/python-maltiverse

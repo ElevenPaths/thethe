@@ -47,7 +47,7 @@ from tasks.subtasks.verifymail import verifymail
 from tasks.subtasks.virustotal import virustotal
 
 celery_app = Celery(
-    "tasks", backend="redis://localhost", broker="redis://localhost:6379/0"
+    "tasks", backend="redis://redis", broker="redis://redis:6379/0"
 )
 
 
