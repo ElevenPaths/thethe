@@ -6,7 +6,7 @@ services:
     image: mongo
     restart: always
     ports:
-      - 27017
+      - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
@@ -17,7 +17,7 @@ services:
     image: redis
     restart: always
     ports:
-      - 6379
+      - 6379:6379
 
   celery:
     build: .

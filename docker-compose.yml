@@ -5,8 +5,6 @@ services:
   mongo:
     image: mongo
     restart: always
-    ports:
-      - 27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
@@ -16,8 +14,6 @@ services:
   redis:
     image: redis
     restart: always
-    ports:
-      - 6379
 
   celery:
     build: .
@@ -43,8 +39,6 @@ services:
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
-    ports:
-      - 8000
     depends_on:
       - mongo
       - celery
