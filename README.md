@@ -31,13 +31,13 @@ Inside **utils** folder, there a couple of scripts that will let you dump and re
 Make a backup
 
 ```bash
-backup_thethe.sh
+backup_thethe_db.sh
 ```
 
 Restore from a backup
 
 ```bash
-restore_thethe.sh <restoration_file>
+restore_thethe_db.sh
 ```
 
 ---
