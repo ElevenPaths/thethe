@@ -5,7 +5,6 @@ from server.entities.resource_types import ResourceType
 # Import Celery task needed to do the real work
 from tasks.tasks import threatcrowd_task
 
-# TODO: This plugin is deactivated by now until we can work the map tile as a static one
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.DOMAIN, ResourceType.IPv4, ResourceType.EMAIL, ResourceType.HASH]
 

@@ -51,8 +51,6 @@ class ResourceBase:
         self, plugin_name, project_id, resource_id, resource_type, query_result
     ):
         # TODO: Should we store an time-based diff of results if they differ?
-        print(plugin_name)
-        print(query_result)
         result_exists = self.collection().find_one(
             {"_id": self.resource_id, f"plugins.name": plugin_name}
         )
