@@ -35,6 +35,8 @@ services:
       - 80:80
     volumes:
       - ./frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - server
 
   server:
     build: .
