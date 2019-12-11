@@ -1,4 +1,9 @@
-const axios = require("axios").create({ baseURL: "http://localhost" });
+let baseURL = "http://localhost";
+if (process.env.NODE_ENV === "development") {
+  baseURL = "http://localhost:8000";
+}
+
+const axios = require("axios").create({ baseURL: baseURL });
 
 import { AUTH_LOGOUT } from "../store/actions/auth";
 import router from "../router";

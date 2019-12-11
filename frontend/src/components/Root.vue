@@ -292,14 +292,14 @@ export default {
     setInterval(() => {
       this.$store.dispatch("update");
     }, 10000);
-  }
+  },
 
   //TODO: Commented to let dev mode be kind when reloading components
-  /*   beforeMount: function() {
+  beforeMount: function() {
     if (this.$store.getters["auth_status"] === "") {
       this.$router.push("/login");
     }
-  } */
+  }
 };
 </script>
 
