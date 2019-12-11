@@ -1,3 +1,3 @@
-const API_URL = "http://server/api";
+const API_URL = "http://localhost/api";
 
 export default API_URL;

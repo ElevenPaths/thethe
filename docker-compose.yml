@@ -25,6 +25,8 @@ services:
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
+    depends_on:
+      - redis
 
   nginx:
     build:
@@ -43,5 +45,4 @@ services:
       - 8000
     depends_on:
       - mongo
-      - redis
       - celery

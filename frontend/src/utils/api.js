@@ -1,4 +1,4 @@
-const axios = require("axios").create({ baseURL: "http://localhost:8000" });
+const axios = require("axios").create({ baseURL: "http://localhost" });
 
 import { AUTH_LOGOUT } from "../store/actions/auth";
 import router from "../router";
