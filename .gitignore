@@ -110,10 +110,10 @@ __pycache__/*
 thethe_venv/*
 notes.txt
 tags
-frontend/static/phishtank/*
 TODO
 sources
 Pipfile
 Pipfile.lock
 frontend/public/static/phishtank/*
 mongodb_data
+frontend/dist/*
