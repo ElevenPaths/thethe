@@ -32,6 +32,8 @@ services:
     build:
       context: ./nginx
     container_name: thethe_nginx
+    volumes:
+      - ./nginx/dist/static/phishtank:/usr/share/nginx/html/static/phishtank
     ports:
       - 80:80
       - 443:443
