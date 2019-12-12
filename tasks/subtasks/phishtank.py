@@ -10,6 +10,9 @@ from tasks.api_keys import KeyRing
 API_KEY = KeyRing().get("phishtank")
 
 URL = "https://checkurl.phishtank.com/checkurl/"
+SCREENSHOTS_STORAGE_PATH = "/temp/phishtank"
+SCREENSHOTS_SERVER_PATH = "static/phishtank"
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
 
 
 def phishtank_check(url):
@@ -21,7 +24,7 @@ def phishtank_check(url):
         response = {}
 
         headers = {
-            "User-Agent": "phishtank/badboynt",
+            "User-Agent": USER_AGENT,
             "Content-Type": "application/x-www-form-urlencoded",
         }
 
@@ -64,7 +67,7 @@ def phishtank_screenshot(phish_id):
 
         response = {}
 
-        headers = {"User-Agent": "phishtank/badboynt"}
+        headers = {"User-Agent": USER_AGENT}
 
         response = requests.get(URL_main, headers=headers)
         if not response.status_code == 200:
@@ -78,9 +81,9 @@ def phishtank_screenshot(phish_id):
                     screenshot_url = matches[0]
                     screenshot_name = urlparse(screenshot_url).path
                     r = requests.get(screenshot_url, allow_redirects=True)
-                    with open(f"frontend/static/phishtank{screenshot_name}", "wb") as f:
+                    with open(f"{SCREENSHOTS_STORAGE_PATH}{screenshot_name}", "wb") as f:
                         f.write(r.content)
-                    return f"static/phishtank{screenshot_name}"
+                    return f"{SCREENSHOTS_SERVER_PATH}{screenshot_name}"
 
         return None
 
@@ -101,7 +104,7 @@ def phishtank_tech_details(phish_id):
 
         response = {}
 
-        headers = {"User-Agent": "phishtank/badboynt"}
+        headers = {"User-Agent": USER_AGENT}
 
         response = requests.get(URL_main, headers=headers)
         if not response.status_code == 200:

@@ -24,6 +24,7 @@ services:
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
+      - ./nginx/dist/static/phishtank:/temp/phishtank
     depends_on:
       - redis
 
@@ -43,6 +44,7 @@ services:
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
+      - ./nginx/dist/static/phishtank:/temp/phishtank
     depends_on:
       - mongo
       - celery

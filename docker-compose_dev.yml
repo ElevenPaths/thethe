@@ -28,6 +28,7 @@ services:
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
+      - ./nginx/dist/static/phishtank:/temp/phishtank
 
   server:
     build: .
@@ -35,6 +36,7 @@ services:
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
+      - ./nginx/dist/static/phishtank:/temp/phishtank
     ports:
       - 8000:8000
     depends_on:
