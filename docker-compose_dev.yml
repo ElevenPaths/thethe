@@ -23,6 +23,7 @@ services:
 
   celery:
     build: .
+    container_name: thethe_celery
     command: celery -A tasks.tasks:celery_app worker -l info
     volumes:
       - ./server:/usr/src/thethe/server
@@ -30,6 +31,7 @@ services:
 
   server:
     build: .
+    container_name: thethe_server
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks

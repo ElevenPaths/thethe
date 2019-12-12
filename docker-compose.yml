@@ -19,6 +19,7 @@ services:
 
   celery:
     build: .
+    container_name: thethe_celery
     command: celery -A tasks.tasks:celery_app worker -l info
     volumes:
       - ./server:/usr/src/thethe/server
@@ -29,6 +30,7 @@ services:
   nginx:
     build:
       context: ./nginx
+    container_name: thethe_nginx
     ports:
       - 80:80
     depends_on:
@@ -36,6 +38,7 @@ services:
 
   server:
     build: .
+    container_name: thethe_server
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
