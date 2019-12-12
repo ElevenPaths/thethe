@@ -28,11 +28,10 @@ services:
 
   nginx:
     build:
-      context: ./nginx
+      context: .
+      dockerfile: ./nginx/Dockerfile
     ports:
       - 80:80
-    volumes:
-      - ./frontend/dist:/usr/share/nginx/html
     depends_on:
       - server
 
