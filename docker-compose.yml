@@ -33,6 +33,7 @@ services:
     container_name: thethe_nginx
     ports:
       - 80:80
+      - 443:443
     depends_on:
       - server
 

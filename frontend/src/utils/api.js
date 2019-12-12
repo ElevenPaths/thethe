@@ -1,6 +1,6 @@
-let baseURL = "http://localhost";
+let baseURL = "https://localhost";
 if (process.env.NODE_ENV === "development") {
-  baseURL = "http://localhost:8000";
+  baseURL = "https://localhost:8000";
 }
 
 const axios = require("axios").create({ baseURL: baseURL });
