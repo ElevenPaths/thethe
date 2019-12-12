@@ -20,7 +20,7 @@ services:
   celery:
     build: .
     container_name: thethe_celery
-    command: celery -A tasks.tasks:celery_app worker -l info
+    command: /usr/local/bin/celery -A tasks.tasks:celery_app worker -l info
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
@@ -43,6 +43,7 @@ services:
   server:
     build: .
     container_name: thethe_server
+    command: /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
