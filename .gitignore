@@ -115,6 +115,5 @@ sources
 Pipfile
 Pipfile.lock
 frontend/public/static/phishtank/*
-frontend/dist/*
 utils/db.dump
 utils/db.dump.gz
