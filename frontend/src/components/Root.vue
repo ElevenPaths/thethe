@@ -211,6 +211,7 @@ export default {
       active: null,
       show_apikeys: false,
       show_change_password: false,
+      update_interval: null,
       hash_resource_description: {
         type: "hash",
         resource_list: "hashlist"
@@ -281,6 +282,7 @@ export default {
 
   methods: {
     logout: function() {
+      clearInterval(this.update_interval);
       this.$store
         .dispatch(AUTH_LOGOUT)
         .then(() => {
@@ -306,19 +308,21 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["get_opened_project", "is_project_opened"]),
+    ...mapGetters(["get_opened_project", "is_project_opened", "auth_status"]),
     username: function() {
       return this.$store.getters["username"];
     }
   },
 
   mounted: function() {
-    setInterval(() => {
-      this.$store.dispatch("update");
+    let self = this;
+    this.update_interval = setInterval(function() {
+      if (self.auth_status === "success") {
+        self.$store.dispatch("update").catch();
+      }
     }, 10000);
   },
 
-  //TODO: Commented to let dev mode be kind when reloading components
   beforeMount: function() {
     if (this.$store.getters["auth_status"] === "") {
       this.$router.push("/login");

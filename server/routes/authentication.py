@@ -10,6 +10,7 @@ from flask import Blueprint, request, jsonify
 
 authentication_api = Blueprint("authentication", __name__)
 
+MIN_PASSWORD_LENGHT = 3
 
 @authentication_api.route("/api/auth", methods=["POST"])
 def auth():
@@ -42,19 +43,23 @@ def change_password(user):
         new_password_2 = request.json["new_password_2"]
         user = bson.ObjectId(user)
 
-        if not new_password_1 == new_password_2:
-            print("[AUTH] Unmatched new password for change password operation")
-            return jsonify({"error_message": "New password does not match"}), 400
-
         db = DB("users")
         cursor = db.collection.find_one({"_id": user})
         if cursor:
             password_hash = cursor["password"]
-            if utils.verify_password(old_password, password_hash):
-                db.collection.update({"_id": user}, {"$set": {"password": hash_password(new_password_1)}})
-            return jsonify({"success_message": "Password changed"})
-        else:
-            return jsonify({"error_message": "Bad user or password"}), 400
+            if not utils.verify_password(old_password, password_hash):
+                return jsonify({"error_message": "Bad user or password"}), 400
+
+        if not new_password_1 == new_password_2:
+            print("[AUTH] Unmatched new password for change password operation")
+            return jsonify({"error_message": "New password does not match"}), 400
+
+        if len(new_password_1) < MIN_PASSWORD_LENGHT:
+            print("[AUTH] new password is less than 8 characters")
+            return jsonify({"error_message": "Password is too short (must be at least 8 characters)"}), 400
+
+        db.collection.update({"_id": user}, {"$set": {"password": hash_password(new_password_1)}})
+        return jsonify({"success_message": "Password changed"})
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

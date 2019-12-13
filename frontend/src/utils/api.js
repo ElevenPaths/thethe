@@ -20,12 +20,11 @@ axios.interceptors.response.use(
     return response;
   },
   function(error) {
-    console.log("Axios error:" + error);
     if (error.response && error.response.status === 401) {
-      store.dispatch(AUTH_LOGOUT);
-      router.push("/login");
+      //store.dispatch(AUTH_LOGOUT);
+      //router.push("/login");
     }
-    return Promise.reject(error);
+    return Promise.reject(error.response);
   }
 );
 

@@ -75,9 +75,24 @@ export default {
         .then(resp => {
           this.$emit("change-password-closed");
         })
-        .then(this.reset_fields())
+        .then(resp => this.reset_fields())
+        .then(resp =>
+          this.$notify({
+            title: "Ok",
+            text: resp.data.success_message,
+            type: "success"
+          })
+        )
         .then(this.logout())
-        .catch(resp => console.log("Error changing password: " + resp));
+        .catch(err => {
+          if (err.data) {
+            this.$notify({
+              title: "Error",
+              text: err.data.error_message,
+              type: "error"
+            });
+          }
+        });
     },
 
     reset_fields: function() {
