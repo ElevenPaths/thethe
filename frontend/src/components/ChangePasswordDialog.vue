@@ -66,7 +66,7 @@ export default {
         new_password_2: this.new_password_2
       };
       api_call(params).catch(resp =>
-        console.log("Error changing password" + resp)
+        console.log("Error changing password: " + resp)
       );
       this.$emit("change-password-closed");
     }
