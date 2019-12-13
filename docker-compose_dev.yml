@@ -14,6 +14,7 @@ services:
 
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongodb_data:/data/
 
   redis:
     image: redis
@@ -24,7 +25,7 @@ services:
   celery:
     build: .
     container_name: thethe_celery
-    command: celery -A tasks.tasks:celery_app worker -l info
+    command: /usr/local/bin/watchmedo auto-restart -d tasks -p '*.py' -- celery -A tasks.tasks:celery_app worker -l info
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
@@ -44,3 +45,6 @@ services:
       - mongo
       - redis
       - celery
+
+  volumes:
+    mongodb_data:

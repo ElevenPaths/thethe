@@ -12,6 +12,7 @@ services:
 
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongodb_data/:/data/db
 
   redis:
     image: redis
@@ -34,6 +35,7 @@ services:
     container_name: thethe_nginx
     volumes:
       - ./nginx/dist/static/phishtank:/usr/share/nginx/html/static/phishtank
+      - ./nginx/dist:/usr/share/nginx/html
     ports:
       - 80:80
       - 443:443
@@ -41,7 +43,7 @@ services:
       - server
 
   server:
-    build: .
+    image: thethe_celery
     container_name: thethe_server
     command: /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000
     volumes:
@@ -51,3 +53,6 @@ services:
     depends_on:
       - mongo
       - celery
+
+volumes:
+  mongodb_data:

@@ -24,6 +24,35 @@ Change the **admin** password as soon as you login into **thethe** the very firs
 
 ---
 
+## API keys
+
+There are not API keys stored by default in the system.
+
+To add an API key, there is an option in the user menu (right upper corner).
+
+All API keys (**a new API management system is in development**) must be written as CSV values:
+
+```text
+service_name_1,api_value_1
+service_name_2,api_value_2
+...
+service_name_n,api_value_n
+
+```
+
+What if a service must have more than one API key, secret, etc...
+
+```text
+secret,api_value
+...
+cookie,cookie_value
+
+```
+
+and so on...
+
+---
+
 ## Database backups and restoration
 
 Inside **utils** folder, there a couple of scripts that will let you dump and restore the database:
@@ -31,13 +60,43 @@ Inside **utils** folder, there a couple of scripts that will let you dump and re
 Make a backup
 
 ```bash
-backup_thethe_db.sh
+backup_thethe_db.sh <mongodb_container_name>
 ```
 
 Restore from a backup
 
 ```bash
-restore_thethe_db.sh
+restore_thethe_db.sh <mongodb_container_name>
+```
+
+---
+
+## Updating
+
+**Make a database backup!** (look section "Database backups and restoration")
+
+```bash
+git pull
+```
+
+If the source code has been changed all the mounted volumes should reflect the changes, but in certain cases (third party libraries, etc) the images must be rebuilded.
+
+Stop the containers:
+
+```bash
+docker-composer stop
+```
+
+Rebuild images:
+
+```bash
+docker-composer build
+```
+
+Restart the system
+
+```bash
+docker-composer up -d
 ```
 
 ---

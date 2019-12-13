@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="show" persistent max-width="290">
     <v-card>
-      <v-card-title class="headline">Password change</v-card-title>
+      <v-card-title class="headline">Change password</v-card-title>
       <v-card-text>
         <v-form>
           <v-layout column>
