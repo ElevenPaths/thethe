@@ -39,6 +39,23 @@
           </v-list-tile>
 
           <v-divider></v-divider>
+
+          <v-list-tile class="caption" @click.stop="show_change_password_dialog(true)">
+            <change-password-dialog
+              :show="show_change_password"
+              @change-password-closed="show_change_password_dialog(false)"
+            ></change-password-dialog>
+
+            <v-list-tile-avatar>
+              <v-icon>mdi-textbox-password</v-icon>
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title>Change password</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-divider></v-divider>
+
           <v-list-tile @click="logout" class="caption">
             <v-list-tile-avatar>
               <v-icon>logout</v-icon>
@@ -169,6 +186,7 @@ import ProjectSelector from "./ProjectSelector";
 import ResourceInput from "./ResourceInput";
 import SimpleVisNetwork from "./SimpleVisNetwork";
 import ApiKeys from "./ApiKeys";
+import ChangePasswordDialog from "./ChangePasswordDialog";
 
 import StatusBar from "./StatusBar";
 
@@ -184,13 +202,15 @@ export default {
     ResourceInput,
     StatusBar,
     SimpleVisNetwork,
-    ApiKeys
+    ApiKeys,
+    ChangePasswordDialog
   },
 
   data: function() {
     return {
       active: null,
       show_apikeys: false,
+      show_change_password: false,
       hash_resource_description: {
         type: "hash",
         resource_list: "hashlist"
@@ -273,6 +293,10 @@ export default {
 
     show_apikeys_f: function(show) {
       this.show_apikeys = show;
+    },
+
+    show_change_password_dialog: function(show) {
+      this.show_change_password = show;
     },
 
     //TODO: Before switch project check if there are pending operations

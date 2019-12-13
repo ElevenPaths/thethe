@@ -15,7 +15,7 @@ Click==7.0
 click-plugins==1.1.1
 colorama==0.4.1
 decorator==4.4.0
-diario==0.1.8
+diario==0.1.9
 dnspython==1.16.0
 Flask==1.0.2
 Flask-Cors==3.0.7
