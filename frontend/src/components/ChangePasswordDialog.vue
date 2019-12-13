@@ -72,10 +72,6 @@ export default {
         new_password_2: this.new_password_2
       };
       api_call(params)
-        .then(resp => {
-          this.$emit("change-password-closed");
-        })
-        .then(resp => this.reset_fields())
         .then(resp =>
           this.$notify({
             title: "Ok",
@@ -83,7 +79,12 @@ export default {
             type: "success"
           })
         )
-        .then(this.logout())
+        .then(resp => this.reset_fields())
+        .then(resp => {
+          this.$emit("change-password-closed");
+        })
+
+        //.then(this.logout())
         .catch(err => {
           if (err.data) {
             this.$notify({

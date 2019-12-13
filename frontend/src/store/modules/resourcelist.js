@@ -25,13 +25,15 @@ const actions = {
   update: async function({ commit }) {
     let url = "/api/ping";
 
-    await api_call({ url: url }).then(resp => {
-      if (resp.data.length > 0) {
-        resp.data.forEach(update => {
-          commit("add_update", update);
-        });
-      }
-    });
+    await api_call({ url: url })
+      .then(resp => {
+        if (resp.data.length > 0) {
+          resp.data.forEach(update => {
+            commit("add_update", update);
+          });
+        }
+      })
+      .catch(err => console.log(err));
   },
 
   reset_resource_lists: function({ commit }) {
