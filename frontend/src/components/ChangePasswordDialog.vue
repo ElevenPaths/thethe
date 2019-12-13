@@ -38,7 +38,11 @@
       <v-spacer></v-spacer>
       <v-card-actions>
         <v-flex>
-          <v-btn color="green darken-1" flat @click.stop="$emit('change-password-closed')">Cancel</v-btn>
+          <v-btn
+            color="green darken-1"
+            flat
+            @click.stop="reset_fields();$emit('change-password-closed');"
+          >Cancel</v-btn>
           <v-btn color="red darken-1" flat @click.stop="doit" :disabled="password_match">Ok</v-btn>
         </v-flex>
       </v-card-actions>
@@ -48,6 +52,8 @@
 
 <script>
 import api_call from "../utils/api";
+import { AUTH_LOGOUT } from "../store/actions/auth";
+import { RESET_PROJECT } from "../store/actions/project";
 
 export default {
   name: "change-password-dialog",
@@ -65,10 +71,30 @@ export default {
         new_password_1: this.new_password_1,
         new_password_2: this.new_password_2
       };
-      api_call(params).catch(resp =>
-        console.log("Error changing password: " + resp)
-      );
-      this.$emit("change-password-closed");
+      api_call(params)
+        .then(resp => {
+          this.$emit("change-password-closed");
+        })
+        .then(this.reset_fields())
+        .then(this.logout())
+        .catch(resp => console.log("Error changing password: " + resp));
+    },
+
+    reset_fields: function() {
+      this.old_password = "";
+      this.new_password_1 = "";
+      this.new_password_2 = "";
+    },
+
+    logout: function() {
+      this.$store
+        .dispatch(AUTH_LOGOUT)
+        .then(() => {
+          this.$store.dispatch(RESET_PROJECT);
+        })
+        .then(() => {
+          this.$router.push("/login");
+        });
     }
   },
   computed: {

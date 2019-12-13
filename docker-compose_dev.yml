@@ -46,5 +46,5 @@ services:
       - redis
       - celery
 
-  volumes:
-    mongodb_data:
+volumes:
+  mongodb_data:

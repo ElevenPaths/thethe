@@ -35,7 +35,6 @@ services:
     container_name: thethe_nginx
     volumes:
       - ./nginx/dist/static/phishtank:/usr/share/nginx/html/static/phishtank
-      - ./nginx/dist:/usr/share/nginx/html
     ports:
       - 80:80
       - 443:443
