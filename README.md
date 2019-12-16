@@ -1,4 +1,4 @@
-# The Threat Hunting Enviroment
+# The Threat Hunting Environment
 
 You are a Threat Hunter. While investigating, did you find yourself with more than 20 tabs opened in your browser, scattered .txt files with data and some terminals showing up in the background?
 
@@ -91,7 +91,7 @@ restore_thethe_db.sh <mongodb_container_name>
 git pull
 ```
 
-If the source code has been changed all the mounted volumes should reflect the changes, but in certain cases (third party libraries, etc) the images must be rebuilded.
+If the source code has been changed all the mounted volumes should reflect the changes, but in certain cases (third party libraries, etc) the images must be rebuilt.
 
 Stop the containers:
 
@@ -113,7 +113,7 @@ docker-compose up -d
 
 ---
 
-## Development enviroment
+## Development environment
 
 If you want to collaborate with the project a development version is provided:
 
