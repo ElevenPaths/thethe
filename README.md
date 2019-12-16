@@ -1,10 +1,10 @@
 # The Threat Hunting Enviroment
 
-You are a threat hunter. While investigating, did you found yourself with more than 20 tabs opened in your browser, scattered txts files with data and some terminals showing up in the background?
+You are a Threat Hunter. While investigating, did you find yourself with more than 20 tabs opened in your browser, scattered .txt files with data and some terminals showing up in the background?
 
-theTHE centralize all the information regarding a investigation in a project and share its results with your team (and nobody else). Cache your API responses so you don't have to repeat the requests. Do not share your keys, let the users make calls to the services.
+theTHE centralizes all the information on an investigation in a single project and shares its results with your team (and with nobody else). theTHE caches your API responses, so you don't need to repeat the requests. Don’t share your keys, let the users make calls to the services.
 
-theTHE also contains some command-line tools integrated so you don't have to open a terminal and pipe the results in a txt.
+theTHE also contains some command-line tools integrated so you don't have to open a terminal and pipe the results in a .txt file.
 
 Your feedback is welcome.
 
