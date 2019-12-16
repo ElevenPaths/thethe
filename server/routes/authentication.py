@@ -10,7 +10,7 @@ from flask import Blueprint, request, jsonify
 
 authentication_api = Blueprint("authentication", __name__)
 
-MIN_PASSWORD_LENGHT = 3
+MIN_PASSWORD_LENGHT = 8
 
 @authentication_api.route("/api/auth", methods=["POST"])
 def auth():

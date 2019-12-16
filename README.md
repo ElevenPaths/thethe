@@ -2,9 +2,9 @@
 
 You are a threat hunter. While investigating, did you found yourself with more than 20 tabs opened in your browser, scattered txts files with data and some terminals showing up in the background?
 
-theTHE centralize all the information regarding a investigation in a project and share its results with your team (and nobody else). Cache your API responses so you don't have to repeat the requests. Do not share your keys, let the users make call to the services.
+theTHE centralize all the information regarding a investigation in a project and share its results with your team (and nobody else). Cache your API responses so you don't have to repeat the requests. Do not share your keys, let the users make calls to the services.
 
-theTHE also contains command-line tools so you don't have to open a terminal and pipe the results in a txt.
+theTHE also contains some command-line tools integrated so you don't have to open a terminal and pipe the results in a txt.
 
 Your feedback is welcome.
 
