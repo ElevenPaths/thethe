@@ -63,11 +63,11 @@ and so on...
 
 ## Database backups and restoration
 
-Mongodb has a docker volume to ease external storage and backups called **thethe_mongodb_data**
+Mongodb has a bind volume to ease external storage and backups in a folder **mongodb_data**
 
-In any case, we have provided you a couple of scripts to backup and restore data from your mongo container.
+In any case, we have provided you a couple of scripts to backup (a compressed file) and restore data from your mongo container.
 
-Inside **utils** folder, there a couple of scripts that will let you dump and restore the database:
+Inside **utils** folder:
 
 Make a backup
 
