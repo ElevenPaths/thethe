@@ -42,7 +42,7 @@ services:
       - server
 
   server:
-    image: thethe_celery
+    build: .
     container_name: thethe_server
     command: /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000
     volumes:
