@@ -96,19 +96,19 @@ If the source code has been changed all the mounted volumes should reflect the c
 Stop the containers:
 
 ```bash
-docker-composer stop
+docker-compose stop
 ```
 
 Rebuild images:
 
 ```bash
-docker-composer build
+docker-compose build
 ```
 
 Restart the system
 
 ```bash
-docker-composer up -d
+docker-compose up -d
 ```
 
 ---
