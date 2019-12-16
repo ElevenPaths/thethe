@@ -117,3 +117,4 @@ nginx/dist/static/phishtank/*
 !nginx/dist/static/phishtank/.gitkeep
 utils/db.dump
 utils/db.dump.gz
+mongodb_data/*

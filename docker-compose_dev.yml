@@ -14,7 +14,7 @@ services:
 
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      - mongodb_data:/data/
+      - ./mongodb_data:/data/
 
   redis:
     image: redis
@@ -30,6 +30,8 @@ services:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
       - ./nginx/dist/static/phishtank:/temp/phishtank
+    depends_on:
+      - redis
 
   server:
     build: .
@@ -43,8 +45,4 @@ services:
       - 8000:8000
     depends_on:
       - mongo
-      - redis
       - celery
-
-volumes:
-  mongodb_data:

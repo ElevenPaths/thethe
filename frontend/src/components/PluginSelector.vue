@@ -26,8 +26,8 @@
             <v-list-tile-title>{{ plugin.name }}</v-list-tile-title>
             <v-list-tile-sub-title>
               <v-layout align-center>
-                <v-flex lg6>{{ plugin.description }}</v-flex>
-                <v-flex v-if="plugin.last_update">
+                <v-flex lg8>{{ plugin.description }}</v-flex>
+                <v-flex offset-lg1 v-if="plugin.last_update">
                   <v-layout align-center>
                     <span>Last update:&nbsp;</span>
                     <span>{{ plugin.last_update }}</span>

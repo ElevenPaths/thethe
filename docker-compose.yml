@@ -12,7 +12,7 @@ services:
 
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      - mongodb_data/:/data/db
+      - ./mongodb_data/:/data/db
 
   redis:
     image: redis
@@ -52,6 +52,3 @@ services:
     depends_on:
       - mongo
       - celery
-
-volumes:
-  mongodb_data:
