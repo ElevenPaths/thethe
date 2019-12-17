@@ -113,8 +113,9 @@ TODO
 sources
 Pipfile
 Pipfile.lock
-nginx/dist/static/phishtank/*
-!nginx/dist/static/phishtank/.gitkeep
+frontend/public/static/phishtank/*
+!frontend/public/static/phishtank/.gitkeep
 utils/db.dump
 utils/db.dump.gz
 mongodb_data/*
+node_modules/
