@@ -14,7 +14,7 @@ services:
 
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      - ./mongodb_data:/data/
+      - ./mongodb_data:/data/db
 
   redis:
     image: redis
@@ -29,7 +29,7 @@ services:
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
-      - ./nginx/dist/static/phishtank:/temp/phishtank
+      - ./frontend/public/static/phishtank:/temp/phishtank
     depends_on:
       - redis
 
@@ -40,7 +40,7 @@ services:
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
-      - ./nginx/dist/static/phishtank:/temp/phishtank
+      - ./frontend/public/static/phishtank:/temp/phishtank
     ports:
       - 8000:8000
     depends_on:

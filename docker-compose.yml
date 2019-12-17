@@ -25,16 +25,16 @@ services:
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
-      - ./nginx/dist/static/phishtank:/temp/phishtank
+      - ./frontend/public/static/phishtank:/temp/phishtank
     depends_on:
       - redis
 
   nginx:
     build:
-      context: ./nginx
+      context: ./frontend
     container_name: thethe_nginx
     volumes:
-      - ./nginx/dist/static/phishtank:/usr/share/nginx/html/static/phishtank
+      - ./frontend/public/static/phishtank:/usr/share/nginx/html/static/phishtank
     ports:
       - 80:80
       - 443:443
@@ -48,7 +48,7 @@ services:
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
-      - ./nginx/dist/static/phishtank:/temp/phishtank
+      - ./frontend/public/static/phishtank:/temp/phishtank
     depends_on:
       - mongo
       - celery
