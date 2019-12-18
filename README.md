@@ -22,7 +22,7 @@ Last, build the images and run the containers
 docker-compose up -d
 ```
 
-You should see **thethe** in [http://localhost](http://localhost) after a :coffee:
+You should see **thethe** in [https://localhost](https://localhost) after a :coffee:
 
 ## Default user
 
