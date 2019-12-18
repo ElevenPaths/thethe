@@ -16,7 +16,7 @@ First, clone this repository with:
 git clone https://github.com/ElevenPaths/thethe.git
 ```
 
-Last, build the images and run the containers
+Then, build the images and run the containers
 
 ```bash
 docker-compose up -d
@@ -26,19 +26,19 @@ You should see **thethe** in [https://localhost](https://localhost) after a :cof
 
 ## Default user
 
-By default, there is only one user **admin** with password **admin**
+By default, there is a single user **admin** with password **admin**
 
-Change the **admin** password as soon as you login into **thethe** the very first time.
+Change the **admin** password as soon as you log into **thethe** the very first time.
 
 ---
 
 ## API keys
 
-There are not API keys stored by default in the system.
+There are not API keys stored by default on the system.
 
-To add an API key, there is an option in the user menu (right upper corner).
+To add an API key, there is an option in the user menu (upper-right corner).
 
-All API keys (**a new API management system is in development**) must be written as CSV values:
+All API keys (**a new API management system is being development**) must be written as CSV values:
 
 ```text
 service_name_1,api_value_1
@@ -48,7 +48,7 @@ service_name_n,api_value_n
 
 ```
 
-What if a service must have more than one API key, secret, etc...
+If a service must have more than one API key, secret, etc...
 
 ```text
 secret,api_value
@@ -65,7 +65,7 @@ and so on...
 
 Mongodb has a bind volume to ease external storage and backups in a folder **mongodb_data**
 
-In any case, we have provided you a couple of scripts to backup (a compressed file) and restore data from your mongo container.
+In any case, we have provided you with a couple of scripts to backup (a compressed file) and restore data from your mongo container.
 
 Inside **utils** folder:
 
@@ -85,13 +85,13 @@ restore_thethe_db.sh <mongodb_container_name>
 
 ## Updating
 
-**Make a database backup!** (look section "Database backups and restoration")
+**Make a database backup!** (check the section "Database Backups and Restoration")
 
 ```bash
 git pull
 ```
 
-If the source code has been changed all the mounted volumes should reflect the changes, but in certain cases (third party libraries, etc) the images must be rebuilt.
+If the source code has been changed all the mounted volumes should reflect such changes. However in certain cases (third party libraries, etc) the images will have to be rebuilt.
 
 Stop the containers:
 
@@ -115,7 +115,7 @@ docker-compose up -d
 
 ## Development environment
 
-If you want to collaborate with the project a development version is provided:
+If you want to collaborate with the project, a development version is provided:
 
 ### Get the repository
 
@@ -141,6 +141,6 @@ npm run serve
 
 ## More info
 
-Site: [https://thethe.e-paths.com](https://thethe.e-paths.com/)
+Website: [https://thethe.e-paths.com](https://thethe.e-paths.com/)
 
 License: [https://raw.githubusercontent.com/ElevenPaths/thethe/master/LICENSE](https://raw.githubusercontent.com/ElevenPaths/thethe/master/LICENSE)
