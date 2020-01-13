@@ -7,14 +7,13 @@ from tasks.tasks import virustotal_task
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [
-    ResourceType.URL,
-    ResourceType.HASH,
+    ResourceType.DOMAIN,
 ]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
-PLUGIN_DESCRIPTION = "Search a hash or a URL in VirusTotal"
+PLUGIN_DESCRIPTION = "Search a domain in VirusTotal"
 PLUGIN_IS_ACTIVE = False
-PLUGIN_NAME = "virustotal"
+PLUGIN_NAME = "vt_domain"
 PLUGIN_AUTOSTART = False
 PLUGIN_DISABLE = False
 
@@ -33,6 +32,10 @@ class Plugin:
         resource_type = self.resource.get_type()
 
         target = self.resource.get_data()["canonical_name"]
+
+        # Canonical data of hashes is its short form so we have to get long hash instead
+        if resource_type == ResourceType.HASH:
+            target = self.resource.get_data()["hash"]
 
         try:
             to_task = {

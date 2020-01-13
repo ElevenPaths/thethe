@@ -6,7 +6,7 @@
           <v-card class="elevation-12">
             <v-toolbar color="grey darken-3" dark flat>
               <v-spacer>
-                <v-toolbar-title>The Thread Enviroment Experience</v-toolbar-title>
+                <v-toolbar-title>The Threat Hunting Environment</v-toolbar-title>
               </v-spacer>
             </v-toolbar>
             <v-card-text>

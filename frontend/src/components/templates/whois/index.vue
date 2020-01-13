@@ -238,7 +238,9 @@ export default {
 
       plugin_result.org = make_unique_list(plugin_result.org, false)[0];
 
-      plugin_result.country = this.is_country_code(plugin_result.country);
+      if (plugin_result.country) {
+        plugin_result.country = this.is_country_code(plugin_result.country);
+      }
 
       return plugin_result;
     }

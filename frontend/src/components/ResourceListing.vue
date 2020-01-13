@@ -1,18 +1,13 @@
 <template>
   <v-layout class="pa-1">
-    <v-flex
-      :class="{ [`lg${grid_space}`]: true }"
-      v-if="there_are_resources_in_list || search"
-    >
+    <v-flex :class="{ [`lg${grid_space}`]: true }" v-if="there_are_resources_in_list || search">
       <v-card
         v-on:dismiss="remove_resource = !remove_resource"
         v-on:dodelete="remove_resource_with_confirmation"
       >
         <v-card-title class="pa-0">
           <v-card-text>
-            <v-flex
-              class="subheading blue--text text--lighten-2 text-xs-center ma-0 pa-0"
-            >
+            <v-flex class="subheading blue--text text--lighten-2 text-xs-center ma-0 pa-0">
               <v-flex>
                 <slot name="title"></slot>
                 ({{ resource_count }})
@@ -20,44 +15,6 @@
             </v-flex>
           </v-card-text>
         </v-card-title>
-        <v-divider></v-divider>
-        <v-card-title class="pa-1 ma-0" v-if="!a_resource_is_selected">
-          <v-flex>
-            <v-text-field
-              v-model="search"
-              prepend-icon="search"
-              label="Search"
-              single-line
-              hide-details
-              clearable
-              class="pa-1 ma-0"
-            ></v-text-field>
-          </v-flex>
-          <v-flex>
-            <v-chip>{{ resource_list.length }}/{{ resource_count }}</v-chip>
-          </v-flex>
-        </v-card-title>
-        <v-flex>
-          <v-list>
-            <v-list-tile
-              v-for="item in resource_list"
-              :key="item._id"
-              avatar
-              @click="select_resource(item)"
-              active-class="selected"
-              :class="{ selected: selected_resource._id === item._id }"
-            >
-              <v-list-tile-content>
-                <v-list-tile-title
-                  v-text="item.canonical_name"
-                ></v-list-tile-title>
-                <v-list-tile-sub-title v-if="headers.length > 1">
-                  {{ item[headers[1].value] }}
-                </v-list-tile-sub-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-list>
-        </v-flex>
         <v-divider></v-divider>
         <v-card-actions v-if="a_resource_is_selected">
           <v-flex px-2>
@@ -77,13 +34,7 @@
               <v-flex>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      flat
-                      color="orange"
-                      v-on="on"
-                      @click.stop="toggle_tags"
-                    >
+                    <v-btn icon flat color="orange" v-on="on" @click.stop="toggle_tags">
                       <v-icon>local_offer</v-icon>
                     </v-btn>
                   </template>
@@ -93,19 +44,14 @@
               <v-flex>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      flat
-                      color="green"
-                      v-on="on"
-                      @click.stop="copy_resource_to_json"
-                    >
+                    <v-btn icon flat color="green" v-on="on" @click.stop="copy_resource_to_json">
                       <v-icon>mdi-json</v-icon>
                     </v-btn>
                   </template>
                   <span>Copy to clipboard resource in JSON</span>
                 </v-tooltip>
               </v-flex>
+
               <v-flex>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
@@ -125,15 +71,53 @@
             </v-layout>
           </v-flex>
         </v-card-actions>
-
+        <v-card-title class="pa-1 ma-0" v-if="!a_resource_is_selected">
+          <v-flex>
+            <v-text-field
+              v-model="search"
+              prepend-icon="search"
+              label="Search"
+              single-line
+              hide-details
+              clearable
+              class="pa-1 ma-0"
+            ></v-text-field>
+          </v-flex>
+          <v-flex>
+            <v-chip>{{ resource_list.length }}/{{ resource_count }}</v-chip>
+          </v-flex>
+          <v-flex>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn icon flat color="grey" v-on="on" @click.stop="copy_resource_list">
+                  <v-icon>mdi-content-copy</v-icon>
+                </v-btn>
+              </template>
+              <span>Copy to clipboard resource list</span>
+            </v-tooltip>
+          </v-flex>
+        </v-card-title>
+        <v-flex>
+          <v-list>
+            <v-list-tile
+              v-for="item in resource_list"
+              :key="item._id"
+              avatar
+              @click="select_resource(item)"
+              active-class="selected"
+              :class="{ selected: selected_resource._id === item._id }"
+            >
+              <v-list-tile-content>
+                <v-list-tile-title v-text="item.canonical_name"></v-list-tile-title>
+                <v-list-tile-sub-title v-if="headers.length > 1">{{ item[headers[1].value] }}</v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+        </v-flex>
         <v-flex>
           <v-flex v-if="a_resource_is_selected">
             <v-divider></v-divider>
-            <tags
-              :resource="selected_resource"
-              :show_tags="open_tags"
-              @shake="tag_shake"
-            ></tags>
+            <tags :resource="selected_resource" :show_tags="open_tags" @shake="tag_shake"></tags>
           </v-flex>
         </v-flex>
         <delete-dialog
@@ -260,6 +244,20 @@ export default {
       await navigator.clipboard.writeText(
         JSON.stringify(this.selected_resource, null, 2)
       );
+    },
+
+    copy_resource_list: async function() {
+      let resource_list = [];
+
+      if (this.resource_list[0].resource_type === "hash") {
+        resource_list = this.resource_list.map(elem => elem.hash).join("\n");
+      } else {
+        resource_list = this.resource_list
+          .map(elem => elem.canonical_name)
+          .join("\n");
+      }
+
+      await navigator.clipboard.writeText(resource_list);
     },
 
     select_resource: function(resource) {

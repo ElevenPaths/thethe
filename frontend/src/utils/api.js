@@ -1,9 +1,10 @@
-let baseURL = "https://localhost";
-if (process.env.NODE_ENV === "development") {
-  baseURL = "http://localhost:8000";
-}
+const axios = require("axios").create();
 
-const axios = require("axios").create({ baseURL: baseURL });
+if (process.env.NODE_ENV === "development") {
+  console.log("Starting development mode...");
+    axios.defaults.baseURL = "http://localhost:8000"
+} else {
+}
 
 import { AUTH_LOGOUT } from "../store/actions/auth";
 import router from "../router";
