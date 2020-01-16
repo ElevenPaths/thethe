@@ -1,9 +1,5 @@
 <template>
-  <v-flex
-    v-if="resource.response_code === 0"
-    class="font-weight-medium"
-    subheading
-  >
+  <v-flex v-if="resource.response_code === 0" class="font-weight-medium" subheading>
     <v-card>
       <v-card-title>Resource is not in VirusTotal</v-card-title>
       <v-divider></v-divider>
@@ -58,12 +54,7 @@
           <v-divider></v-divider>
           <v-card-text>
             <v-flex class="siblings_list">
-              <div
-                v-for="(domain, index) in domain_siblings_filter_list"
-                :key="index"
-              >
-                {{ domain }}
-              </div>
+              <div v-for="(domain, index) in domain_siblings_filter_list" :key="index">{{ domain }}</div>
             </v-flex>
           </v-card-text>
         </v-card>
@@ -77,12 +68,7 @@
             <v-flex>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn
-                    flat
-                    color="grey"
-                    v-on="on"
-                    @click.stop="copy_content(resource.whois)"
-                  >
+                  <v-btn flat color="grey" v-on="on" @click.stop="copy_content(resource.whois)">
                     <v-icon>file_copy</v-icon>
                   </v-btn>
                 </template>
@@ -93,12 +79,7 @@
           <v-divider></v-divider>
           <v-card-text>
             <v-flex>
-              <v-textarea
-                rows="10"
-                readonly
-                :value="resource.whois"
-                class="caption"
-              ></v-textarea>
+              <v-textarea rows="10" readonly :value="resource.whois" class="caption"></v-textarea>
             </v-flex>
           </v-card-text>
         </v-card>
@@ -127,9 +108,11 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-flex class="text-xs-center">{{
+            <v-flex class="text-xs-center">
+              {{
               get_time(resource.https_certificate_date)
-            }}</v-flex>
+              }}
+            </v-flex>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -157,25 +140,25 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-flex class="text-xs-center">{{
+            <v-flex class="text-xs-center">
+              {{
               get_time(resource.dns_records_date)
-            }}</v-flex>
+              }}
+            </v-flex>
           </v-card-text>
         </v-card>
       </v-flex>
 
-      <v-flex
-        v-if="resource.undetected_downloaded_samples.length > 0"
-        xs10
-        lg10
-      >
+      <v-flex v-if="resource.undetected_downloaded_samples" xs10 lg10>
         <v-card>
           <v-card-title class="subheading">
             <v-flex>Undetected downloaded samples</v-flex>
             <v-flex>
-              <v-chip>{{
+              <v-chip>
+                {{
                 resource.undetected_downloaded_samples.length
-              }}</v-chip>
+                }}
+              </v-chip>
             </v-flex>
             <v-spacer></v-spacer>
             <v-flex>
@@ -203,10 +186,7 @@
           <v-divider></v-divider>
           <v-card-text>
             <v-flex>
-              <v-card
-                v-for="(item, index) in resource.undetected_downloaded_samples"
-                :key="index"
-              >
+              <v-card v-for="(item, index) in resource.undetected_downloaded_samples" :key="index">
                 <v-card-title>
                   <v-flex>{{ item.sha256 }}</v-flex>
                   <v-flex>{{ item.date }}</v-flex>
@@ -218,11 +198,11 @@
                       :value="get_percentage(item.positives, item.total)"
                       :color="get_detection_color(item.positives, item.total)"
                     >
-                      <span class="font-weight-bold"
-                        >{{
-                          get_percentage(item.positives, item.total)
-                        }}&nbsp;%</span
-                      >
+                      <span class="font-weight-bold">
+                        {{
+                        get_percentage(item.positives, item.total)
+                        }}&nbsp;%
+                      </span>
                     </v-progress-circular>
                   </v-flex>
                 </v-card-title>
@@ -232,7 +212,7 @@
         </v-card>
       </v-flex>
 
-      <v-flex v-if="resource.detected_downloaded_samples.length > 0" xs10 lg10>
+      <v-flex v-if="resource.detected_downloaded_samples" xs10 lg10>
         <v-card>
           <v-card-title class="subheading">
             <v-flex>Detected downloaded samples</v-flex>
@@ -265,10 +245,7 @@
           <v-divider></v-divider>
           <v-card-text>
             <v-flex>
-              <v-card
-                v-for="(item, index) in resource.detected_downloaded_samples"
-                :key="index"
-              >
+              <v-card v-for="(item, index) in resource.detected_downloaded_samples" :key="index">
                 <v-card-title>
                   <v-flex>{{ item.sha256 }}</v-flex>
                   <v-flex>{{ item.date }}</v-flex>
@@ -280,11 +257,11 @@
                       :value="get_percentage(item.positives, item.total)"
                       :color="get_detection_color(item.positives, item.total)"
                     >
-                      <span class="font-weight-bold"
-                        >{{
-                          get_percentage(item.positives, item.total)
-                        }}&nbsp;%</span
-                      >
+                      <span class="font-weight-bold">
+                        {{
+                        get_percentage(item.positives, item.total)
+                        }}&nbsp;%
+                      </span>
                     </v-progress-circular>
                   </v-flex>
                 </v-card-title>
@@ -325,10 +302,7 @@
           <v-divider></v-divider>
           <v-card-text>
             <v-flex>
-              <v-card
-                v-for="(item, index) in resource.detected_urls"
-                :key="index"
-              >
+              <v-card v-for="(item, index) in resource.detected_urls" :key="index">
                 <v-card-title>
                   <v-flex>{{ item.url }}</v-flex>
                   <v-flex>{{ item.scan_date }}</v-flex>
@@ -340,11 +314,11 @@
                       :value="get_percentage(item.positives, item.total)"
                       :color="get_detection_color(item.positives, item.total)"
                     >
-                      <span class="font-weight-bold"
-                        >{{
-                          get_percentage(item.positives, item.total)
-                        }}&nbsp;%</span
-                      >
+                      <span class="font-weight-bold">
+                        {{
+                        get_percentage(item.positives, item.total)
+                        }}&nbsp;%
+                      </span>
                     </v-progress-circular>
                   </v-flex>
                 </v-card-title>
@@ -385,10 +359,7 @@
           <v-divider></v-divider>
           <v-card-text>
             <v-flex>
-              <v-card
-                v-for="(item, index) in resource.resolutions"
-                :key="index"
-              >
+              <v-card v-for="(item, index) in resource.resolutions" :key="index">
                 <v-card-title>
                   <v-flex>{{ item.ip_address }}</v-flex>
                   <v-flex>{{ item.last_resolved }}</v-flex>
@@ -462,6 +433,12 @@ export default {
   computed: {
     resource: function() {
       let plugin_result = { ...this.plugin_data.results };
+      // if (typeof plugin_result.undetected_downloaded_samples === "undefined") {
+      //   plugin_result.undetected_downloaded_samples = [];
+      // }
+      // if (typeof plugin_result.detected_downloaded_samples === "undefined") {
+      //   plugin_result.detected_downloaded_samples = [];
+      // }
       return plugin_result;
     },
 
