@@ -34,6 +34,10 @@ class Plugin:
 
         target = self.resource.get_data()["canonical_name"]
 
+        # Canonical data of hashes is its short form so we have to get long hash instead
+        if resource_type == ResourceType.HASH:
+            target = self.resource.get_data()["hash"]
+
         try:
             to_task = {
                 "target": target,

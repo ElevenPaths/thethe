@@ -72,30 +72,38 @@
           </v-flex>
         </v-card-actions>
         <v-card-title class="pa-1 ma-0" v-if="!a_resource_is_selected">
-          <v-flex>
-            <v-text-field
-              v-model="search"
-              prepend-icon="search"
-              label="Search"
-              single-line
-              hide-details
-              clearable
-              class="pa-1 ma-0"
-            ></v-text-field>
-          </v-flex>
-          <v-flex>
-            <v-chip>{{ resource_list.length }}/{{ resource_count }}</v-chip>
-          </v-flex>
-          <v-flex>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn icon flat color="grey" v-on="on" @click.stop="copy_resource_list">
-                  <v-icon>mdi-content-copy</v-icon>
-                </v-btn>
-              </template>
-              <span>Copy to clipboard resource list</span>
-            </v-tooltip>
-          </v-flex>
+          <v-layout align-center>
+            <v-flex>
+              <v-text-field
+                v-model="search"
+                prepend-icon="search"
+                label="Search"
+                single-line
+                hide-details
+                clearable
+                class="pa-1 ma-0"
+              ></v-text-field>
+            </v-flex>
+            <v-flex>
+              <v-chip>{{ resource_list.length }}/{{ resource_count }}</v-chip>
+            </v-flex>
+            <v-flex>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    icon
+                    flat
+                    color="grey"
+                    v-on="on"
+                    @click.stop="copy_resource_list"
+                  >
+                    <v-icon>mdi-content-copy</v-icon>
+                  </v-btn>
+                </template>
+                <span>Copy to clipboard resource list</span>
+              </v-tooltip>
+            </v-flex>
+          </v-layout>
         </v-card-title>
         <v-flex>
           <v-list>
@@ -108,8 +116,12 @@
               :class="{ selected: selected_resource._id === item._id }"
             >
               <v-list-tile-content>
-                <v-list-tile-title v-text="item.canonical_name"></v-list-tile-title>
-                <v-list-tile-sub-title v-if="headers.length > 1">{{ item[headers[1].value] }}</v-list-tile-sub-title>
+                <v-list-tile-title
+                  v-text="item.canonical_name"
+                ></v-list-tile-title>
+                <v-list-tile-sub-title v-if="headers.length > 1">{{
+                  item[headers[1].value]
+                }}</v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
           </v-list>
