@@ -1,9 +1,13 @@
 import traceback
+import json
+import requests
 
-from server.entities.resource_types import ResourceType
+from tasks.api_keys import KeyRing
+from server.entities.resource import Resources, ResourceType
+from tasks.tasks import celery_app
 
-# Import Celery task needed to do the real work
-from tasks.tasks import verifymail_task
+API_KEY = KeyRing().get("verify-email")
+URL = "https://app.verify-email.org/api/v1/{key}/verify/{email}"
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.EMAIL]
@@ -42,3 +46,48 @@ class Plugin:
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
+
+def verifymail(email):
+    try:
+        if not API_KEY:
+            print("No API key...!")
+            return None
+
+        response = {}
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+        vmail = requests.get(URL.format(**{"key": API_KEY, "email": email}), headers=headers)
+        if not vmail.status_code == 200:
+            print("API key error!")
+            return None
+        else:
+            response = json.loads(vmail.content)
+
+        return response
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+        return None
+
+@celery_app.task
+def verifymail_task(plugin_name, project_id, resource_id, resource_type, email):
+    try:
+        query_result = verifymail(email)
+        if not query_result:
+            return
+
+        # TODO: See if ResourceType.__str__ can be use for serialization
+        resource_type = ResourceType(resource_type)
+        resource = Resources.get(resource_id, resource_type)
+        resource.set_plugin_results(
+            plugin_name, project_id, resource_id, resource_type, query_result
+        )
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+

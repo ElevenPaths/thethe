@@ -1,9 +1,26 @@
 import traceback
+import json
+import hashlib
+import requests
 
-from server.entities.resource_types import ResourceType
+from tasks.deps.maltiverse import Maltiverse
+from tasks.api_keys import KeyRing
 
-# Import Celery task needed to do the real work
-from tasks.tasks import maltiverse_task
+from server.entities.resource import Resources, ResourceType
+from tasks.tasks import celery_app
+
+MALTIVERSE_EMAIL = KeyRing().get("maltiverse_email")
+MALTIVERSE_PASS = KeyRing().get("maltiverse_pass")
+
+api = Maltiverse()
+api.login(MALTIVERSE_EMAIL, password=MALTIVERSE_PASS)
+
+URL_IP = "https://api.maltiverse.com/ip/{ip}"
+URL_DOMAIN = "https://api.maltiverse.com/hostname/{hostname}"
+URL_URL = "https://api.maltiverse.com/url/{url}"
+URL_HASH = "https://api.maltiverse.com/sample/{hash}"
+
+
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.IPv4, ResourceType.DOMAIN, ResourceType.URL, ResourceType.HASH]
@@ -42,3 +59,79 @@ class Plugin:
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
+
+def send_request(url):
+    try:
+        response = {}
+        maltiverse_response = requests.get(url)
+        if not maltiverse_response.status_code == 200:
+            print("Response error!")
+            print(maltiverse_response.content)
+            response = None
+        else:
+            response = json.dumps(json.loads(maltiverse_response.content))
+
+        return response
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+        return None
+
+
+def maltiverse_ip(ip):
+    # url = URL_IP.format(**{"ip": ip})
+    # send_request(url)
+    return api.ip_get(ip)
+
+
+def maltiverse_domain(hostname):
+    # url = URL_DOMAIN.format(**{"hostname": hostname})
+    # send_request(url)
+    return api.hostname_get(hostname)
+
+
+def maltiverse_url(url_original):
+    # hash_url = hashlib.sha256(url_original.encode('utf-8')).hexdigest()
+    # url = URL_URL.format(**{"url": hash_url})
+    # send_request(url)
+    return api.url_get(url_original)
+
+
+def maltiverse_hash(hash):
+    # url = URL_HASH.format(**{"hash": hash})
+    # send_request(url)
+    return api.sample_get(hash)
+
+@celery_app.task
+def maltiverse_task(plugin_name, project_id, resource_id, resource_type, target):
+    try:
+        query_result = None
+        resource_type = ResourceType(resource_type)
+        if resource_type == ResourceType.IPv4:
+            query_result = maltiverse_ip(target)
+        elif resource_type == ResourceType.DOMAIN:
+            query_result = maltiverse_domain(target)
+        elif resource_type == ResourceType.URL:
+            query_result = maltiverse_url(target)
+        elif resource_type == ResourceType.HASH:
+            query_result = maltiverse_hash(target)
+        else:
+            print("Maltiverse resource type does not found")
+
+        if not query_result:
+            return
+
+        print(query_result)
+
+        # TODO: See if ResourceType.__str__ can be use for serialization
+        resource = Resources.get(resource_id, resource_type)
+        resource.set_plugin_results(
+            plugin_name, project_id, resource_id, resource_type, query_result
+        )
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+

@@ -1,9 +1,11 @@
 import traceback
+import os
+import json
 
-from server.entities.resource_types import ResourceType
+import tasks.deps.sherlock.sherlock as _sherlock
 
-# Import Celery task needed to do the real work
-from tasks.tasks import sherlock_task
+from server.entities.resource import Resources, ResourceType
+from tasks.tasks import celery_app
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.USERNAME]
@@ -42,3 +44,61 @@ class Plugin:
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
+def sherlock(username):
+    try:
+        site_data_all = None
+        data_file_path = os.path.join(
+            os.getcwd(), "tasks", "deps", "sherlock", "data.json"
+        )
+
+        if site_data_all is None:
+            # Check if the file exists otherwise exit.
+            if not os.path.exists(data_file_path):
+                print("JSON file at doesn't exist.")
+                print(
+                    "If this is not a file but a website, make sure you have appended http:// or https://."
+                )
+                return None
+            else:
+                raw = open(data_file_path, "r", encoding="utf-8")
+                try:
+                    site_data_all = json.load(raw)
+                except:
+                    print("Invalid JSON loaded from file.")
+
+        result = _sherlock.sherlock(username, site_data_all, print_found_only=False)
+
+        response = []
+        for service in result:
+            temp_result = {}
+            temp_result["sitename"] = service
+            temp_result["exists"] = result.get(service).get("exists")
+            temp_result["url_user"] = result.get(service).get("url_user")
+            response.append(temp_result)
+
+        return response
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+        return None
+
+@celery_app.task
+def sherlock_task(plugin_name, project_id, resource_id, resource_type, username):
+    try:
+        query_result = sherlock(username)
+        if not query_result:
+            return
+
+        # TODO: See if ResourceType.__str__ can be use for serialization
+        resource_type = ResourceType(resource_type)
+        resource = Resources.get(resource_id, resource_type)
+        resource.set_plugin_results(
+            plugin_name, project_id, resource_id, resource_type, query_result
+        )
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+

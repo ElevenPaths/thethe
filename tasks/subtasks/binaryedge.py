@@ -1,15 +1,3 @@
-import traceback
-import json
-import requests
-
-from tasks.api_keys import KeyRing
-
-# 250 requests left, 31 days until renewal.
-API_KEY = KeyRing().get("binaryedge")
-# https://docs.binaryedge.io/api-v2/
-URL = "https://api.binaryedge.io/v2/query/ip/{ip}"
-
-
 def binaryedge(ip):
     try:
 

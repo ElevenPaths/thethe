@@ -1,9 +1,13 @@
 import traceback
+from server.entities.resource import Resources, ResourceType
+from tasks.tasks import celery_app
 
-from server.entities.resource_types import ResourceType
+from tasks.deps.tacyt import TacytApp as tacytsdk
+from tasks.api_keys import KeyRing
 
-# Import Celery task needed to do the real work
-from tasks.tasks import tacyt_task
+
+APP_ID = KeyRing().get("tacyt-appid")
+SECRET_KEY = KeyRing().get("tacyt-secret")
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.HASH]
@@ -42,3 +46,116 @@ class Plugin:
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
+
+__OUT_FIELDS = [
+    "title",
+    "platform",
+    "origin",
+    "categoryName",
+    "size",
+    "marketSize",
+    "numDownloads",
+    "versionCode",
+    "packageName",
+    "price",
+    "versionString",
+    "minSdkVersion",
+    "targetSdkVersion",
+    "nFiles",
+    "nImages",
+    "nPermissions",
+    "nMetadataApiKeys",
+    "nActivities",
+    "nActivityAlias",
+    "nServices",
+    "nReceivers",
+    "nProviders",
+    "nAdNetworks",
+    "nAdNetworks",
+    "nClassNames",
+    "nMethodNames",
+    "nDomains",
+    "nDeveloperDomains",
+    "nEmailDomains",
+    "nURIDomains",
+    "md5",
+    "sha256",
+    "hashPath",
+    "recentChanges",
+    "description",
+    "androidXMLManifest",
+    "permissionName",
+    "certificateFingerprint",
+    "certificateIssuerCommonName",
+    "certificateIssuerCountryName",
+    "certificateIssuerState",
+    "certificateIssuerLocality",
+    "certificateIssuerOrganizationName",
+    "certificateIssuerOrganizationUnitName",
+    "certificatePublicKey",
+    "certificatePublicKeyInfo",
+    "certificateSignatureAlgorithm",
+    "certificateAutoSigned",
+    "certificateSubjectCommonName",
+    "certificateSubjectCountryName",
+    "certificateSubjectState",
+    "certificateSubjectLocality",
+    "certificateSubjectOrganizationName",
+    "certificateSubjectOrganizationUnitName",
+    "certificateSerialNumber",
+    "certificateValidityGapSeconds",
+    "certificateVersion",
+    "certificateValidityGapRoundedYears",
+    "certificateValidFrom",
+    "certificateValidTo",
+    "links",
+    "manifestHeaderBuiltBy",
+    "manifestHeaderVersion",
+    "manifestHeaderCreatedBy",
+    "URIDomains",
+    "emailDomains",
+]
+
+
+def tacyt(_hash):
+    application = None
+    try:
+        api = tacytsdk.TacytApp(APP_ID, SECRET_KEY)
+        search = api.search_apps(query=_hash, outfields=__OUT_FIELDS)
+
+        if (
+            search.data
+            and search.data.get("data")
+            and search.data.get("data").get("result")
+            and search.data.get("data").get("result").get("numResults") == 1
+        ):
+            application = search.data.get("data").get("result").get("applications")[0]
+        return application
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+        application = None
+
+    return application
+
+@celery_app.task
+def tacyt_task(plugin_name, project_id, resource_id, resource_type, hash):
+    try:
+        query_result = tacyt(hash)
+        if not query_result:
+            return
+
+        # TODO: See if ResourceType.__str__ can be use for serialization
+        resource_type = ResourceType(resource_type)
+        resource = Resources.get(resource_id, resource_type)
+        resource.set_plugin_results(
+            plugin_name, project_id, resource_id, resource_type, query_result
+        )
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+
+

@@ -3,11 +3,8 @@ import ipwhois
 import json
 import traceback
 
-from server.entities.resource_types import ResourceType
-
-# Import Celery task needed to do the real work
-from tasks.tasks import whois_task
-
+from server.entities.resource import Resources, ResourceType
+from tasks.tasks import celery_app
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.DOMAIN, ResourceType.EMAIL]
@@ -51,3 +48,24 @@ class Plugin:
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
+@celery_app.task
+def whois_task(plugin_name, project_id, resource_id, resource_type, domain):
+
+    try:
+        query_result = json.loads(str(whois.whois(domain)))
+        resource_type = ResourceType(resource_type)
+        # TODO: See if ResourceType.__str__ can be use for serialization
+        resource = Resources.get(resource_id, resource_type)
+        resource.set_plugin_results(
+            plugin_name, project_id, resource_id, resource_type, query_result
+        )
+
+    except whois.parser.PywhoisError:
+        print(f"Domain {domain} does not exists")
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+
+
