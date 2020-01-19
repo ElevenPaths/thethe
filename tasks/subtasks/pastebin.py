@@ -1,22 +1,3 @@
-import traceback
-import pprint
-import time
-
-import requests
-
-from tasks.api_keys import KeyRing
-from server.db import DB
-from server.entities.pastebin_manager import PastebinManager, Paste
-
-
-API_KEY = KeyRing().get("pastebin")
-# pastebin.com says 1 second between queries, so be cautious and lets it be 1.1 seconds
-# https://pastebin.com/doc_scraping_api#5
-RATE_LIMIT = 1.1
-
-METADATA_URL = "https://scrape.pastebin.com/api_scrape_item_meta.php?i="
-RAWPASTE_URL = "https://scrape.pastebin.com/api_scrape_item.php?i="
-
 
 def get_key_from_paste_key(item):
     return item.split("/")[-1]

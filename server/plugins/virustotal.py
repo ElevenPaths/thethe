@@ -1,9 +1,19 @@
 import traceback
+import json
+import requests
 
+from tasks.api_keys import KeyRing
 from server.entities.resource_types import ResourceType
 
-# Import Celery task needed to do the real work
-from tasks.tasks import virustotal_task
+API_KEY = KeyRing().get("virustotal")
+
+url_for_hashes = "https://www.virustotal.com/vtapi/v2/file/report"
+url_for_urls = "https://www.virustotal.com/vtapi/v2/url/report"
+url_for_domains = "https://www.virustotal.com/vtapi/v2/domain/report"
+url_for_ips = "https://www.virustotal.com/vtapi/v2/ip-address/report"
+
+from server.entities.resource import Resources, ResourceType
+from tasks.tasks import celery_app
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [
@@ -52,3 +62,22 @@ class Plugin:
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
+@celery_app.task
+def virustotal_task(plugin_name, project_id, resource_id, resource_type, target):
+    try:
+        query_result = None
+
+        resource_type = ResourceType(resource_type)
+        query_result = virustotal(target, resource_type)
+
+        # TODO: See if ResourceType.__str__ can be use for serialization
+        resource = Resources.get(resource_id, resource_type)
+        resource.set_plugin_results(
+            plugin_name, project_id, resource_id, resource_type, query_result
+        )
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+

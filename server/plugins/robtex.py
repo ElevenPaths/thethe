@@ -1,9 +1,9 @@
 import traceback
+import json
+import requests
 
-from server.entities.resource_types import ResourceType
-
-# Import Celery task needed to do the real work
-from tasks.tasks import robtex_task
+from server.entities.resource import Resources, ResourceType
+from tasks.tasks import celery_app
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.IPv4]
@@ -14,6 +14,8 @@ PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "robtex"
 PLUGIN_AUTOSTART = False
 PLUGIN_DISABLE = True
+
+URL = "https://freeapi.robtex.com/ipquery/{ip}"
 
 class Plugin:
     description = PLUGIN_DESCRIPTION
@@ -41,3 +43,41 @@ class Plugin:
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
+
+def robtex(ip):
+    try:
+        response = {}
+        robtex_response = requests.get(URL.format(**{"ip": ip}))
+        if not robtex_response.status_code == 200:
+            print("Robtext error!")
+            response = None
+        else:
+            response = json.loads(robtex_response.content)
+
+        return response
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+        return None
+
+@celery_app.task
+def robtex_task(plugin_name, project_id, resource_id, resource_type, ip):
+    try:
+        query_result = robtex(ip)
+        if not query_result:
+            return
+
+        # TODO: See if ResourceType.__str__ can be use for serialization
+        resource_type = ResourceType(resource_type)
+        resource = Resources.get(resource_id, resource_type)
+        resource.set_plugin_results(
+            plugin_name, project_id, resource_id, resource_type, query_result
+        )
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+
+

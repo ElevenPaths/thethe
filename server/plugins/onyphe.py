@@ -1,10 +1,13 @@
 import json
 import traceback
+import json
+import urllib.request
 
-from server.entities.resource_types import ResourceType
+from tasks.api_keys import KeyRing
+from server.entities.resource import Resources, ResourceType
+from tasks.tasks import celery_app
 
-# Import Celery task needed to do the real work
-from tasks.tasks import onyphe_task
+API_KEY = KeyRing().get("onyphe")
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.IPv4]
@@ -43,3 +46,56 @@ class Plugin:
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
+
+def onyphe_threatlist(ip):
+    try:
+        URL = f"https://www.onyphe.io/api/threatlist/{ip}?apikey={API_KEY}"
+        response = urllib.request.urlopen(URL).read()
+        response = json.loads(response)
+
+        threatlists = {"threatlists": []}
+        if "results" in response:
+            for entry in response["results"]:
+                if "threatlist" in entry:
+                    threatlists["threatlists"].append(entry["threatlist"])
+        threatlists["threatlists"] = list(set(threatlists["threatlists"]))
+        threatlists["threatlists"].sort()
+        print(threatlists)
+        return threatlists
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+        return None
+
+
+def onyphe_synscan(ip):
+    try:
+        URL = f"https://www.onyphe.io/api/synscan/{ip}?apikey={API_KEY}"
+        response = urllib.request.urlopen(URL).read()
+        return response
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+        return None
+
+@celery_app.task
+def onyphe_task(plugin_name, project_id, resource_id, resource_type, ip):
+    try:
+        query_result = onyphe_threatlist(ip)
+        if not query_result:
+            return
+
+        # TODO: See if ResourceType.__str__ can be use for serialization
+        resource_type = ResourceType(resource_type)
+        resource = Resources.get(resource_id, resource_type)
+        resource.set_plugin_results(
+            plugin_name, project_id, resource_id, resource_type, query_result
+        )
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+
