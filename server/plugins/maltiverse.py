@@ -1,3 +1,4 @@
+# FIXME: This plugins does not work when resource is not a domain
 import traceback
 import json
 import hashlib
@@ -8,6 +9,7 @@ from tasks.api_keys import KeyRing
 
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
+from server.plugins.plugin_base import finishing_task
 
 MALTIVERSE_EMAIL = KeyRing().get("maltiverse_email")
 MALTIVERSE_PASS = KeyRing().get("maltiverse_pass")
@@ -21,9 +23,13 @@ URL_URL = "https://api.maltiverse.com/url/{url}"
 URL_HASH = "https://api.maltiverse.com/sample/{hash}"
 
 
-
 # Which resources are this plugin able to work with
-RESOURCE_TARGET = [ResourceType.IPv4, ResourceType.DOMAIN, ResourceType.URL, ResourceType.HASH]
+RESOURCE_TARGET = [
+    ResourceType.IPv4,
+    ResourceType.DOMAIN,
+    ResourceType.URL,
+    ResourceType.HASH,
+]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Search indicators of compromise or something related"
@@ -54,7 +60,7 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            maltiverse_task.delay(**to_task)
+            maltiverse.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
@@ -104,8 +110,9 @@ def maltiverse_hash(hash):
     # send_request(url)
     return api.sample_get(hash)
 
+
 @celery_app.task
-def maltiverse_task(plugin_name, project_id, resource_id, resource_type, target):
+def maltiverse(plugin_name, project_id, resource_id, resource_type, target):
     try:
         query_result = None
         resource_type = ResourceType(resource_type)
@@ -125,13 +132,10 @@ def maltiverse_task(plugin_name, project_id, resource_id, resource_type, target)
 
         print(query_result)
 
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
+        finishing_task(
             plugin_name, project_id, resource_id, resource_type, query_result
         )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
-

@@ -5,6 +5,7 @@ import requests
 from tasks.api_keys import KeyRing
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
+from server.plugins.plugin_base import finishing_task
 
 
 API_KEY = KeyRing().get("hunterio")
@@ -47,7 +48,7 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            hunterio_task.delay(**to_task)
+            hunterio.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
@@ -86,8 +87,9 @@ def hunterio_email(email):
     url = URL_EMAIL_VERIFIER.format(**{"email": email, "key": API_KEY})
     return send_request(url)
 
+
 @celery_app.task
-def hunterio_task(plugin_name, project_id, resource_id, resource_type, target):
+def hunterio(plugin_name, project_id, resource_id, resource_type, target):
     try:
         query_result = None
 
@@ -99,14 +101,10 @@ def hunterio_task(plugin_name, project_id, resource_id, resource_type, target):
         else:
             print("Hunter.io resource type does not found")
 
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
+        finishing_task(
             plugin_name, project_id, resource_id, resource_type, query_result
         )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
-
-

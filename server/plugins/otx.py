@@ -19,19 +19,24 @@ URL_IPv4 = "https://otx.alienvault.com/api/v1/indicators/IPv4/{ip}/{section}"
 URL_IPv6 = "https://otx.alienvault.com/api/v1/indicators/IPv6/{ip}/{section}"
 
 
-
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
 
 
 # Which resources are this plugin able to work with
-RESOURCE_TARGET = [ResourceType.IPv4, ResourceType.DOMAIN, ResourceType.URL, ResourceType.HASH]
+RESOURCE_TARGET = [
+    ResourceType.IPv4,
+    ResourceType.DOMAIN,
+    ResourceType.URL,
+    ResourceType.HASH,
+]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "OTX AlienVault Feeds Threats"
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "otx"
 PLUGIN_AUTOSTART = False
+# TODO: Plugin need testing before enabling it
 PLUGIN_DISABLE = True
 
 
@@ -210,6 +215,7 @@ def otx_iocs_ipv6(ip, section):
         print("".join(tb1.format()))
         return None
 
+
 @celery_app.task
 def otx_task(plugin_name, project_id, resource_id, resource_type, target):
     try:
@@ -234,4 +240,3 @@ def otx_task(plugin_name, project_id, resource_id, resource_type, target):
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
-

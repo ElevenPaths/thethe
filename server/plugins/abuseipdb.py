@@ -3,13 +3,13 @@ import json
 import requests
 
 from tasks.api_keys import KeyRing
+from server.entities.resource import Resources, ResourceType
+from tasks.tasks import celery_app
+from server.plugins.plugin_base import finishing_task
 
 API_KEY = KeyRing().get("abuseipdb")
 URL = "https://api.abuseipdb.com/api/v2/check"
 
-
-from server.entities.resource import Resources, ResourceType
-from tasks.tasks import celery_app
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.IPv4]
@@ -43,13 +43,15 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            abuseipdb_task.delay(**to_task)
+            abuseipdb.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
 
-def abuseipdb(ip):
+
+@celery_app.task
+def abuseipdb(ip, plugin_name, project_id, resource_id, resource_type):
     try:
         if not API_KEY:
             print("No API key...!")
@@ -66,27 +68,9 @@ def abuseipdb(ip):
             response = json.loads(abuse_response.content)
             print(response)
 
-        return response
+        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         return None
-
-@celery_app.task
-def abuseipdb_task(plugin_name, project_id, resource_id, resource_type, ip):
-    try:
-        query_result = abuseipdb(ip)
-        if not query_result:
-            return
-
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource_type = ResourceType(resource_type)
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
-
-    except Exception as e:
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))

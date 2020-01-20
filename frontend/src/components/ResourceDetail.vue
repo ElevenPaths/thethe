@@ -21,7 +21,7 @@
           entry.plugin.name
         }}</v-tab>
         <v-tabs-items>
-          <v-tab-item v-for="entry in sorted_plugin_list" :key="entry.index">
+          <v-tab-item v-for="entry in sorted_plugin_list" :key="entry.index" lazy>
             <dynamic-link
               :type="entry.plugin.name"
               :data="entry.plugin"

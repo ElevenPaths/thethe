@@ -1,4 +1,3 @@
-
 import traceback
 import json
 import time
@@ -7,6 +6,7 @@ import requests
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
 from tasks.api_keys import KeyRing
+from server.plugins.plugin_base import finishing_task
 
 API_KEY = KeyRing().get("urlscan")
 SUBMISSION_URL = "https://urlscan.io/api/v1/scan/"
@@ -44,7 +44,7 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            urlscan_task.delay(**to_task)
+            urlscan.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
@@ -56,11 +56,12 @@ def result(uuid):
     if not url_result_response.status_code == 200:
         print("URL Result API error for uuid {}".format(uuid))
         return None
-    else:
-        return json.loads(url_result_response.content)
+    return json.loads(url_result_response.content)
 
 
-def urlscan(url):
+@celery_app.task
+def urlscan(plugin_name, project_id, resource_id, resource_type, url):
+
     try:
         if not API_KEY:
             print("No API key...!")
@@ -93,30 +94,9 @@ def urlscan(url):
                 SLEEP_FRAME = round(SLEEP_FRAME * SLEEP_DELTA_INCREMENT)
                 time.sleep(SLEEP_FRAME)
 
-        return response
+        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         return None
-
-
-@celery_app.task
-def urlscan_task(plugin_name, project_id, resource_id, resource_type, url):
-    try:
-        query_result = urlscan(url)
-        if not query_result:
-            return
-
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource_type = ResourceType(resource_type)
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
-
-    except Exception as e:
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))
-
-

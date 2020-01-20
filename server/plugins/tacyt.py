@@ -4,7 +4,7 @@ from tasks.tasks import celery_app
 
 from tasks.deps.tacyt import TacytApp as tacytsdk
 from tasks.api_keys import KeyRing
-
+from server.plugins.plugin_base import finishing_task
 
 APP_ID = KeyRing().get("tacyt-appid")
 SECRET_KEY = KeyRing().get("tacyt-secret")
@@ -35,13 +35,13 @@ class Plugin:
 
         try:
             to_task = {
-                "hash": self.resource.get_data()["hash"],
+                "apk_hash": self.resource.get_data()["hash"],
                 "resource_id": self.resource.get_id_as_string(),
                 "project_id": self.project_id,
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            tacyt_task.delay(**to_task)
+            tacyt.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
@@ -118,11 +118,12 @@ __OUT_FIELDS = [
 ]
 
 
-def tacyt(_hash):
+@celery_app.task
+def tacyt(plugin_name, project_id, resource_id, resource_type, apk_hash):
     application = None
     try:
         api = tacytsdk.TacytApp(APP_ID, SECRET_KEY)
-        search = api.search_apps(query=_hash, outfields=__OUT_FIELDS)
+        search = api.search_apps(query=apk_hash, outfields=__OUT_FIELDS)
 
         if (
             search.data
@@ -131,31 +132,10 @@ def tacyt(_hash):
             and search.data.get("data").get("result").get("numResults") == 1
         ):
             application = search.data.get("data").get("result").get("applications")[0]
-        return application
+
+        finishing_task(plugin_name, project_id, resource_id, resource_type, application)
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         application = None
-
-    return application
-
-@celery_app.task
-def tacyt_task(plugin_name, project_id, resource_id, resource_type, hash):
-    try:
-        query_result = tacyt(hash)
-        if not query_result:
-            return
-
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource_type = ResourceType(resource_type)
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
-
-    except Exception as e:
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))
-
-

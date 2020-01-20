@@ -5,6 +5,7 @@ import requests
 from tasks.api_keys import KeyRing
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
+from server.plugins.plugin_base import finishing_task
 
 # 250 requests left, 31 days until renewal.
 API_KEY = KeyRing().get("binaryedge")
@@ -19,6 +20,7 @@ PLUGIN_DESCRIPTION = "List of recent events for the specified host, including de
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "binaryedge"
 PLUGIN_AUTOSTART = False
+# TODO: Needs heavy testing
 PLUGIN_DISABLE = True
 
 
@@ -43,14 +45,15 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            binaryedge_task.delay(**to_task)
+            binaryedge.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
 
 
-def binaryedge(ip):
+@celery_app.task
+def binaryedge(plugin_name, project_id, resource_id, resource_type, ip):
     try:
 
         if not API_KEY:
@@ -68,32 +71,10 @@ def binaryedge(ip):
         else:
             response = json.loads(response.content)
             print(response)
-            return response
 
-        return {}
+        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         return None
-
-@celery_app.task
-def binaryedge_task(plugin_name, project_id, resource_id, resource_type, ip):
-    try:
-        query_result = {}
-        resource_type = ResourceType(resource_type)
-        if resource_type == ResourceType.DOMAIN:
-            query_result = binaryedge(ip)
-        else:
-            print("threatminer resource type does not found")
-
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
-
-    except Exception as e:
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))
-
-

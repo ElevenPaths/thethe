@@ -1,3 +1,4 @@
+# TODO: Plugin pending of testing
 # user: user11 o zigineki@getnada.com
 # pass: Developer_11
 
@@ -120,6 +121,7 @@ def pulsedive_getreport(qid):
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         return None
+
 
 @celery_app.task
 def puslsedive_task(

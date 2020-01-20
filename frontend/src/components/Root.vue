@@ -73,15 +73,15 @@
       </div>
       <v-flex v-else>
         <v-tabs v-model="active" slider-color="red">
-          <v-tab ripple>NETWORK</v-tab>
-          <v-tab ripple>DOMAIN</v-tab>
-          <v-tab ripple>URL</v-tab>
-          <v-tab ripple>HASH</v-tab>
-          <v-tab ripple>EMAILS</v-tab>
-          <v-tab ripple>USERNAMES</v-tab>
+          <v-tab>NETWORK</v-tab>
+          <v-tab>DOMAIN</v-tab>
+          <v-tab>URL</v-tab>
+          <v-tab>HASH</v-tab>
+          <v-tab>EMAILS</v-tab>
+          <v-tab>USERNAMES</v-tab>
           <v-spacer></v-spacer>
-          <v-tab ripple>FLOW</v-tab>
-          <v-tab ripple>ANALYSIS</v-tab>
+          <v-tab>FLOW</v-tab>
+          <v-tab>ANALYSIS</v-tab>
           <v-tabs-items>
             <v-tab-item>
               <v-layout wrap>
@@ -165,7 +165,7 @@
             <v-tab-item>
               <v-layout row wrap pt-2>Flows</v-layout>
             </v-tab-item>
-            <v-tab-item>
+            <v-tab-item lazy>
               <v-flex offset-lg1 lg10>
                 <simple-vis-network></simple-vis-network>
               </v-flex>

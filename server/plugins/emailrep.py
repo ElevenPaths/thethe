@@ -3,19 +3,19 @@ import json
 import requests
 
 from tasks.api_keys import KeyRing
+from tasks.tasks import celery_app
+from server.entities.resource import Resources, ResourceType
+from server.plugins.plugin_base import finishing_task
 
 # At this time there is no need for an APIKEY
 # API_KEY = KeyRing().get("emailrep")
 URL = "https://emailrep.io/{email}"
 
-from server.entities.resource import Resources, ResourceType
-from tasks.tasks import celery_app
-
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.EMAIL]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
-PLUGIN_DESCRIPTION = "Illuminate the \"reputation\" behind an email address"
+PLUGIN_DESCRIPTION = 'Illuminate the "reputation" behind an email address'
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "emailrep"
 PLUGIN_AUTOSTART = False
@@ -43,15 +43,17 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            emailrep_task.delay(**to_task)
+            emailrep.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
 
-def emailrep(email):
+
+@celery_app.task
+def emailrep(plugin_name, project_id, resource_id, resource_type, email):
     try:
-        # API Key no es necesaria!
+        # API Key is not needed bynow 20-01-2020
         # if not API_KEY:
         #     print("No API key...!")
         #     return None
@@ -68,27 +70,9 @@ def emailrep(email):
         else:
             response = json.loads(emailrep_response.content)
 
-        return response
+        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         return None
-
-@celery_app.task
-def emailrep_task(plugin_name, project_id, resource_id, resource_type, email):
-    try:
-        query_result = emailrep(email)
-        if not query_result:
-            return
-
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource_type = ResourceType(resource_type)
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
-
-    except Exception as e:
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))

@@ -63,7 +63,7 @@
           <span class="subheading">OpenStreetMap</span>
         </v-card-title>
         <v-divider></v-divider>
-        <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height: 360px">
+        <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height: 360px; z-index: 0;">
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker :lat-lng="withPopup"></l-marker>
         </l-map>

@@ -2,16 +2,22 @@ import traceback
 import json
 import requests
 
+from server.entities.resource import Resources, ResourceType
+from tasks.tasks import celery_app
+from server.plugins.plugin_base import finishing_task
+
 URL_IP = "https://www.threatcrowd.org/searchApi/v2/ip/report/?ip={ip}"
 URL_DOMAIN = "https://www.threatcrowd.org/searchApi/v2/domain/report/?domain={domain}"
 URL_EMAIL = "https://www.threatcrowd.org/searchApi/v2/email/report/?email={email}"
 URL_HASH = "https://www.threatcrowd.org/searchApi/v2/file/report/?resource={hash}"
 
-from server.entities.resource import Resources, ResourceType
-from tasks.tasks import celery_app
-
 # Which resources are this plugin able to work with
-RESOURCE_TARGET = [ResourceType.DOMAIN, ResourceType.IPv4, ResourceType.EMAIL, ResourceType.HASH]
+RESOURCE_TARGET = [
+    ResourceType.DOMAIN,
+    ResourceType.IPv4,
+    ResourceType.EMAIL,
+    ResourceType.HASH,
+]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Allows you to quickly identify related infrastructure and malware"
@@ -42,7 +48,7 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            threatcrowd_task.delay(**to_task)
+            threatcrowd.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
@@ -88,7 +94,7 @@ def threatcrowd_hash(hash):
 
 
 @celery_app.task
-def threatcrowd_task(plugin_name, project_id, resource_id, resource_type, target):
+def threatcrowd(plugin_name, project_id, resource_id, resource_type, target):
     try:
         resource_type = ResourceType(resource_type)
         if resource_type == ResourceType.IPv4:
@@ -103,11 +109,12 @@ def threatcrowd_task(plugin_name, project_id, resource_id, resource_type, target
             print("ThreatCrowd resource type does not found")
 
         if not query_result:
+            print("No results from ThreatCrowd plugin")
             return
 
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
+        print("********************************")
+        print(query_result)
+        finishing_task(
             plugin_name, project_id, resource_id, resource_type, query_result
         )
 

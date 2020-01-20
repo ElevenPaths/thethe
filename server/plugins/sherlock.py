@@ -6,6 +6,7 @@ import tasks.deps.sherlock.sherlock as _sherlock
 
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
+from server.plugins.plugin_base import finishing_task
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.USERNAME]
@@ -39,13 +40,15 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            sherlock_task.delay(**to_task)
+            sherlock.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
 
-def sherlock(username):
+
+@celery_app.task
+def sherlock(username, plugin_name, project_id, resource_id, resource_type):
     try:
         site_data_all = None
         data_file_path = os.path.join(
@@ -77,28 +80,9 @@ def sherlock(username):
             temp_result["url_user"] = result.get(service).get("url_user")
             response.append(temp_result)
 
-        return response
+        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         return None
-
-@celery_app.task
-def sherlock_task(plugin_name, project_id, resource_id, resource_type, username):
-    try:
-        query_result = sherlock(username)
-        if not query_result:
-            return
-
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource_type = ResourceType(resource_type)
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
-
-    except Exception as e:
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))
-

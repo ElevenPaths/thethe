@@ -7,6 +7,7 @@ from ipwhois import IPWhois
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
 from dns import resolver, reversename
+from server.plugins.plugin_base import finishing_task
 
 
 # Which resources are this plugin able to work with
@@ -42,11 +43,12 @@ class Plugin:
                     "resource_type": resource_type.value,
                     "plugin_name": Plugin.name,
                 }
-                return basic_ip_task.delay(**to_task)
+                return basic_ip.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
 
 def asn(ip):
     try:
@@ -76,6 +78,7 @@ def asn(ip):
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
 
+
 def ptr(ip):
     try:
         PTR_record = None
@@ -88,7 +91,7 @@ def ptr(ip):
 
 
 @celery_app.task
-def basic_ip_task(plugin_name, project_id, resource_id, resource_type, ip):
+def basic_ip(ip, plugin_name, project_id, resource_id, resource_type):
 
     query_result = {}
 
@@ -107,17 +110,10 @@ def basic_ip_task(plugin_name, project_id, resource_id, resource_type, ip):
         if "network" in ASN_NET_record:
             query_result["network"] = ASN_NET_record["network"]
 
-        # TODO: Probably, we can save some parameters here when object is instantiated
-        resource_type = ResourceType(resource_type)
-
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
+        finishing_task(
             plugin_name, project_id, resource_id, resource_type, query_result
         )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
-
-
-

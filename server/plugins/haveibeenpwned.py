@@ -6,6 +6,7 @@ import json
 import requests
 
 from tasks.api_keys import KeyRing
+from server.plugins.plugin_base import finishing_task
 
 API_KEY = KeyRing().get("haveibeenpwned")
 URL = "https://haveibeenpwned.com/api/v3/{service}/{account}"
@@ -42,11 +43,12 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            haveibeenpwned_task.delay(**to_task)
+            haveibeenpwned.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
 
 def breach_detail_filler(sites):
     blob = None
@@ -63,7 +65,8 @@ def breach_detail_filler(sites):
     return [entry for entry in blob if entry["Name"] in sites]
 
 
-def haveibeenpwned(email):
+@celery_app.task
+def haveibeenpwned(plugin_name, project_id, resource_id, resource_type, email):
     try:
         if not API_KEY:
             print("No API key...!")
@@ -89,30 +92,9 @@ def haveibeenpwned(email):
         if not len(details) == len(response):
             print("[HIBP] An update should be needed in breaches.json file")
 
-        return details
+        finishing_task(plugin_name, project_id, resource_id, resource_type, details)
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         return None
-
-@celery_app.task
-def haveibeenpwned_task(plugin_name, project_id, resource_id, resource_type, email):
-    try:
-        query_result = haveibeenpwned(email)
-        if not query_result:
-            return
-
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource_type = ResourceType(resource_type)
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
-
-    except Exception as e:
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))
-
-
-

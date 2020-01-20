@@ -4,6 +4,7 @@ import requests
 
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
+from server.plugins.plugin_base import finishing_task
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.IPv4]
@@ -13,9 +14,10 @@ PLUGIN_DESCRIPTION = "Search for an IP number and get which hostnames points to 
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "robtex"
 PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = True
+PLUGIN_DISABLE = False
 
 URL = "https://freeapi.robtex.com/ipquery/{ip}"
+
 
 class Plugin:
     description = PLUGIN_DESCRIPTION
@@ -38,14 +40,15 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            robtex_task.delay(**to_task)
+            robtex.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
 
 
-def robtex(ip):
+@celery_app.task
+def robtex(plugin_name, project_id, resource_id, resource_type, ip):
     try:
         response = {}
         robtex_response = requests.get(URL.format(**{"ip": ip}))
@@ -55,29 +58,9 @@ def robtex(ip):
         else:
             response = json.loads(robtex_response.content)
 
-        return response
+        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         return None
-
-@celery_app.task
-def robtex_task(plugin_name, project_id, resource_id, resource_type, ip):
-    try:
-        query_result = robtex(ip)
-        if not query_result:
-            return
-
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource_type = ResourceType(resource_type)
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
-
-    except Exception as e:
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))
-
-
