@@ -6,6 +6,7 @@ import urllib.request
 from tasks.api_keys import KeyRing
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
+from server.plugins.plugin_base import finishing_task
 
 API_KEY = KeyRing().get("onyphe")
 
@@ -41,7 +42,7 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            onyphe_task.delay(**to_task)
+            onyphe.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
@@ -61,7 +62,6 @@ def onyphe_threatlist(ip):
                     threatlists["threatlists"].append(entry["threatlist"])
         threatlists["threatlists"] = list(set(threatlists["threatlists"]))
         threatlists["threatlists"].sort()
-        print(threatlists)
         return threatlists
 
     except Exception as e:
@@ -81,21 +81,19 @@ def onyphe_synscan(ip):
         print("".join(tb1.format()))
         return None
 
+
 @celery_app.task
-def onyphe_task(plugin_name, project_id, resource_id, resource_type, ip):
+def onyphe(plugin_name, project_id, resource_id, resource_type, ip):
     try:
         query_result = onyphe_threatlist(ip)
         if not query_result:
             return
+        print(query_result)
 
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource_type = ResourceType(resource_type)
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
+        finishing_task(
             plugin_name, project_id, resource_id, resource_type, query_result
         )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
-

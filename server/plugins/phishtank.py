@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 from tasks.api_keys import KeyRing
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
+from server.plugins.plugin_base import finishing_task
 
 API_KEY = KeyRing().get("phishtank")
 
@@ -49,7 +50,7 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            phishtank_task.delay(**to_task)
+            phishtank.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
@@ -122,7 +123,9 @@ def phishtank_screenshot(phish_id):
                     screenshot_url = matches[0]
                     screenshot_name = urlparse(screenshot_url).path
                     r = requests.get(screenshot_url, allow_redirects=True)
-                    with open(f"{SCREENSHOTS_STORAGE_PATH}{screenshot_name}", "wb") as f:
+                    with open(
+                        f"{SCREENSHOTS_STORAGE_PATH}{screenshot_name}", "wb"
+                    ) as f:
                         f.write(r.content)
                     return f"{SCREENSHOTS_SERVER_PATH}{screenshot_name}"
 
@@ -163,7 +166,7 @@ def phishtank_tech_details(phish_id):
 
 
 @celery_app.task
-def phishtank_task(plugin_name, project_id, resource_id, resource_type, url):
+def phishtank(plugin_name, project_id, resource_id, resource_type, url):
     try:
         resource_type = ResourceType(resource_type)
         if resource_type == ResourceType.URL:
@@ -171,8 +174,7 @@ def phishtank_task(plugin_name, project_id, resource_id, resource_type, url):
         else:
             print("phishtank resource type does not found")
 
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
+        finishing_task(
             plugin_name, project_id, resource_id, resource_type, query_result
         )
 

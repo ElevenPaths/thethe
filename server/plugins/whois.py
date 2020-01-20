@@ -5,6 +5,7 @@ import traceback
 
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
+from server.plugins.plugin_base import finishing_task
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.DOMAIN, ResourceType.EMAIL]
@@ -43,21 +44,19 @@ class Plugin:
                     "plugin_name": Plugin.name,
                 }
 
-                whois_task.delay(**to_task)
+                whois.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
 
+
 @celery_app.task
-def whois_task(plugin_name, project_id, resource_id, resource_type, domain):
+def whois(plugin_name, project_id, resource_id, resource_type, domain):
 
     try:
         query_result = json.loads(str(whois.whois(domain)))
-        resource_type = ResourceType(resource_type)
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
+        finishing_task(
             plugin_name, project_id, resource_id, resource_type, query_result
         )
 
@@ -67,5 +66,3 @@ def whois_task(plugin_name, project_id, resource_id, resource_type, domain):
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
-
-

@@ -1,6 +1,7 @@
 import traceback
 from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
+from server.plugins.plugin_base import finishing_task
 
 # Login with the following information:
 # Login Name: zigineki@getnada.com
@@ -24,6 +25,7 @@ PLUGIN_DESCRIPTION = "BotScout helps prevent automated web scripts, known as 'bo
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "botscout"
 PLUGIN_AUTOSTART = False
+# TODO: needs heavy testing before enabling
 PLUGIN_DISABLE = True
 
 
@@ -48,11 +50,12 @@ class Plugin:
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            botscout_task.delay(**to_task)
+            botscout.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
 
 def botscout_ip(ip):
     try:
@@ -87,6 +90,7 @@ def botscout_ip_details(ip):
         print("".join(tb1.format()))
         return None
 
+
 @celery_app.task
 def botscout_task(plugin_name, project_id, resource_id, resource_type, ip):
     try:
@@ -104,5 +108,3 @@ def botscout_task(plugin_name, project_id, resource_id, resource_type, ip):
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
-
-

@@ -4,7 +4,10 @@ import requests
 
 from diario import Diario
 
+from server.plugins.plugin_base import finishing_task
 from tasks.api_keys import KeyRing
+from server.entities.resource import Resources, ResourceType
+from tasks.tasks import celery_app
 
 APP_ID = KeyRing().get("diario-appid")
 SECRET_KEY = KeyRing().get("diario-secret")
@@ -12,8 +15,6 @@ SECRET_KEY = KeyRing().get("diario-secret")
 __PREDICTION = {"M": "Malware", "G": "Goodware", "NM": "No macros"}
 __STATUS = {"A": "Analyzed", "P": "Processing", "F": "Failed"}
 
-from server.entities.resource import Resources, ResourceType
-from tasks.tasks import celery_app
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.HASH]
@@ -41,13 +42,13 @@ class Plugin:
 
         try:
             to_task = {
-                "hash": self.resource.get_data()["hash"],
+                "document_hash": self.resource.get_data()["hash"],
                 "resource_id": self.resource.get_id_as_string(),
                 "project_id": self.project_id,
                 "resource_type": resource_type.value,
                 "plugin_name": Plugin.name,
             }
-            diario_task.delay(**to_task)
+            diario.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
@@ -82,7 +83,9 @@ def old_diario(document_hash):
 
     return result
 
-def diario(document_hash):
+
+@celery_app.task
+def diario(plugin_name, project_id, resource_id, resource_type, document_hash):
     result = {"is_document": False}
     try:
         if not APP_ID:
@@ -99,13 +102,12 @@ def diario(document_hash):
         if response.data:
             result = get_result(diariosdk, response.data)
 
-
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         result = None
 
-    return result
+    finishing_task(plugin_name, project_id, resource_id, resource_type, result)
 
 
 def old_get_result(diariosdk, data):
@@ -121,6 +123,7 @@ def old_get_result(diariosdk, data):
         "sub_documents": get_subdocument(diariosdk, data, document_type),
     }
 
+
 def get_result(diariosdk, data):
     document_type = data.get("type")
     if not document_type:
@@ -131,8 +134,9 @@ def get_result(diariosdk, data):
         "document_type": document_type,
         "prediction": __PREDICTION.get(data.get("prediction")),
         "status": __STATUS.get(data.get("status")),
-        "sub_documents": get_subdocument(diariosdk, data, document_type)
+        "sub_documents": get_subdocument(diariosdk, data, document_type),
     }
+
 
 def _get_subdocument(diariosdk, data, document_type):
     sub_documents = []
@@ -170,23 +174,3 @@ def get_subdocument(diariosdk, data, document_type):
             sub_documents.append(sd_response.data)
 
     return sub_documents
-
-@celery_app.task
-def diario_task(plugin_name, project_id, resource_id, resource_type, hash):
-    try:
-        query_result = diario(hash)
-        if not query_result:
-            return
-
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource_type = ResourceType(resource_type)
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
-
-    except Exception as e:
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))
-
-

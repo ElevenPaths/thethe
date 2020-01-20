@@ -3,7 +3,9 @@ import json
 import requests
 
 from tasks.api_keys import KeyRing
-from server.entities.resource_types import ResourceType
+from tasks.tasks import celery_app
+from server.entities.resource import Resources, ResourceType
+from server.plugins.plugin_base import finishing_task
 
 API_KEY = KeyRing().get("virustotal")
 
@@ -12,8 +14,6 @@ url_for_urls = "https://www.virustotal.com/vtapi/v2/url/report"
 url_for_domains = "https://www.virustotal.com/vtapi/v2/domain/report"
 url_for_ips = "https://www.virustotal.com/vtapi/v2/ip-address/report"
 
-from server.entities.resource import Resources, ResourceType
-from tasks.tasks import celery_app
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [
@@ -43,7 +43,6 @@ class Plugin:
 
         target = self.resource.get_data()["canonical_name"]
 
-
         try:
             to_task = {
                 "target": target,
@@ -53,14 +52,15 @@ class Plugin:
                 "plugin_name": Plugin.name,
             }
 
-            virustotal_task.delay(**to_task)
+            vt_domain.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
 
 
-def virustotal(resource, resource_type):
+@celery_app.task
+def vt_domain(plugin_name, project_id, resource_id, resource_type, target):
     try:
         if not API_KEY:
             print("No API key...!")
@@ -70,18 +70,20 @@ def virustotal(resource, resource_type):
         url = None
         params = {"apikey": API_KEY}
 
-        if resource_type == ResourceType.DOMAIN:
+        resource_type_for_vt = ResourceType(resource_type)
+
+        if resource_type_for_vt == ResourceType.DOMAIN:
             url = url_for_domains
-            params["domain"] = resource
-        elif resource_type == ResourceType.URL:
+            params["domain"] = target
+        elif resource_type_for_vt == ResourceType.URL:
             url = url_for_urls
-            params["resource"] = resource
-        elif resource_type == ResourceType.IPv4:
+            params["resource"] = target
+        elif resource_type_for_vt == ResourceType.IPv4:
             url = url_for_ips
-            params["ip"] = resource
-        elif resource_type == ResourceType.HASH:
+            params["ip"] = target
+        elif resource_type_for_vt == ResourceType.HASH:
             url = url_for_hashes
-            params["resource"] = resource
+            params["resource"] = target
         else:
             print("[VT] Unknown resource type before querying service")
             return None
@@ -95,29 +97,9 @@ def virustotal(resource, resource_type):
             response = json.loads(response.content)
 
         print(response)
-        return response
+        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         return None
-
-
-
-@celery_app.task
-def virustotal_task(plugin_name, project_id, resource_id, resource_type, target):
-    try:
-        query_result = None
-
-        resource_type = ResourceType(resource_type)
-        query_result = virustotal(target, resource_type)
-
-        # TODO: See if ResourceType.__str__ can be use for serialization
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
-
-    except Exception as e:
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))

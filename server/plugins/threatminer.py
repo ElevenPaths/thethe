@@ -1,3 +1,4 @@
+# TODO: Untested plugin. Disabled
 import json
 import traceback
 
@@ -22,6 +23,7 @@ PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "threatminer"
 PLUGIN_AUTOSTART = False
 PLUGIN_DISABLE = True
+
 
 class Plugin:
     description = PLUGIN_DESCRIPTION
@@ -194,6 +196,7 @@ def threatminer_ssl(hash, tab_rt):
         print("".join(tb1.format()))
         return None
 
+
 @celery_app.task
 def threatminer_task(plugin_name, project_id, resource_id, resource_type, domain):
     try:
@@ -211,5 +214,3 @@ def threatminer_task(plugin_name, project_id, resource_id, resource_type, domain
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
-
-

@@ -4,13 +4,13 @@ import pprint
 import time
 import requests
 
-from server.entities.resource import Resources, ResourceType
-from tasks.tasks import celery_app
-
-from tasks.api_keys import KeyRing
 from server.db import DB
 from server.entities.pastebin_manager import PastebinManager, Paste
+from server.entities.resource import Resources, ResourceType
+from server.plugins.plugin_base import finishing_task
+from tasks.api_keys import KeyRing
 from tasks.subtasks.googlesearch import restricted_googlesearch
+from tasks.tasks import celery_app
 
 
 API_KEY = KeyRing().get("pastebin")
@@ -70,16 +70,15 @@ class Plugin:
                 "plugin_name": Plugin.name,
                 "search_engine": SEARCH_ENGINE,
             }
-            pastebin_task.delay(**to_task)
+            pastebin.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
 
 
-
 @celery_app.task
-def pastebin_task(
+def pastebin(
     plugin_name, project_id, resource_id, resource_type, target, search_engine
 ):
     try:
@@ -89,11 +88,9 @@ def pastebin_task(
 
         # Now, process google results and get the pastes and metadata
         if query_result:
-            query_result = pastebin(query_result)
+            query_result = pastebin_get_results(query_result)
 
-        resource_type = ResourceType(resource_type)
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
+        finishing_task(
             plugin_name, project_id, resource_id, resource_type, query_result
         )
 
@@ -102,12 +99,11 @@ def pastebin_task(
         print("".join(tb1.format()))
 
 
-
-
 def get_key_from_paste_key(item):
     return item.split("/")[-1]
 
-def pastebin(results):
+
+def pastebin_get_results(results):
     try:
         if not API_KEY:
             raise Exception("No API_KEY for pastebin")
@@ -169,4 +165,3 @@ def pastebin(results):
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
-
