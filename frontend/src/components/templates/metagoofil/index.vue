@@ -1,7 +1,17 @@
 <template>
   <v-flex class="text-xs-left">
     <v-divider></v-divider>
-    <v-card>
+    <v-layout row pt-2 wrap class="subheading">
+      <v-flex>
+        <v-layout row align-start pa-2>
+          <v-flex v-if="resource.email" lg3>
+            <v-label>Email:</v-label>
+          </v-flex>
+          <v-flex>{{ resource.email }}</v-flex>
+        </v-layout>
+      </v-flex>
+    </v-layout>
+    <!-- <v-card>
       <v-card-title>
         <v-flex title v-if="resource.threatlists.length > 0"
           >This IP is included in the following threat lists</v-flex
@@ -13,7 +23,7 @@
           threatlist
         }}</v-flex>
       </v-card-text>
-    </v-card>
+    </v-card> -->
   </v-flex>
 </template>
 
@@ -21,7 +31,7 @@
 import { make_unique_list } from "../../../utils/utils";
 
 export default {
-  name: "onyphe",
+  name: "metagoofil",
   props: {
     plugin_data: Object
   },
