@@ -117,5 +117,6 @@ frontend/public/static/phishtank/*
 !frontend/public/static/phishtank/.gitkeep
 utils/db.dump
 utils/db.dump.gz
+db.dump.gz
 mongodb_data/*
 node_modules/
