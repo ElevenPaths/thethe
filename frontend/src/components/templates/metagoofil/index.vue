@@ -1,29 +1,25 @@
 <template>
   <v-flex class="text-xs-left">
     <v-divider></v-divider>
-    <v-layout row pt-2 wrap class="subheading">
-      <v-flex>
-        <v-layout row align-start pa-2>
-          <v-flex v-if="resource.email" lg3>
-            <v-label>Email:</v-label>
-          </v-flex>
-          <v-flex>{{ resource.email }}</v-flex>
-        </v-layout>
+    <v-layout row wrap>
+      <v-flex v-for="item in resource" xs3>
+        <v-card>
+          <v-card-title class="justify-center" style="word-break: break-all">{{
+            item.filename
+          }}</v-card-title>
+          <v-card-text>
+            <div class="fi fi-swift fi-size-xl">
+              <div class="fi-content">{{ item.extension }}</div>
+            </div>
+          </v-card-text>
+          <v-card-actions class="justify-center">
+            <v-btn flat color="green" :href="item.url" target="_blank"
+              >Download</v-btn
+            >
+          </v-card-actions>
+        </v-card>
       </v-flex>
     </v-layout>
-    <!-- <v-card>
-      <v-card-title>
-        <v-flex title v-if="resource.threatlists.length > 0"
-          >This IP is included in the following threat lists</v-flex
-        >
-        <v-flex v-else title>This IP is not included in any thread list</v-flex>
-      </v-card-title>
-      <v-card-text>
-        <v-flex v-for="threatlist in resource.threatlists" :key="threatlist">{{
-          threatlist
-        }}</v-flex>
-      </v-card-text>
-    </v-card> -->
   </v-flex>
 </template>
 
