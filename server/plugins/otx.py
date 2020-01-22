@@ -33,6 +33,7 @@ RESOURCE_TARGET = [
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "OTX AlienVault Feeds Threats"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "otx"
 PLUGIN_AUTOSTART = False

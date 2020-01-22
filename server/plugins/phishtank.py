@@ -23,6 +23,7 @@ RESOURCE_TARGET = [ResourceType.URL]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Check in PhishTank if this URL is marked as a phishing"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "phishtank"
 PLUGIN_AUTOSTART = False

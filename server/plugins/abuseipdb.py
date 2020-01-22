@@ -16,6 +16,7 @@ RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Check the report history of any IP address to see if anyone else has reported malicious activities"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "abuseipdb"
 PLUGIN_AUTOSTART = False

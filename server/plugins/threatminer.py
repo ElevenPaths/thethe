@@ -19,6 +19,7 @@ RESOURCE_TARGET = [ResourceType.DOMAIN]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "List Threats for domain"
+PLUGIN_API_KEY = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "threatminer"
 PLUGIN_AUTOSTART = False

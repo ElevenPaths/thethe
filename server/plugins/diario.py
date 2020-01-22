@@ -21,6 +21,7 @@ RESOURCE_TARGET = [ResourceType.HASH]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Scans and analyzes pdf and office documents in a static way keeping users content private"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "diario"
 PLUGIN_AUTOSTART = False

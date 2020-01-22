@@ -14,6 +14,7 @@ RESOURCE_TARGET = [ResourceType.HASH]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Search an APK in Tacyt and retrieve all its info"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "tacyt"
 PLUGIN_AUTOSTART = False

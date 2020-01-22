@@ -12,6 +12,7 @@ RESOURCE_TARGET = [ResourceType.DOMAIN, ResourceType.EMAIL]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Performs a WHOIS request for a domain"
+PLUGIN_API_KEY = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "whois"
 PLUGIN_AUTOSTART = True

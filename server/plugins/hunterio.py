@@ -21,6 +21,7 @@ RESOURCE_TARGET = [ResourceType.DOMAIN, ResourceType.EMAIL]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Lists all the people working in a company with their name and email address found on the web"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "hunterio"
 PLUGIN_AUTOSTART = False
