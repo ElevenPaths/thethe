@@ -1,4 +1,6 @@
+import os
 import traceback
+from urllib.parse import urlparse
 
 import tasks.deps.metagoofil.metagoofil as _metagoofil
 
@@ -50,11 +52,18 @@ class Plugin:
 @celery_app.task
 def metagoofil(domain, plugin_name, project_id, resource_id, resource_type):
     try:
-        print("analize {} with metagoofil".format(domain))
+        print("Analizing {} with metagoofil".format(domain))
 
         response = _metagoofil._main(domain)
 
-        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
+        files = []
+        for x in response:
+            url = urlparse(x)
+            filename = os.path.basename(url.path)
+            extension = filename.split(".")[1]
+            files.append({'filename' : filename, "extension": extension.lower(), "url": x})
+
+        finishing_task(plugin_name, project_id, resource_id, resource_type, files)
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
