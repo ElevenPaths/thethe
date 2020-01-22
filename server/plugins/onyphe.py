@@ -15,6 +15,7 @@ RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Lookup onyphe.io wether this IP is included in threatlists"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "onyphe"
 PLUGIN_AUTOSTART = False

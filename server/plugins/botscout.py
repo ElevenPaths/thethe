@@ -22,6 +22,7 @@ RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "BotScout helps prevent automated web scripts, known as 'bots', from multiples sources"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "botscout"
 PLUGIN_AUTOSTART = False

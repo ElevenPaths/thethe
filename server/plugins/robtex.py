@@ -11,6 +11,7 @@ RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Search for an IP number and get which hostnames points to it"
+PLUGIN_API_KEY = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "robtex"
 PLUGIN_AUTOSTART = False

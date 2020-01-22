@@ -12,6 +12,7 @@ RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Use Shodan to get information about an IP address"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "shodan"
 PLUGIN_AUTOSTART = False

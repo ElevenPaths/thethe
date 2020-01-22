@@ -16,6 +16,7 @@ RESOURCE_TARGET = [ResourceType.EMAIL]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = 'Illuminate the "reputation" behind an email address'
+PLUGIN_API_KEY = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "emailrep"
 PLUGIN_AUTOSTART = False

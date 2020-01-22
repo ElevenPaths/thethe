@@ -13,6 +13,7 @@ RESOURCE_TARGET = [ResourceType.USERNAME]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Use Sherlock to find usernames across many social networks"
+PLUGIN_API_KEY = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "sherlock"
 PLUGIN_AUTOSTART = False

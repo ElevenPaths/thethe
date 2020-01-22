@@ -21,6 +21,7 @@ RESOURCE_TARGET = [
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Allows you to quickly identify related infrastructure and malware"
+PLUGIN_API_KEY = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "threatcrowd"
 PLUGIN_AUTOSTART = False

@@ -15,6 +15,7 @@ RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Run a subset of plugins to gather ASN, Network and rDNS information on a IP address"
+PLUGIN_API_KEY = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "basic"
 PLUGIN_AUTOSTART = True

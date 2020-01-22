@@ -17,6 +17,7 @@ RESOURCE_TARGET = [ResourceType.EMAIL]
 PLUGIN_DESCRIPTION = (
     "Connects to the mail server and checks whether the mailbox exists or not"
 )
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "verifymail"
 PLUGIN_AUTOSTART = False

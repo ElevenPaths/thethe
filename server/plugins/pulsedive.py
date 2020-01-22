@@ -12,6 +12,7 @@ from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
 
 API_KEY = KeyRing().get("pulsedive")
+PLUGIN_API_KEY = True
 URL = "https://pulsedive.com/api/analyze.php"
 URL_INFO = "https://pulsedive.com/api/info.php"
 PLUGIN_DISABLE = True

@@ -33,6 +33,7 @@ RESOURCE_TARGET = [
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Use Google Search API to retrieve 'pastebin.com' results"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "pastebin"
 PLUGIN_AUTOSTART = False

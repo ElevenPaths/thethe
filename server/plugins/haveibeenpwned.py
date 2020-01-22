@@ -16,6 +16,7 @@ RESOURCE_TARGET = [ResourceType.EMAIL]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Check if this account has been compromised in a data breach"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "haveibeenpwned"
 PLUGIN_AUTOSTART = False

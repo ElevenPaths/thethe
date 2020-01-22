@@ -17,6 +17,7 @@ RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "List of recent events for the specified host, including details of exposed ports and services"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "binaryedge"
 PLUGIN_AUTOSTART = False
