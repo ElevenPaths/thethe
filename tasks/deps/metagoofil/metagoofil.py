@@ -227,10 +227,10 @@ def _main(domain):
         "search_max": 5,
         "download_file_limit": 2,
         "save_directory": ".",
-        "number_of_threads": 2,
-        "file_types": ["pdf","doc"],
+        "number_of_threads": 4,
+        "file_types": ["pdf","docx", "doc", "xlsx", "xls", "pptx", "ppt"],
         "user_agent": None,
-        "download_files": True
+        "download_files": False
     }
 
     global mg
