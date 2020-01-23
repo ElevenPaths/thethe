@@ -31,7 +31,7 @@ RESOURCE_TARGET = [
     ResourceType.HASH,
 ]
 
-# Plugin Metadata {a decription, if target is actively reached and name}
+# Plugin Metadata {a description, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "OTX AlienVault Feeds Threats"
 PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
@@ -45,6 +45,8 @@ class Plugin:
     description = PLUGIN_DESCRIPTION
     is_active = PLUGIN_IS_ACTIVE
     name = PLUGIN_NAME
+    api_key = PLUGIN_API_KEY
+    api_doc = "https://otx.alienvault.com/api"
     autostart = PLUGIN_AUTOSTART
 
     def __init__(self, resource, project_id):

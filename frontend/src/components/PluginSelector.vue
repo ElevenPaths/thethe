@@ -6,37 +6,76 @@
       </template>
       <v-list>
         <v-subheader>
-          <b>Available plugins</b>&nbsp; (click on a entry to launch task)
+          <span
+            ><b>Available plugins</b>&nbsp; (click on a entry to launch
+            task)</span
+          >
         </v-subheader>
         <v-divider></v-divider>
         <v-list-tile
           v-for="plugin in plugin_list"
           :key="plugin.name"
-          @click="
-            launch(plugin);
-            sheet = false;
-          "
+          avatar
           two-line
         >
           <v-list-tile-avatar>
-            <v-icon v-if="plugin.is_active" :color="avatar_color(plugin.last_update)">warning</v-icon>
-            <v-icon v-else :color="avatar_color(plugin.last_update)">info</v-icon>
+            <v-btn
+              v-if="plugin.api_key"
+              flat
+              icon
+              color="error"
+              :href="plugin.api_doc"
+              target="_blank"
+            >
+              <v-icon>
+                warning
+              </v-icon>
+            </v-btn>
+            <v-btn v-else flat icon style="visibility: hidden">
+              <v-icon>
+                warning
+              </v-icon>
+            </v-btn>
           </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-list-tile-title>{{ plugin.name }}</v-list-tile-title>
-            <v-list-tile-sub-title>
-              <v-layout align-center>
-                <v-flex lg8>{{ plugin.description }}</v-flex>
-                <v-flex offset-lg1 v-if="plugin.last_update">
-                  <v-layout align-center>
-                    <span>Last update:&nbsp;</span>
-                    <span>{{ plugin.last_update }}</span>
-                  </v-layout>
-                </v-flex>
-              </v-layout>
-            </v-list-tile-sub-title>
-          </v-list-tile-content>
+          <v-layout
+            @click="
+              launch(plugin);
+              sheet = false;
+            "
+          >
+            <v-list-tile-avatar>
+              <v-icon
+                v-if="plugin.is_active"
+                :color="avatar_color(plugin.last_update)"
+                >warning</v-icon
+              >
+              <v-icon v-else :color="avatar_color(plugin.last_update)">
+                info
+              </v-icon>
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ plugin.name }}</v-list-tile-title>
+              <v-list-tile-sub-title>
+                <v-layout align-center>
+                  <v-flex lg8>{{ plugin.description }}</v-flex>
+                  <v-flex offset-lg1 v-if="plugin.last_update">
+                    <v-layout align-center>
+                      <span>Last update:&nbsp;</span>
+                      <span>{{ plugin.last_update }}</span>
+                    </v-layout>
+                  </v-flex>
+                </v-layout>
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-layout>
         </v-list-tile>
+        <v-divider></v-divider>
+        <v-subheader>
+          <v-icon color="error" style="margin: 0px 8px">
+            warning
+          </v-icon>
+          <span style="padding: 0px 10px"><b>API KEY needed!</b></span>
+        </v-subheader>
       </v-list>
     </v-bottom-sheet>
   </div>

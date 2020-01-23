@@ -9,7 +9,7 @@ from server.plugins.plugin_base import finishing_task
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.IPv4]
 
-# Plugin Metadata {a decription, if target is actively reached and name}
+# Plugin Metadata {a description, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Search for an IP number and get which hostnames points to it"
 PLUGIN_API_KEY = False
 PLUGIN_IS_ACTIVE = False
@@ -24,6 +24,8 @@ class Plugin:
     description = PLUGIN_DESCRIPTION
     is_active = PLUGIN_IS_ACTIVE
     name = PLUGIN_NAME
+    api_key = PLUGIN_API_KEY
+    api_doc = ""
     autostart = PLUGIN_AUTOSTART
 
     def __init__(self, resource, project_id):

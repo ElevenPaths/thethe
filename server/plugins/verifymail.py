@@ -13,7 +13,7 @@ URL = "https://app.verify-email.org/api/v1/{key}/verify/{email}"
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.EMAIL]
 
-# Plugin Metadata {a decription, if target is actively reached and name}
+# Plugin Metadata {a description, if target is actively reached and name}
 PLUGIN_DESCRIPTION = (
     "Connects to the mail server and checks whether the mailbox exists or not"
 )
@@ -28,6 +28,8 @@ class Plugin:
     description = PLUGIN_DESCRIPTION
     is_active = PLUGIN_IS_ACTIVE
     name = PLUGIN_NAME
+    api_key = PLUGIN_API_KEY
+    api_doc = "https://verify-email.org/faq.html"
     autostart = PLUGIN_AUTOSTART
 
     def __init__(self, resource, project_id):
