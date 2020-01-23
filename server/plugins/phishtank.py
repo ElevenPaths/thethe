@@ -21,7 +21,7 @@ USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.URL]
 
-# Plugin Metadata {a decription, if target is actively reached and name}
+# Plugin Metadata {a description, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Check in PhishTank if this URL is marked as a phishing"
 PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
@@ -34,6 +34,8 @@ class Plugin:
     description = PLUGIN_DESCRIPTION
     is_active = PLUGIN_IS_ACTIVE
     name = PLUGIN_NAME
+    api_key = PLUGIN_API_KEY
+    api_doc = "https://www.phishtank.com/api_info.php"
     autostart = PLUGIN_AUTOSTART
 
     def __init__(self, resource, project_id):

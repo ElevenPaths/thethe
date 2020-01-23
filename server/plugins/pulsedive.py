@@ -125,7 +125,7 @@ def pulsedive_getreport(qid):
 
 
 @celery_app.task
-def puslsedive_task(
+def pulsedive_task(
     plugin_name, project_id, resource_id, resource_type, domain_or_hash
 ):
     try:

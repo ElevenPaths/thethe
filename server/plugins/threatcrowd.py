@@ -19,7 +19,7 @@ RESOURCE_TARGET = [
     ResourceType.HASH,
 ]
 
-# Plugin Metadata {a decription, if target is actively reached and name}
+# Plugin Metadata {a description, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Allows you to quickly identify related infrastructure and malware"
 PLUGIN_API_KEY = False
 PLUGIN_IS_ACTIVE = False
@@ -32,6 +32,8 @@ class Plugin:
     description = PLUGIN_DESCRIPTION
     is_active = PLUGIN_IS_ACTIVE
     name = PLUGIN_NAME
+    api_key = PLUGIN_API_KEY
+    api_doc = ""
     autostart = PLUGIN_AUTOSTART
 
     def __init__(self, resource, project_id):
