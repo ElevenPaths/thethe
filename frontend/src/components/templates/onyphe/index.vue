@@ -21,7 +21,7 @@
 import { make_unique_list } from "../../../utils/utils";
 
 export default {
-  name: "verifymail",
+  name: "onyphe",
   props: {
     plugin_data: Object
   },

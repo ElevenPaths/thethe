@@ -12,6 +12,9 @@ import "vuetify/dist/vuetify.min.css";
 // Added material icons
 import "@mdi/font/css/materialdesignicons.css";
 
+// Added file icons
+import "css-file-icons/build/css-file-icons.css";
+
 import router from "./router";
 import store from "./store";
 import App from "./App";
