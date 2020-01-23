@@ -12,7 +12,7 @@ import requests
 # API_KEY = KeyRing().get("binaryedge")
 
 # IMPORTANT NOTE: Please note that the rate limit is set to 10 queries per minute.
-API_KEY = ""
+API_KEY = False
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.DOMAIN]
@@ -33,6 +33,7 @@ class Plugin:
     api_key = PLUGIN_API_KEY
     api_doc = ""
     autostart = PLUGIN_AUTOSTART
+    apikey_in_ddbb = bool(API_KEY)
 
     def __init__(self, resource, project_id):
         self.project_id = project_id

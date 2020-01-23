@@ -68,6 +68,7 @@ class Plugins:
                     "api_key": plugin.api_key,
                     "api_doc": plugin.api_doc,
                     "is_active": plugin.is_active,
+                    "apikey_in_ddbb": plugin.apikey_in_ddbb,
                 }
             )
 

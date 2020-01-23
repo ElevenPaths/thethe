@@ -28,6 +28,7 @@ class Plugin:
     api_key = PLUGIN_API_KEY
     api_doc = "https://tacyt.elevenpaths.com/"
     autostart = PLUGIN_AUTOSTART
+    apikey_in_ddbb = bool(APP_ID) & bool(SECRET_KEY)
 
     def __init__(self, resource, project_id):
         self.project_id = project_id

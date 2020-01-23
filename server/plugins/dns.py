@@ -20,6 +20,7 @@ PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "dns"
 PLUGIN_AUTOSTART = True
 PLUGIN_DISABLE = False
+API_KEY = False
 
 # If you want to expand DNS query types this is the right place
 LOOKUP = ["NS", "A", "AAAA", "MX", "TXT", "SRV"]
@@ -32,6 +33,7 @@ class Plugin:
     api_key = PLUGIN_API_KEY
     api_doc = ""
     autostart = PLUGIN_AUTOSTART
+    apikey_in_ddbb = bool(API_KEY)
 
     def __init__(self, resource, project_id):
         self.project_id = project_id

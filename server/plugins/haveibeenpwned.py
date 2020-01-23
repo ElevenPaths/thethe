@@ -30,6 +30,7 @@ class Plugin:
     api_key = PLUGIN_API_KEY
     api_doc = "https://haveibeenpwned.com/API/v3"
     autostart = PLUGIN_AUTOSTART
+    apikey_in_ddbb = bool(API_KEY)
 
     def __init__(self, resource, project_id):
         self.project_id = project_id

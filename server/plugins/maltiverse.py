@@ -47,6 +47,7 @@ class Plugin:
     api_key = PLUGIN_API_KEY
     api_doc = "https://app.swaggerhub.com/apis-docs/maltiverse/api/1.0.0-oas3"
     autostart = PLUGIN_AUTOSTART
+    apikey_in_ddbb = bool(MALTIVERSE_PASS) & bool(MALTIVERSE_EMAIL)
 
     def __init__(self, resource, project_id):
         self.project_id = project_id

@@ -21,6 +21,8 @@ PLUGIN_NAME = "basic"
 PLUGIN_AUTOSTART = True
 PLUGIN_DISABLE = False
 
+API_KEY = False
+
 
 class Plugin:
     description = PLUGIN_DESCRIPTION
@@ -29,6 +31,7 @@ class Plugin:
     api_key = PLUGIN_API_KEY
     api_doc = ""
     autostart = PLUGIN_AUTOSTART
+    apikey_in_ddbb = bool(API_KEY)
 
     def __init__(self, resource, project_id):
         self.project_id = project_id
