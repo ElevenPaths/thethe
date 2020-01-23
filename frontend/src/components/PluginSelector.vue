@@ -20,7 +20,7 @@
         >
           <v-list-tile-avatar>
             <v-btn
-              v-if="plugin.api_key"
+              v-if="!plugin.apikey_in_ddbb && plugin.api_key"
               flat
               icon
               color="error"
@@ -94,6 +94,10 @@ export default {
     };
   },
   mounted: function() {
+      this.get_related_plugins();
+  },
+  methods: {
+      get_related_plugins: function() {
     let params = {
       url: "/api/get_related_plugins",
       resource_id: this.resource._id,
@@ -107,7 +111,6 @@ export default {
       })
       .then(resp => this.update_pluginglist_dates());
   },
-  methods: {
     launch: function(entry) {
       let params = {
         url: "/api/launch_plugin",
@@ -134,6 +137,7 @@ export default {
     },
 
     update_pluginglist_dates: function() {
+
       for (let plugin of this.plugin_list) {
         let match = this.resource.plugins.find(
           elem => elem.name.localeCompare(plugin.name) == 0

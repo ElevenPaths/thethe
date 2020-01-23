@@ -29,6 +29,7 @@ class Plugin:
     api_key = PLUGIN_API_KEY
     api_doc = "https://developer.shodan.io/api"
     autostart = PLUGIN_AUTOSTART
+    apikey_in_ddbb = bool(API_KEY)
 
     def __init__(self, resource, project_id):
         self.project_id = project_id
