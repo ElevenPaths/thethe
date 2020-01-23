@@ -8,7 +8,10 @@
             item.filename
           }}</v-card-title>
           <v-card-text>
-            <div class="fi fi-swift fi-size-xl">
+            <div v-if="item.extension == 'pdf'" class="fi fi-swift fi-size-xl">
+              <div class="fi-content">{{ item.extension }}</div>
+            </div>
+            <div v-if="item.extension == 'doc'" class="fi fi-doc fi-size-xl">
               <div class="fi-content">{{ item.extension }}</div>
             </div>
           </v-card-text>

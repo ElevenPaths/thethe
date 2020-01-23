@@ -228,7 +228,7 @@ def _main(domain):
         "download_file_limit": 2,
         "save_directory": ".",
         "number_of_threads": 4,
-        "file_types": ["pdf","docx", "doc", "xlsx", "xls", "pptx", "ppt"],
+        "file_types": ["pdf","doc"],
         "user_agent": None,
         "download_files": False
     }
