@@ -1,5 +1,6 @@
-import whois
-import ipwhois
+import whois as whois_pkg
+
+# import ipwhois
 import json
 import traceback
 
@@ -55,7 +56,8 @@ class Plugin:
 def whois(plugin_name, project_id, resource_id, resource_type, domain):
 
     try:
-        query_result = json.loads(str(whois.whois(domain)))
+        query_result = whois_pkg.whois(domain)  # json.loads(str(whois.whois(domain)))
+
         finishing_task(
             plugin_name, project_id, resource_id, resource_type, query_result
         )
