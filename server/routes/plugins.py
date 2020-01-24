@@ -24,7 +24,7 @@ def get_all_plugins(user):
     try:
         PLUGIN_DIRECTORY = "server/plugins/"
         PLUGIN_HIERARCHY = "server.plugins"
-        EXCLUDE_SET = ["plugins.py", "__init__.py", "plugin_base.py"]
+        EXCLUDE_SET = ["plugins.py", "__init__.py", "plugin_base.py", "TEMPLATE.py"]
 
         plugins = []
         files = os.scandir(PLUGIN_DIRECTORY)
@@ -40,6 +40,7 @@ def get_all_plugins(user):
     except Exception as e:
         print(e)
         return jsonify({"error_message": "Error gettings plugins"}), 400
+
 
 @plugins_api.route("/api/get_related_plugins", methods=["POST"])
 @token_required

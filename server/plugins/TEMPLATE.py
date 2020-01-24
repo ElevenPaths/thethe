@@ -66,11 +66,16 @@ PLUGIN_DESCRIPTION = "Lists all the people working in a company with their name 
 
         If True, the plugin neither will be loaded nor will be shown in thethe. Use for development.
 
+    PLUGIN_API_KEY = True
+
+        If True, there is a api key in database, false is there is not api key.
+
 """
 
 PLUGIN_IS_ACTIVE = False
 PLUGIN_AUTOSTART = False
 PLUGIN_DISABLE = False
+PLUGIN_API_KEY = True
 
 
 """
