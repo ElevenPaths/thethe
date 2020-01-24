@@ -1,9 +1,10 @@
+import os
 import time
 import bson
 import json
 import traceback
 import urllib.parse
-
+import importlib
 
 from flask import Blueprint, request, abort, jsonify
 
@@ -16,6 +17,29 @@ from server.entities.pastebin_manager import PastebinManager
 
 plugins_api = Blueprint("plugins", __name__)
 
+
+@plugins_api.route("/api/get_all_plugins", methods=["POST"])
+@token_required
+def get_all_plugins(user):
+    try:
+        PLUGIN_DIRECTORY = "server/plugins/"
+        PLUGIN_HIERARCHY = "server.plugins"
+        EXCLUDE_SET = ["plugins.py", "__init__.py", "plugin_base.py"]
+
+        plugins = []
+        files = os.scandir(PLUGIN_DIRECTORY)
+
+        for f in files:
+            if f.is_file() and f.name.endswith(".py") and not f.name in EXCLUDE_SET:
+                module = importlib.import_module(f"{PLUGIN_HIERARCHY}.{f.name[:-3]}")
+                if module.PLUGIN_API_KEY and not module.PLUGIN_DISABLE:
+                    plugins.append(module.PLUGIN_NAME)
+
+        return json.dumps(plugins)
+
+    except Exception as e:
+        print(e)
+        return jsonify({"error_message": "Error gettings plugins"}), 400
 
 @plugins_api.route("/api/get_related_plugins", methods=["POST"])
 @token_required
