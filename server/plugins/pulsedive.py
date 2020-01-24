@@ -12,6 +12,7 @@ from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
 
 API_KEY = KeyRing().get("pulsedive")
+PLUGIN_API_KEY = True
 URL = "https://pulsedive.com/api/analyze.php"
 URL_INFO = "https://pulsedive.com/api/info.php"
 PLUGIN_DISABLE = True
@@ -124,7 +125,7 @@ def pulsedive_getreport(qid):
 
 
 @celery_app.task
-def puslsedive_task(
+def pulsedive_task(
     plugin_name, project_id, resource_id, resource_type, domain_or_hash
 ):
     try:
