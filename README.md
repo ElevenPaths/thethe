@@ -36,28 +36,7 @@ Change the **admin** password as soon as you log into **thethe** the very first 
 
 There are not API keys stored by default on the system.
 
-To add an API key, there is an option in the user menu (upper-right corner).
-
-All API keys (**a new API management system is being development**) must be written as CSV values:
-
-```text
-service_name_1,api_value_1
-service_name_2,api_value_2
-...
-service_name_n,api_value_n
-
-```
-
-If a service must have more than one API key, secret, etc...
-
-```text
-secret,api_value
-...
-cookie,cookie_value
-
-```
-
-and so on...
+To add an API key, there is an option in the user menu (upper-right corner) to manage your keys.
 
 ---
 
@@ -83,33 +62,10 @@ restore_thethe_db.sh <mongodb_container_name>
 
 ---
 
-## Updating
+## Updating thethe
 
-**Make a database backup!** (check the section "Database Backups and Restoration")
+See [updating thethe](https://github.com/ElevenPaths/thethe/wiki/How-to-update-thethe)
 
-```bash
-git pull
-```
-
-If the source code has been changed all the mounted volumes should reflect such changes. However in certain cases (third party libraries, etc) the images will have to be rebuilt.
-
-Stop the containers:
-
-```bash
-docker-compose stop
-```
-
-Rebuild images:
-
-```bash
-docker-compose build
-```
-
-Restart the system
-
-```bash
-docker-compose up -d
-```
 
 ---
 
