@@ -4,10 +4,14 @@
       <v-select v-model="plugin" :items="plugins" label="Service"></v-select>
     </v-flex>
     <v-flex>
-      <v-text-field v-model="apikey" label="API KEY" @keyup.enter="$emit('add', plugin, apikey)"></v-text-field>
+      <v-text-field
+        v-model="apikey"
+        label="API KEY"
+        @keyup.enter="$emit('add', plugin, apikey); clean()"
+      ></v-text-field>
     </v-flex>
     <v-flex xs1>
-      <v-btn icon @click="$emit('add', plugin, apikey)">
+      <v-btn icon @click="$emit('add', plugin, apikey);clean()">
         <v-icon>done</v-icon>
       </v-btn>
     </v-flex>
@@ -18,6 +22,7 @@
 import api_call from "../utils/api";
 
 export default {
+  props: ["reset"],
   data() {
     return {
       plugins: [],
@@ -33,6 +38,19 @@ export default {
     api_call(params).then(resp => {
       this.plugins = resp.data.sort();
     });
+  },
+  watch: {
+    reset: function(oldValue, newValue) {
+      if (newValue) {
+        this.clean();
+      }
+    }
+  },
+  methods: {
+    clean() {
+      this.plugin = "";
+      this.apikey = "";
+    }
   }
 };
 </script>
