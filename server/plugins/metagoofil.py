@@ -12,12 +12,16 @@ from server.plugins.plugin_base import finishing_task
 RESOURCE_TARGET = [ResourceType.DOMAIN]
 
 # Plugin Metadata {a decription, if target is actively reached and name}
-PLUGIN_DESCRIPTION = "Information gathering tool for extracting metadata of public documents"
+PLUGIN_DESCRIPTION = (
+    "Information gathering tool for extracting metadata of public documents"
+)
 PLUGIN_API_KEY = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "metagoofil"
 PLUGIN_AUTOSTART = False
 PLUGIN_DISABLE = False
+
+API_KEY = False
 
 
 class Plugin:
@@ -27,6 +31,7 @@ class Plugin:
     api_key = PLUGIN_API_KEY
     api_doc = ""
     autostart = PLUGIN_AUTOSTART
+    apikey_in_ddbb = bool(API_KEY)
 
     def __init__(self, resource, project_id):
         self.project_id = project_id
@@ -41,13 +46,14 @@ class Plugin:
                 "resource_id": self.resource.get_id_as_string(),
                 "project_id": self.project_id,
                 "resource_type": resource_type.value,
-                "plugin_name": Plugin.name
+                "plugin_name": Plugin.name,
             }
             metagoofil.delay(**to_task)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
+
 
 @celery_app.task
 def metagoofil(domain, plugin_name, project_id, resource_id, resource_type):
@@ -61,7 +67,9 @@ def metagoofil(domain, plugin_name, project_id, resource_id, resource_type):
             url = urlparse(x)
             filename = os.path.basename(url.path)
             extension = filename.split(".")[1]
-            files.append({'filename' : filename, "extension": extension.lower(), "url": x})
+            files.append(
+                {"filename": filename, "extension": extension.lower(), "url": x}
+            )
 
         finishing_task(plugin_name, project_id, resource_id, resource_type, files)
 
