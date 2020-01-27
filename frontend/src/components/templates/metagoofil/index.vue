@@ -2,7 +2,7 @@
   <v-flex class="text-xs-left">
     <v-divider></v-divider>
     <v-layout row wrap>
-      <v-flex v-for="item in resource" xs3>
+      <v-flex v-for="item in resource" :key="item" xs3>
         <v-card>
           <v-card-title class="justify-center" style="word-break: break-all">{{
             item.filename
