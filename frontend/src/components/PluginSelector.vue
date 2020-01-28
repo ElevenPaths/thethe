@@ -43,7 +43,7 @@
               sheet = false;
             "
           >
-            <v-list-tile-avatar class="pt-1">
+            <v-list-tile-avatar class="pt-2">
               <v-icon
                 v-if="plugin.is_active"
                 :color="avatar_color(plugin.last_update)"
@@ -53,7 +53,7 @@
                 info
               </v-icon>
             </v-list-tile-avatar>
-            <v-btn class="text-lowercase" block flat>
+            <v-btn class="text-lowercase" block large flat>
               <v-list-tile-content>
                 <v-list-tile-title class="subheading">{{
                   plugin.name
