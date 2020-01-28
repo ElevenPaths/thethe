@@ -43,7 +43,7 @@
               sheet = false;
             "
           >
-            <v-list-tile-avatar>
+            <v-list-tile-avatar class="pt-1">
               <v-icon
                 v-if="plugin.is_active"
                 :color="avatar_color(plugin.last_update)"
@@ -53,20 +53,24 @@
                 info
               </v-icon>
             </v-list-tile-avatar>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ plugin.name }}</v-list-tile-title>
-              <v-list-tile-sub-title>
-                <v-layout align-center>
-                  <v-flex lg8>{{ plugin.description }}</v-flex>
-                  <v-flex offset-lg1 v-if="plugin.last_update">
-                    <v-layout align-center>
-                      <span>Last update:&nbsp;</span>
-                      <span>{{ plugin.last_update }}</span>
-                    </v-layout>
-                  </v-flex>
-                </v-layout>
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
+            <v-btn class="text-lowercase" block flat>
+              <v-list-tile-content>
+                <v-list-tile-title class="subheading">{{
+                  plugin.name
+                }}</v-list-tile-title>
+                <v-list-tile-sub-title>
+                  <v-layout align-center>
+                    <v-flex lg8>{{ plugin.description }}</v-flex>
+                    <v-flex offset-lg1 v-if="plugin.last_update">
+                      <v-layout align-center>
+                        <span>Last update:&nbsp;</span>
+                        <span>{{ plugin.last_update }}</span>
+                      </v-layout>
+                    </v-flex>
+                  </v-layout>
+                </v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-btn>
           </v-layout>
         </v-list-tile>
         <v-divider></v-divider>
@@ -94,23 +98,23 @@ export default {
     };
   },
   mounted: function() {
-      this.get_related_plugins();
+    this.get_related_plugins();
   },
   methods: {
-      get_related_plugins: function() {
-    let params = {
-      url: "/api/get_related_plugins",
-      resource_id: this.resource._id,
-      resource_type: this.resource.resource_type,
-      project_id: this.$store.getters["get_opened_project"]._id
-    };
+    get_related_plugins: function() {
+      let params = {
+        url: "/api/get_related_plugins",
+        resource_id: this.resource._id,
+        resource_type: this.resource.resource_type,
+        project_id: this.$store.getters["get_opened_project"]._id
+      };
 
-    api_call(params)
-      .then(resp => {
-        this.plugin_list = resp.data;
-      })
-      .then(resp => this.update_pluginglist_dates());
-  },
+      api_call(params)
+        .then(resp => {
+          this.plugin_list = resp.data;
+        })
+        .then(resp => this.update_pluginglist_dates());
+    },
     launch: function(entry) {
       let params = {
         url: "/api/launch_plugin",
@@ -137,7 +141,6 @@ export default {
     },
 
     update_pluginglist_dates: function() {
-
       for (let plugin of this.plugin_list) {
         let match = this.resource.plugins.find(
           elem => elem.name.localeCompare(plugin.name) == 0
