@@ -7,11 +7,21 @@
       <v-text-field
         v-model="apikey"
         label="API KEY"
-        @keyup.enter="$emit('add', plugin, apikey); clean()"
+        @keyup.enter="
+          $emit('add', plugin, apikey);
+          clean();
+        "
       ></v-text-field>
     </v-flex>
     <v-flex xs1>
-      <v-btn icon @click="$emit('add', plugin, apikey);clean()">
+      <v-btn
+        icon
+        :disabled="empty"
+        @click="
+          $emit('add', plugin, apikey);
+          clean();
+        "
+      >
         <v-icon>done</v-icon>
       </v-btn>
     </v-flex>
@@ -29,6 +39,15 @@ export default {
       plugin: "",
       apikey: ""
     };
+  },
+  computed: {
+    empty: function() {
+      var result = true;
+      if (this.plugin != "" && this.apikey != "") {
+        result = false;
+      }
+      return result;
+    }
   },
   mounted: function() {
     let params = {
