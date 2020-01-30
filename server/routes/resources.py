@@ -68,7 +68,7 @@ def create_multiple_resources(user):
         return jsonify(response)
 
     except ResourceTypeException:
-        return jsonify({"error_message": "Trying to add an unkown resource type"}), 400
+        return jsonify({"error_message": "Trying to add an unknown resource type"}), 400
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
@@ -123,7 +123,7 @@ def create_resource(user):
         return jsonify(response)
 
     except ResourceTypeException:
-        return jsonify({"error_message": "Trying to add an unkown resource type"}), 400
+        return jsonify({"error_message": "Trying to add an unknown resource type"}), 400
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

@@ -103,7 +103,6 @@ const mutations = {
       }
 
       let resource = state[resource_list].find(el => el._id === resource_id);
-
       resource.plugins = resp_as_json.plugins;
       resource.tags = resp_as_json.tags;
     });
