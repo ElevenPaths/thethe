@@ -16,6 +16,66 @@ from server.entities.user import User
 resources_api = Blueprint("resources", __name__)
 
 
+@resources_api.route("/api/create_multiple_resources", methods=["POST"])
+@token_required
+def create_multiple_resources(user):
+    try:
+        project = User(user).get_active_project()
+        response = []
+
+        for entry in request.json["entries"]:
+            resource_name = entry["resource"]
+            resource_type = ResourceType.get_type_from_string(entry["type"].lower())
+            if resource_type == ResourceType.UNKNOWN:
+                print(
+                    f"[resources/create_multiple_resources]: Unknown resource type {entry['type'].lower()}"
+                )
+                continue
+
+            resource = Resources.get(resource_name, resource_type, get_by_name=True)
+            project.add_resource(resource)
+
+            response.append(
+                {
+                    "success_message": f"Added new resource: {resource_name}",
+                    "new_resource": resource.to_JSON(),
+                    "type": resource.get_type_value(),
+                }
+            )
+            resource.launch_plugins(project.get_id())
+
+            # Deal with the case of URL resources where we have the chance to add a Domain or IP
+            if resource.get_type() == ResourceType.URL:
+                ip_or_domain = urllib.parse.urlparse(resource_name).netloc
+                resource_type = ResourceType.validate_ip_or_domain(ip_or_domain)
+                if ip_or_domain:
+                    resource = Resources.get(
+                        ip_or_domain, resource_type, get_by_name=True
+                    )
+                    project.add_resource(resource)
+                    response.append(
+                        {
+                            "success_message": f"Added new resource: {ip_or_domain}",
+                            "new_resource": resource.to_JSON(),
+                            "type": resource.get_type_value(),
+                        }
+                    )
+                    resource.launch_plugins(project.get_id())
+
+            # TODO: Deal with the case of domain -> IP
+            # TODO: Deal with the case of emails -> domains -> IP
+
+        return jsonify(response)
+
+    except ResourceTypeException:
+        return jsonify({"error_message": "Trying to add an unkown resource type"}), 400
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+        return jsonify({"error_message": "Server error :("}), 400
+
+
 @resources_api.route("/api/create_resource", methods=["POST"])
 @token_required
 def create_resource(user):

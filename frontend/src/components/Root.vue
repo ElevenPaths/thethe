@@ -1,23 +1,46 @@
 <template>
   <v-app :dark="true">
-    <v-toolbar class="grey darken-3" dark flat dense>
+    <v-toolbar
+      class="grey darken-3"
+      dark
+      flat
+      dense
+    >
       <!-- <v-toolbar-title class="light-grey--text">TheehT</v-toolbar-title> -->
-      <img src="static/images/thethe_big.png" height="36" width="100" />
-      <v-spacer></v-spacer>
+      <img
+        src="static/images/thethe_big.png"
+        height="36"
+        width="100"
+      >
+      <v-spacer />
       <v-chip
+        v-if="is_project_opened"
         label
         color="primary"
-        v-if="is_project_opened"
         class="ma-2 title"
-      >{{ get_opened_project.name }}</v-chip>
-      <v-menu offset-y dark>
+      >
+        {{ get_opened_project.name }}
+      </v-chip>
+      <v-menu
+        offset-y
+        dark
+      >
         <template v-slot:activator="{ on }">
-          <v-avatar size="36" color="#666666" v-on="on">
-            <v-icon dark>mdi-account-circle-outline</v-icon>
+          <v-avatar
+            size="36"
+            color="#666666"
+            v-on="on"
+          >
+            <v-icon dark>
+              mdi-account-circle-outline
+            </v-icon>
           </v-avatar>
         </template>
         <v-list class="text-lg-left">
-          <v-list-tile @click="switch_project" v-if="is_project_opened">
+          <v-list-tile
+            v-if="is_project_opened"
+            @click="switch_project"
+          >
             <v-list-tile-avatar>
               <v-icon>eject</v-icon>
             </v-list-tile-avatar>
@@ -25,10 +48,16 @@
               <v-list-tile-title>Change project</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-          <v-divider></v-divider>
+          <v-divider />
 
-          <v-list-tile class="caption" @click.stop="show_apikeys_f(true)">
-            <api-keys :show="show_apikeys" @apikeys-closed="show_apikeys_f(false)"></api-keys>
+          <v-list-tile
+            class="caption"
+            @click.stop="show_apikeys_f(true)"
+          >
+            <api-keys
+              :show="show_apikeys"
+              @apikeys-closed="show_apikeys_f(false)"
+            />
 
             <v-list-tile-avatar>
               <v-icon>call</v-icon>
@@ -38,13 +67,16 @@
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-divider></v-divider>
+          <v-divider />
 
-          <v-list-tile class="caption" @click.stop="show_change_password_dialog(true)">
+          <v-list-tile
+            class="caption"
+            @click.stop="show_change_password_dialog(true)"
+          >
             <change-password-dialog
               :show="show_change_password"
               @change-password-closed="show_change_password_dialog(false)"
-            ></change-password-dialog>
+            />
 
             <v-list-tile-avatar>
               <v-icon>mdi-textbox-password</v-icon>
@@ -54,9 +86,12 @@
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-divider></v-divider>
+          <v-divider />
 
-          <v-list-tile @click="logout" class="caption">
+          <v-list-tile
+            class="caption"
+            @click="logout"
+          >
             <v-list-tile-avatar>
               <v-icon>logout</v-icon>
             </v-list-tile-avatar>
@@ -67,19 +102,27 @@
         </v-list>
       </v-menu>
     </v-toolbar>
-    <v-container fluid grid-list-lg pt-1 px-0>
+    <v-container
+      fluid
+      grid-list-lg
+      pt-1
+      px-0
+    >
       <div v-if="!is_project_opened">
-        <project-selector></project-selector>
+        <project-selector />
       </div>
       <v-flex v-else>
-        <v-tabs v-model="active" slider-color="red">
+        <v-tabs
+          v-model="active"
+          slider-color="red"
+        >
           <v-tab>NETWORK</v-tab>
           <v-tab>DOMAIN</v-tab>
           <v-tab>URL</v-tab>
           <v-tab>HASH</v-tab>
           <v-tab>EMAILS</v-tab>
           <v-tab>USERNAMES</v-tab>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-tab>FLOW</v-tab>
           <v-tab>ANALYSIS</v-tab>
           <v-tabs-items>
@@ -89,10 +132,12 @@
                   <resource-listing
                     :sortcriteria="sort_ip_addresses"
                     :headers="ip_table_headers"
-                    :resourceDescription="ip_resource_description"
+                    :resource-description="ip_resource_description"
                     :grid_space="3"
                   >
-                    <template v-slot:title>IP Address</template>
+                    <template v-slot:title>
+                      IP Address
+                    </template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
@@ -101,89 +146,123 @@
               <v-layout wrap>
                 <v-flex>
                   <resource-listing
-                    :resourceDescription="domain_resource_description"
+                    :resource-description="domain_resource_description"
                     :headers="domain_table_headers"
                     :grid_space="3"
                   >
-                    <template v-slot:title>Domains</template>
+                    <template v-slot:title>
+                      Domains
+                    </template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
             </v-tab-item>
             <v-tab-item>
-              <v-layout row wrap>
+              <v-layout
+                row
+                wrap
+              >
                 <v-flex>
                   <resource-listing
-                    :resourceDescription="url_resource_description"
+                    :resource-description="url_resource_description"
                     :headers="url_table_headers"
                     :grid_space="4"
                   >
-                    <template v-slot:title>URLs</template>
+                    <template v-slot:title>
+                      URLs
+                    </template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
             </v-tab-item>
             <v-tab-item>
-              <v-layout row wrap>
+              <v-layout
+                row
+                wrap
+              >
                 <v-flex>
                   <resource-listing
-                    :resourceDescription="hash_resource_description"
+                    :resource-description="hash_resource_description"
                     :headers="hash_table_headers"
                     :grid_space="3"
                   >
-                    <template v-slot:title>Hashes</template>
+                    <template v-slot:title>
+                      Hashes
+                    </template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
             </v-tab-item>
             <v-tab-item>
-              <v-layout row wrap>
+              <v-layout
+                row
+                wrap
+              >
                 <v-flex>
                   <resource-listing
-                    :resourceDescription="email_resource_description"
+                    :resource-description="email_resource_description"
                     :headers="email_table_headers"
                     :grid_space="3"
                   >
-                    <template v-slot:title>Emails</template>
+                    <template v-slot:title>
+                      Emails
+                    </template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
             </v-tab-item>
             <v-tab-item>
-              <v-layout row wrap>
+              <v-layout
+                row
+                wrap
+              >
                 <v-flex>
                   <resource-listing
-                    :resourceDescription="username_resource_description"
+                    :resource-description="username_resource_description"
                     :headers="username_table_headers"
                     :grid_space="3"
                   >
-                    <template v-slot:title>Usernames</template>
+                    <template v-slot:title>
+                      Usernames
+                    </template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
             </v-tab-item>
             <v-tab-item>
-              <v-layout row wrap pt-2>Flows</v-layout>
+              <v-layout
+                row
+                wrap
+                pt-2
+              >
+                Flows
+              </v-layout>
             </v-tab-item>
             <v-tab-item lazy>
-              <v-flex offset-lg1 lg10>
-                <simple-vis-network></simple-vis-network>
+              <v-flex
+                offset-lg1
+                lg10
+              >
+                <simple-vis-network />
               </v-flex>
             </v-tab-item>
           </v-tabs-items>
         </v-tabs>
       </v-flex>
-      <resource-input v-if="is_project_opened"></resource-input>
+      <multiple-resource-input v-if="is_project_opened" />
     </v-container>
-    <status-bar></status-bar>
-    <notifications position="bottom right" :ignoreDuplicates="true" />
+    <status-bar />
+    <notifications
+      position="bottom right"
+      :ignore-duplicates="true"
+    />
   </v-app>
 </template>
 
 <script>
 import ResourceListing from "./ResourceListing";
 import ProjectSelector from "./ProjectSelector";
-import ResourceInput from "./ResourceInput";
+import MultipleResourceInput from "./MultipleResourceInput";
 import SimpleVisNetwork from "./SimpleVisNetwork";
 import ApiKeys from "./ApiKeys";
 import ChangePasswordDialog from "./ChangePasswordDialog";
@@ -199,7 +278,7 @@ export default {
   components: {
     ResourceListing,
     ProjectSelector,
-    ResourceInput,
+    MultipleResourceInput,
     StatusBar,
     SimpleVisNetwork,
     ApiKeys,
