@@ -9,7 +9,7 @@
       <v-flex xs12>
         <v-card v-if="!validate">
           <v-card-title>
-            <span class="headline">Resources</span>
+            <span class="title">Resources</span>
           </v-card-title>
           <v-label v-if="preprocess_resources">{{ preprocess_resources.length }} resources in total</v-label>
           <v-divider />
@@ -22,7 +22,7 @@
                   box
                   rows="1"
                   class="body-1"
-                  auto-grow="true"
+                  :auto-grow="true"
                   label="Paste or enter resources"
                 />
                 <v-divider />
@@ -32,13 +32,10 @@
           </v-card-text>
         </v-card>
         <v-card v-else>
-          <v-card-title class="headline">Validated resources</v-card-title>
+          <v-card-title class="title">Validated resources</v-card-title>
           <v-divider></v-divider>
           <v-flex v-if="preprocess_resources">
-            <v-label>
-              Check heuristic detection. You can move back to fix any
-              entry or change its type later.
-            </v-label>
+            <v-label>You can change the type by pressing in it.</v-label>
             <v-divider></v-divider>
           </v-flex>
           <v-flex v-else headline>
@@ -50,7 +47,27 @@
                 <v-list-tile v-for="item in preprocess_resources" :key="item.resource">
                   <v-flex>
                     <v-list-tile-avatar>
-                      <v-chip :color="item.color" label class="font-weight-bold">{{ item.type }}</v-chip>
+                      <div class="text-xs-center">
+                        <v-menu offset-y>
+                          <template v-slot:activator="{ on }">
+                            <v-chip
+                              :color="item.color"
+                              label
+                              class="font-weight-bold"
+                              v-on="on"
+                            >{{ item.type }}</v-chip>
+                          </template>
+                          <v-list>
+                            <v-list-tile
+                              v-for="(type, index) in types"
+                              :key="index"
+                              @click="patch_type(item.resource, type)"
+                            >
+                              <v-list-tile-title>{{ type }}</v-list-tile-title>
+                            </v-list-tile>
+                          </v-list>
+                        </v-menu>
+                      </div>
                     </v-list-tile-avatar>
                   </v-flex>
                   <v-flex>
@@ -86,10 +103,11 @@ export default {
   name: "MultipleResourceInput",
   data() {
     return {
-      resource_list: null,
       resource_list_model: "",
       validate: false,
-      dialog: false
+      dialog: false,
+      user_type_patch_list: [],
+      types: ["ip", "email", "url", "domain", "hash", "username"]
     };
   },
   watch: {
@@ -97,7 +115,6 @@ export default {
       handler: function(old_value, new_value) {
         if (this.$refs.resource_form && !new_value) {
           this.$refs.resource_form.reset();
-          this.resource_list = [];
         }
         this.validate = false;
       }
@@ -106,11 +123,13 @@ export default {
   computed: {
     preprocess_resources() {
       if (!this.resource_list_model) return;
+
       let values = this.resource_list_model.trim().split("\n");
       let classified_resources = [];
 
       values.forEach(element => {
         let resource_type = this.classify(element);
+
         classified_resources.push({
           resource: element,
           type: resource_type.type,
@@ -122,13 +141,42 @@ export default {
     }
   },
   methods: {
+    colorize_type(type) {
+      switch (type) {
+        case "ip":
+          return "green";
+        case "email":
+          return "blue";
+        case "url":
+          return "orange";
+        case "domain":
+          return "green";
+        case "hash":
+          return "purple";
+        case "username":
+          return "red";
+        default:
+          return "black";
+      }
+    },
     classify(resource) {
+      // Listen to user type patching
+      let patched = null;
+      this.user_type_patch_list.forEach(elem => {
+        if (elem.resource === resource) {
+          patched = { type: elem.type, color: this.colorize_type(elem.type) };
+        }
+      });
+      if (patched) {
+        return patched;
+      }
+
       if (validator.isIP(resource, [4])) {
-        return { type: "ip", color: "green" };
+        return { type: "ip", color: this.colorize_type("ip") };
       }
 
       if (validator.isEmail(resource)) {
-        return { type: "email", color: "blue" };
+        return { type: "email", color: this.colorize_type("email") };
       }
 
       if (
@@ -138,11 +186,11 @@ export default {
           require_protocol: true
         })
       ) {
-        return { type: "url", color: "orange" };
+        return { type: "url", color: this.colorize_type("url") };
       }
 
       if (validator.isFQDN(resource)) {
-        return { type: "domain", color: "green" };
+        return { type: "domain", color: this.colorize_type("domain") };
       }
 
       if (
@@ -152,10 +200,11 @@ export default {
         validator.isHash(resource, "sha384") ||
         validator.isHash(resource, "sha512")
       ) {
-        return { type: "hash", color: "purple" };
+        return { type: "hash", color: this.colorize_type("hash") };
       }
 
-      // Default case, treat as a username
+      // Fallback case, treat as a username
+      //TODO: Be aware of the incomming 'string' type
       return { type: "username", color: "red" };
     },
     send() {
@@ -170,6 +219,17 @@ export default {
         };
         this.$store.dispatch("resource_action", payload);
       });
+    },
+    patch_type(resource, type) {
+      // Check if user already patched the type
+      this.user_type_patch_list.forEach(elem => {
+        if (elem.resource === resource) {
+          elem.type = type;
+          return;
+        }
+      });
+      // New patch from user
+      this.user_type_patch_list.push({ resource: resource, type: type });
     }
   }
 };
