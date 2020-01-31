@@ -240,5 +240,12 @@ export default {
   max-height: 500px;
   overflow-y: auto;
   overflow-x: hidden;
+
 }
+
+.v-btn--bottom:not(.v-btn--absolute) {
+  bottom: 50px;
+}
+
+
 </style>
