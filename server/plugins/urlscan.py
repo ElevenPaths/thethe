@@ -3,7 +3,7 @@ import json
 import time
 import requests
 
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 from tasks.api_keys import KeyRing
 from server.plugins.plugin_base import finishing_task

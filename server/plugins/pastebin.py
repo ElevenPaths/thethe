@@ -6,10 +6,10 @@ import requests
 
 from server.db import DB
 from server.entities.pastebin_manager import PastebinManager, Paste
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
 from server.plugins.plugin_base import finishing_task
 from tasks.api_keys import KeyRing
-from tasks.subtasks.googlesearch import restricted_googlesearch
+from tasks.googlesearch import restricted_googlesearch
 from tasks.tasks import celery_app
 
 

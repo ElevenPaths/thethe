@@ -2,7 +2,7 @@
 import json
 import traceback
 
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 import json
 import requests

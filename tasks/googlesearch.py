@@ -3,10 +3,7 @@ import pprint
 import requests
 
 from googleapiclient.discovery import build
-
-
 from tasks.api_keys import KeyRing
-
 
 API_KEY = KeyRing().get("googlesearch")
 

@@ -4,7 +4,6 @@ import time
 import bson
 
 from server.db import DB
-from server.entities.resource import Resources
 from server.entities.resource_types import ResourceType
 from server.entities.update_central import UpdateCentral
 
@@ -60,7 +59,7 @@ class Project:
 
     def add_resource(self, resource):
         data = {
-            "resource_id": resource.get_id(),
+            "resource_id": resource.resource_id,
             "resource_type": resource.get_type_value(),
         }
 

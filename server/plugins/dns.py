@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 import dns.resolver as resolver
 
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 from server.plugins.plugin_base import finishing_task
 
