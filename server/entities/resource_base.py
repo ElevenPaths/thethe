@@ -6,7 +6,7 @@ import urllib.parse
 
 
 from server.db import DB
-from server.plugins.plugins import Plugins
+from server.entities.plugins import Plugins
 from server.entities.update_central import UpdateCentral
 from server.entities.resource_types import ResourceType
 from server.entities.hash_types import HashType
@@ -56,7 +56,7 @@ def enrich_by_type(args):
 
     elif resource_type == ResourceType.HASH:
         args["hash"] = args["canonical_name"]
-        args["hash_type"] = HashType.hash_detection(args["hash"])
+        args["hash_type"] = HashType.hash_detection(args["hash"]).value
         # canonical_name == printable name in the view
         args["canonical_name"] = args["hash"][:8]
 
@@ -99,7 +99,7 @@ class Resource:
 
         args = enrich_by_type(args)
         result = Resource.collection().insert_one(args)
-
+        print(f"Creating new resource with {args}")
         return Resource(str(result.inserted_id))
 
     def __init__(self, resource_id):

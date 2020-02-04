@@ -9,7 +9,7 @@ from tasks.api_keys import KeyRing
 
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
-from server.plugins.plugin_base import finishing_task
+from server.entities.plugin_base import finishing_task
 
 MALTIVERSE_EMAIL = KeyRing().get("maltiverse_email")
 MALTIVERSE_PASS = KeyRing().get("maltiverse_pass")
