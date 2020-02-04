@@ -91,6 +91,16 @@ class Project:
         else:
             return []
 
+    def get_resources2(self):
+        result = self.db.collection.find_one(
+            {"_id": self.project_id,}, {"resource_refs": 1},
+        )
+
+        if result and "resource_refs" in result.keys():
+            return [item["resource_id"] for item in result["resource_refs"]]
+        else:
+            return []
+
     def get_updates(self, timestamp):
         return UpdateCentral().get_pending_updates(self.project_id, timestamp)
 

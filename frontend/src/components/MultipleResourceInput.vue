@@ -216,14 +216,10 @@ export default {
     send() {
       this.preprocess_resources.forEach(new_resource => {
         let payload = {
-          to_server: {
-            url: "/api/create_resource",
-            resource_name: new_resource.resource,
-            resource_type: new_resource.type
-          },
-          mutation: "add_resource"
+          resource_name: new_resource.resource,
+          resource_type: new_resource.type
         };
-        this.$store.dispatch("resource_action", payload);
+        this.$store.dispatch("add_new_resource", payload);
       });
     },
     patch_type(resource, type) {

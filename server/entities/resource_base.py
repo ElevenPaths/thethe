@@ -219,12 +219,15 @@ class Resource:
 
         def get_doc_if_reference(plugin_name, entry):
             if bson.ObjectId.is_valid(entry):
-                entry = self.get_collection().find_one({"_id": entry}, {"content": 0})
+                entry = DB(plugin_name + "s").collection.find_one(
+                    {"_id": entry}, {"content": 0}
+                )
             return entry
 
-        doc = self.get_collection().find_one({"_id": self.resource_id})
+        # doc = self.get_collection().find_one({"_id": self.resource_id})
         # HACK:  Curiously, this seens to work in order to eliminated the double "" JSON encoding
         #       when converting from ObjectId to String
+        doc = self.resource
 
         for plugin in doc["plugins"]:
             if "results" in plugin and isinstance(plugin["results"], list):

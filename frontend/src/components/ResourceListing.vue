@@ -90,13 +90,7 @@
             <v-flex>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn
-                    icon
-                    flat
-                    color="grey"
-                    v-on="on"
-                    @click.stop="copy_resource_list"
-                  >
+                  <v-btn icon flat color="grey" v-on="on" @click.stop="copy_resource_list">
                     <v-icon>mdi-content-copy</v-icon>
                   </v-btn>
                 </template>
@@ -116,12 +110,12 @@
               :class="{ selected: selected_resource._id === item._id }"
             >
               <v-list-tile-content>
-                <v-list-tile-title
-                  v-text="item.canonical_name"
-                ></v-list-tile-title>
-                <v-list-tile-sub-title v-if="headers.length > 1">{{
+                <v-list-tile-title v-text="item.canonical_name"></v-list-tile-title>
+                <v-list-tile-sub-title v-if="headers.length > 1">
+                  {{
                   item[headers[1].value]
-                }}</v-list-tile-sub-title>
+                  }}
+                </v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
           </v-list>
@@ -144,7 +138,7 @@
         <v-layout justify-center align-center row wrap>
           <v-flex pt-5>
             <v-spacer>
-              <div class="headline white--text">No resources yet.</div>
+              <div class="headline white--text">No resources yet</div>
             </v-spacer>
           </v-flex>
         </v-layout>
@@ -154,7 +148,6 @@
       v-if="a_resource_is_selected"
       :resource="selected_resource"
       :grid_space="grid_space"
-      :resource_list="resourceDescription.resource_list"
       :key="component_key"
     ></resource-detail>
     <v-flex v-if="!a_resource_is_selected && resource_list.length > 0">
@@ -189,7 +182,7 @@ export default {
         return 0;
       }
     },
-    resourceDescription: Object,
+    resourceType: String,
     headers: Array,
     grid_space: Number
   },
@@ -205,10 +198,7 @@ export default {
   },
   computed: {
     resource_list: function() {
-      let resources = this.$store.getters.get_resources(
-        this.resourceDescription.resource_list
-      );
-
+      let resources = this.$store.getters.get_resources(this.resourceType);
       this.resource_count = resources.length;
 
       resources = resources.sort(this.sortcriteria);
@@ -236,22 +226,6 @@ export default {
     }
   },
   methods: {
-    get_resource_list: function() {
-      let payload = {
-        to_server: {
-          url: "/api/get_resources",
-          type: this.resourceDescription.type,
-          fields: this.resourceDescription.fields
-        },
-        mutation: "set_resource_list",
-        mutation_args: {
-          list_name: this.resourceDescription.resource_list,
-          list_values: []
-        }
-      };
-      this.$store.dispatch("resource_action", payload);
-    },
-
     copy_resource_to_json: async function() {
       await navigator.clipboard.writeText(
         JSON.stringify(this.selected_resource, null, 2)
@@ -290,16 +264,10 @@ export default {
     remove_resource_with_confirmation: function() {
       this.remove_resource = false;
       let payload = {
-        to_server: {
-          url: "/api/unlink_resource",
-          resource_id: this.selected_resource._id
-        },
-        mutation: "remove_resource",
-        mutation_args: {
-          list_name: this.resourceDescription.resource_list
-        }
+        resource_id: this.selected_resource._id
       };
-      this.$store.dispatch("resource_action", payload);
+
+      this.$store.dispatch("remove_resource", payload);
       this.selected_resource = {};
     },
 
@@ -309,8 +277,7 @@ export default {
 
     tag_shake: function() {
       let payload = {
-        resource_id: this.selected_resource._id,
-        resource_type: this.selected_resource.resource_type
+        resource_id: this.selected_resource._id
       };
       this.$store.dispatch("update_resource", payload);
     },
@@ -320,9 +287,6 @@ export default {
     rerender_component: function() {
       this.component_key += 1;
     }
-  },
-  mounted() {
-    this.get_resource_list();
   }
 };
 </script>

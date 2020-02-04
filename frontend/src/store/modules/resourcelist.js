@@ -6,15 +6,46 @@ import api_call from "../../utils/api";
 Vue.use(Vuex);
 
 const state = {
-  iplist: [],
-  domainlist: [],
-  emaillist: [],
-  hashlist: [],
-  urllist: [],
-  usernamelist: []
+  resources: []
 };
 
 const actions = {
+  get_resources: async function({ commit, getters }) {
+    let url = "/api/get_resources2";
+    let project_id = getters.get_opened_project._id;
+
+    await api_call({ url: url, project_id: project_id })
+      .then(resp => {
+        commit("set_resources", resp.data);
+      })
+      .catch(err => console.log(err));
+  },
+
+  add_new_resource: async function({ commit }, payload) {
+    let url = "/api/create_resource";
+    await api_call({
+      url: url,
+      resource_name: payload.resource_name,
+      resource_type: payload.resource_type
+    })
+      .then(resp => {
+        commit("set_resources", resp.data);
+      })
+      .catch(err => console.log(err));
+  },
+
+  remove_resource: async function({ commit }, payload) {
+    let url = "/api/unlink_resource";
+    await api_call({
+      url: url,
+      resource_id: payload.resource_id
+    })
+      .then(_ => {
+        commit("unlink_resource", payload.resource_id);
+      })
+      .catch(err => console.log(err));
+  },
+
   resource_action: async function({ commit }, payload) {
     await api_call({ ...payload.to_server }).then(resp => {
       payload.server_response = resp.data;
@@ -46,50 +77,31 @@ const actions = {
 };
 
 const mutations = {
-  reset_resource_lists: function() {
-    Object.keys(state).forEach(el => (state[el] = []));
-  },
-
-  set_resource_list: function(commit, payload) {
-    let resources = [];
-    payload.server_response.forEach(resource => {
-      resources.push(resource);
-    });
-    state[payload.mutation_args.list_name] = resources;
-  },
-
-  remove_resource: function(commit, payload) {
-    let resource_list = payload.mutation_args.list_name;
-
-    state[resource_list] = state[resource_list].filter(
-      el => el._id !== payload.to_server.resource_id
-    );
-  },
-
-  add_resource: function(commit, payload) {
-    payload.server_response.forEach(resource => {
-      let list_name = resource.type + "list";
-      let new_resource = resource.new_resource;
-      let resource_list = state[list_name];
-      if (resource_list.some(el => el._id === new_resource._id)) {
+  set_resources: function(commit, resources) {
+    resources.forEach(resource => {
+      if (state.resources.some(el => el._id === resource._id)) {
         return;
+      } else {
+        state.resources.push(resource);
       }
-      resource_list.push(new_resource);
     });
+  },
 
-    return payload.server_response;
+  reset_resource_lists: function() {
+    state.resources = [];
+  },
+
+  unlink_resource: function(commit, resource_id) {
+    state.resources = state.resources.filter(el => el._id !== resource_id);
   },
 
   add_update: async function(commit, update) {
     let url = "/api/get_resource";
     let resource_id = update.resource_id;
-    let resource_type = update.resource_type;
-    let resource_list = resource_type + "list";
 
     await api_call({
       url: url,
-      resource_id: resource_id,
-      resource_type: resource_type
+      resource_id: resource_id
     }).then(resp => {
       let resp_as_json = null;
       try {
@@ -102,7 +114,7 @@ const mutations = {
         resp_as_json = resp.data;
       }
 
-      let resource = state[resource_list].find(el => el._id === resource_id);
+      let resource = state.resources.find(el => el._id === resource_id);
       resource.plugins = resp_as_json.plugins;
       resource.tags = resp_as_json.tags;
     });
@@ -111,7 +123,9 @@ const mutations = {
 
 const getters = {
   // reusable data accessors
-  get_resources: state => resource_list => state[resource_list]
+  get_resources: state => resource_type => {
+    return state.resources.filter(elem => elem.resource_type === resource_type);
+  }
 };
 
 export default {

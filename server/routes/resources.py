@@ -13,6 +13,7 @@ from server.entities.resource_manager import ResourceManager
 
 from server.entities.resource_types import ResourceType, ResourceTypeException
 from server.entities.user import User
+from server.entities.project import Project
 
 resources_api = Blueprint("resources", __name__)
 
@@ -32,13 +33,7 @@ def create_resource(user):
         project.add_resource(resource)
 
         response = []
-        response.append(
-            {
-                "success_message": f"Added new resource: {resource_name}",
-                "new_resource": resource.to_JSON(),
-                "type": resource.get_type_value(),
-            }
-        )
+        response.append(resource.to_JSON())
 
         if created:
             resource.launch_plugins(project.get_id())
@@ -74,6 +69,40 @@ def create_resource(user):
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         return jsonify({"error_message": "Server error :("}), 400
+
+
+@resources_api.route("/api/get_resources2", methods=["POST"])
+@token_required
+def get_resources2(user):
+    try:
+        project_id = request.json["project_id"]
+        user_projects = [str(project) for project in User(user).get_projects()]
+
+        # User unable to load the project
+        if not project_id in user_projects:
+            return (
+                jsonify(
+                    {
+                        "error_message": f"User is not allowed to load project {project_id}"
+                    }
+                ),
+                400,
+            )
+
+        project = Project(project_id)
+        resources = project.get_resources2()
+
+        results = []
+        for resource in resources:
+            results.append(ResourceManager.get(resource).to_JSON())
+
+        return jsonify(results)
+
+    except Exception as e:
+        print(f"Error getting resource list {e}")
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+        return jsonify({"error_message": "Error getting resources"}), 400
 
 
 @resources_api.route("/api/get_resources", methods=["POST"])
