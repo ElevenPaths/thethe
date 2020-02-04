@@ -128,6 +128,9 @@ export default {
         .trim()
         .split("\n")
         .filter(elem => elem.length > 0);
+
+      values = [...new Set(values)];
+
       let classified_resources = [];
 
       values.forEach(element => {
