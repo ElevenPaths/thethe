@@ -89,7 +89,7 @@
                   <resource-listing
                     :sortcriteria="sort_ip_addresses"
                     :headers="ip_table_headers"
-                    :resource-description="ip_resource_description"
+                    resource-type="ip"
                     :grid_space="3"
                   >
                     <template v-slot:title>IP Address</template>
@@ -101,7 +101,7 @@
               <v-layout wrap>
                 <v-flex>
                   <resource-listing
-                    :resource-description="domain_resource_description"
+                    resource-type="domain"
                     :headers="domain_table_headers"
                     :grid_space="3"
                   >
@@ -114,7 +114,7 @@
               <v-layout row wrap>
                 <v-flex>
                   <resource-listing
-                    :resource-description="url_resource_description"
+                    resource-type="url"
                     :headers="url_table_headers"
                     :grid_space="4"
                   >
@@ -127,7 +127,7 @@
               <v-layout row wrap>
                 <v-flex>
                   <resource-listing
-                    :resource-description="hash_resource_description"
+                    resource-type="hash"
                     :headers="hash_table_headers"
                     :grid_space="3"
                   >
@@ -140,7 +140,7 @@
               <v-layout row wrap>
                 <v-flex>
                   <resource-listing
-                    :resource-description="email_resource_description"
+                    resource-type="email"
                     :headers="email_table_headers"
                     :grid_space="3"
                   >
@@ -153,7 +153,7 @@
               <v-layout row wrap>
                 <v-flex>
                   <resource-listing
-                    :resource-description="username_resource_description"
+                    resource-type="username"
                     :headers="username_table_headers"
                     :grid_space="3"
                   >
@@ -212,30 +212,7 @@ export default {
       show_apikeys: false,
       show_change_password: false,
       update_interval: null,
-      hash_resource_description: {
-        type: "hash",
-        resource_list: "hashlist"
-      },
-      ip_resource_description: {
-        type: "ip",
-        resource_list: "iplist"
-      },
-      domain_resource_description: {
-        type: "domain",
-        resource_list: "domainlist"
-      },
-      email_resource_description: {
-        type: "email",
-        resource_list: "emaillist"
-      },
-      username_resource_description: {
-        type: "username",
-        resource_list: "usernamelist"
-      },
-      url_resource_description: {
-        type: "url",
-        resource_list: "urllist"
-      },
+
       ip_table_headers: [
         {
           text: "IP",
@@ -308,7 +285,11 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["get_opened_project", "is_project_opened", "auth_status"]),
+    ...mapGetters([
+      "get_opened_project",
+      "is_project_opened",
+      "is_authenticated"
+    ]),
     username: function() {
       return this.$store.getters["username"];
     }
@@ -317,7 +298,7 @@ export default {
   mounted: function() {
     let self = this;
     this.update_interval = setInterval(function() {
-      if (self.auth_status === "success") {
+      if (self.is_authenticated) {
         self.$store.dispatch("update").catch();
       }
     }, 10000);
