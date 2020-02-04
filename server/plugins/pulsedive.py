@@ -8,7 +8,7 @@ import requests, base64
 
 from tasks.api_keys import KeyRing
 
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 
 API_KEY = KeyRing().get("pulsedive")

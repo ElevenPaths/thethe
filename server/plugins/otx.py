@@ -19,7 +19,7 @@ URL_IPv4 = "https://otx.alienvault.com/api/v1/indicators/IPv4/{ip}/{section}"
 URL_IPv6 = "https://otx.alienvault.com/api/v1/indicators/IPv6/{ip}/{section}"
 
 
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 
 
