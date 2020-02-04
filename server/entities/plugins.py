@@ -6,7 +6,7 @@ from server.entities.resource_types import ResourceType
 
 PLUGIN_DIRECTORY = "server/plugins/"
 PLUGIN_HIERARCHY = "server.plugins"
-EXCLUDE_SET = ["plugins.py", "__init__.py", "plugin_base.py", "TEMPLATE.py"]
+EXCLUDE_SET = ["__init__.py", "TEMPLATE.py"]
 
 
 def _load_plugins(resource_type, name=None):

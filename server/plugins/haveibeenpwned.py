@@ -6,7 +6,7 @@ import json
 import requests
 
 from tasks.api_keys import KeyRing
-from server.plugins.plugin_base import finishing_task
+from server.entities.plugin_base import finishing_task
 
 API_KEY = KeyRing().get("haveibeenpwned")
 URL = "https://haveibeenpwned.com/api/v3/{service}/{account}"

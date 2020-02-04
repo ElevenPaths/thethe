@@ -6,7 +6,7 @@ import requests
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 from tasks.api_keys import KeyRing
-from server.plugins.plugin_base import finishing_task
+from server.entities.plugin_base import finishing_task
 
 API_KEY = KeyRing().get("urlscan")
 SUBMISSION_URL = "https://urlscan.io/api/v1/scan/"

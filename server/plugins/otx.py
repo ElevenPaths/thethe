@@ -5,6 +5,8 @@ import traceback
 import json
 import requests, base64
 
+from server.entities.resource_manager import ResourceManager
+
 from tasks.api_keys import KeyRing
 
 # https://otx.alienvault.com/api/v1/indicators/file/6c5360d41bd2b14b1565f5b18e5c203cf512e493/analysis
@@ -236,7 +238,7 @@ def otx_task(plugin_name, project_id, resource_id, resource_type, target):
         else:
             print("OTX resource type does not found")
 
-        resource = Resources.get(resource_id, resource_type)
+        resource = ResourceManager.get(resource_id)
         resource.set_plugin_results(
             plugin_name, project_id, resource_id, resource_type, query_result
         )

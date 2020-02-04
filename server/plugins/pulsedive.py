@@ -7,7 +7,7 @@ import json
 import requests, base64
 
 from tasks.api_keys import KeyRing
-
+from server.entities.resource_manager import ResourceManager
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 
@@ -125,9 +125,7 @@ def pulsedive_getreport(qid):
 
 
 @celery_app.task
-def pulsedive_task(
-    plugin_name, project_id, resource_id, resource_type, domain_or_hash
-):
+def pulsedive_task(plugin_name, project_id, resource_id, resource_type, domain_or_hash):
     try:
         resource_type = ResourceType(resource_type)
         if resource_type == ResourceType.DOMAIN or resource_type == ResourceType.HASH:
@@ -135,7 +133,7 @@ def pulsedive_task(
         else:
             print("PulseDive resource type does not found")
 
-        resource = Resources.get(resource_id, resource_type)
+        resource = ResourceManager.get(resource_id, resource_type)
         resource.set_plugin_results(
             plugin_name, project_id, resource_id, resource_type, query_result
         )

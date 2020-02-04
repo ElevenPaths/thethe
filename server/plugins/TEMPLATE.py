@@ -12,7 +12,7 @@ API_KEY = KeyRing().get("YOUR_PLUGIN_NAME")
 
 # [DONOTDELETE] - Internal usage dependencies
 from server.entities.resource_types import ResourceType
-from server.plugins.plugin_base import finishing_task
+from server.entities.plugin_base import finishing_task
 from tasks.tasks import celery_app
 
 

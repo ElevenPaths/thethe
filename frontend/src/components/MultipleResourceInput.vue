@@ -124,7 +124,10 @@ export default {
     preprocess_resources() {
       if (!this.resource_list_model) return;
 
-      let values = this.resource_list_model.trim().split("\n");
+      let values = this.resource_list_model
+        .trim()
+        .split("\n")
+        .filter(elem => elem.length > 0);
       let classified_resources = [];
 
       values.forEach(element => {
@@ -240,12 +243,9 @@ export default {
   max-height: 500px;
   overflow-y: auto;
   overflow-x: hidden;
-
 }
 
 .v-btn--bottom:not(.v-btn--absolute) {
   bottom: 50px;
 }
-
-
 </style>

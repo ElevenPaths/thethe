@@ -7,7 +7,7 @@ from ipwhois import IPWhois
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 from dns import resolver, reversename
-from server.plugins.plugin_base import finishing_task
+from server.entities.plugin_base import finishing_task
 
 
 # Which resources are this plugin able to work with

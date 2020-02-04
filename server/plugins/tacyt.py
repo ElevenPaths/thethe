@@ -4,7 +4,7 @@ from tasks.tasks import celery_app
 
 from tasks.deps.tacyt import TacytApp as tacytsdk
 from tasks.api_keys import KeyRing
-from server.plugins.plugin_base import finishing_task
+from server.entities.plugin_base import finishing_task
 
 APP_ID = KeyRing().get("tacyt-appid")
 SECRET_KEY = KeyRing().get("tacyt-secret")

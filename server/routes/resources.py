@@ -48,7 +48,9 @@ def create_resource(user):
             ip_or_domain = urllib.parse.urlparse(resource_name).netloc
             resource_type = ResourceType.validate_ip_or_domain(ip_or_domain)
             if ip_or_domain:
-                resource, created = Resources.get_or_create(ip_or_domain, resource_type)
+                resource, created = ResourceManager.get_or_create(
+                    ip_or_domain, resource_type
+                )
                 project.add_resource(resource)
                 response.append(
                     {
