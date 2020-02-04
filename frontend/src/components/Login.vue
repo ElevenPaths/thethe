@@ -78,6 +78,12 @@ export default {
   },
   computed: {
     ...mapGetters({ auth_status: "auth_status" })
+  },
+
+  beforeMount: function() {
+    if (this.$store.getters["is_authenticated"]) {
+      this.$router.push("/");
+    }
   }
 };
 </script>
