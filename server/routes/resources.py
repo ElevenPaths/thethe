@@ -71,9 +71,9 @@ def create_resource(user):
         return jsonify({"error_message": "Server error :("}), 400
 
 
-@resources_api.route("/api/get_resources2", methods=["POST"])
+@resources_api.route("/api/get_resources", methods=["POST"])
 @token_required
-def get_resources2(user):
+def get_resources(user):
     try:
         project_id = request.json["project_id"]
         user_projects = [str(project) for project in User(user).get_projects()]
@@ -90,43 +90,13 @@ def get_resources2(user):
             )
 
         project = Project(project_id)
-        resources = project.get_resources2()
+        resources = project.get_resources()
 
         results = []
         for resource in resources:
             results.append(ResourceManager.get(resource).to_JSON())
 
         return jsonify(results)
-
-    except Exception as e:
-        print(f"Error getting resource list {e}")
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))
-        return jsonify({"error_message": "Error getting resources"}), 400
-
-
-@resources_api.route("/api/get_resources", methods=["POST"])
-@token_required
-def get_resources(user):
-    resource_type_as_string = request.json["type"]
-
-    try:
-        resource_type = ResourceType(resource_type_as_string)
-
-        project = User(user).get_active_project()
-        resources = project.get_resources(resource_type)
-
-        results = []
-        for resource in resources:
-            results.append(ResourceManager.get(resource).to_JSON())
-
-        return jsonify(results)
-
-    except ValueError:
-        raise ResourceTypeException()
-
-    except ResourceTypeException:
-        return jsonify({"error_message": "Received an unknown type of resource"}), 400
 
     except Exception as e:
         print(f"Error getting resource list {e}")
