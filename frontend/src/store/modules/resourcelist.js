@@ -11,7 +11,7 @@ const state = {
 
 const actions = {
   get_resources: async function({ commit, getters }) {
-    let url = "/api/get_resources2";
+    let url = "/api/get_resources";
     let project_id = getters.get_opened_project._id;
 
     await api_call({ url: url, project_id: project_id })
