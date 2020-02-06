@@ -73,6 +73,10 @@ const actions = {
 
   update_resource: async function({ commit }, payload) {
     commit("add_update", payload);
+  },
+
+  loading({ commit }, payload) {
+    commit("loading", payload);
   }
 };
 
@@ -118,6 +122,19 @@ const mutations = {
       resource.plugins = resp_as_json.plugins;
       resource.tags = resp_as_json.tags;
     });
+  },
+
+  loading: function(state, payload) {
+    let resource = state.resources.find(el => el._id === payload._id);
+    let plugin = resource.plugins.find(el => el.name === payload.plugin);
+    if (plugin) {
+      plugin.results = "loading";
+    } else {
+      resource.plugins.push({
+        name: payload.plugin,
+        results: "loading"
+      });
+    }
   }
 };
 

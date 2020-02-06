@@ -9,7 +9,9 @@
         label
         color="primary"
         class="ma-2 title"
-      >{{ get_opened_project.name }}</v-chip>
+        >{{ get_opened_project.name }}</v-chip
+      >
+      <tasks v-if="loadingResources"></tasks>
       <v-menu offset-y dark>
         <template v-slot:activator="{ on }">
           <v-avatar size="36" color="#666666" v-on="on">
@@ -28,7 +30,10 @@
           <v-divider />
 
           <v-list-tile class="caption" @click.stop="show_apikeys_f(true)">
-            <api-keys :show="show_apikeys" @apikeys-closed="show_apikeys_f(false)" />
+            <api-keys
+              :show="show_apikeys"
+              @apikeys-closed="show_apikeys_f(false)"
+            />
 
             <v-list-tile-avatar>
               <v-icon>call</v-icon>
@@ -40,7 +45,10 @@
 
           <v-divider />
 
-          <v-list-tile class="caption" @click.stop="show_change_password_dialog(true)">
+          <v-list-tile
+            class="caption"
+            @click.stop="show_change_password_dialog(true)"
+          >
             <change-password-dialog
               :show="show_change_password"
               @change-password-closed="show_change_password_dialog(false)"
@@ -187,7 +195,7 @@ import MultipleResourceInput from "./MultipleResourceInput";
 import SimpleVisNetwork from "./SimpleVisNetwork";
 import ApiKeys from "./ApiKeys";
 import ChangePasswordDialog from "./ChangePasswordDialog";
-
+import Tasks from "./Tasks";
 import StatusBar from "./StatusBar";
 
 import { AUTH_LOGOUT } from "../store/actions/auth";
@@ -203,6 +211,7 @@ export default {
     StatusBar,
     SimpleVisNetwork,
     ApiKeys,
+    Tasks,
     ChangePasswordDialog
   },
 
@@ -292,6 +301,9 @@ export default {
     ]),
     username: function() {
       return this.$store.getters["username"];
+    },
+    loadingResources() {
+      return this.$store.getters.loadingResources;
     }
   },
 

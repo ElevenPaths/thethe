@@ -1,5 +1,12 @@
 <template>
-  <component :is="component" :plugin_data="data" v-if="component" />
+  <v-layout row pt-2 wrap class="subheading">
+    <v-flex v-if="data.results === 'loading'">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+    </v-flex>
+    <v-flex v-else>
+      <component :is="component" :plugin_data="data" v-if="component" />
+    </v-flex>
+  </v-layout>
 </template>
 <script>
 export default {
