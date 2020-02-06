@@ -37,12 +37,7 @@
               </v-icon>
             </v-btn>
           </v-list-tile-avatar>
-          <v-layout
-            @click="
-              launch(plugin);
-              sheet = false;
-            "
-          >
+          <v-layout>
             <v-list-tile-avatar class="pt-2">
               <v-icon
                 v-if="plugin.is_active"
@@ -53,7 +48,16 @@
                 info
               </v-icon>
             </v-list-tile-avatar>
-            <v-btn class="text-lowercase" block large flat>
+            <v-btn
+              class="text-lowercase"
+              block
+              large
+              flat
+              @click="
+                launch(plugin);
+                sheet = false;
+              "
+            >
               <v-list-tile-content>
                 <v-list-tile-title class="subheading">{{
                   plugin.name
@@ -115,6 +119,13 @@ export default {
         })
         .then(resp => this.update_pluginglist_dates());
     },
+    loading: function(plugin) {
+      this.$store.dispatch("loading", {
+        _id: this.resource._id,
+        resourceType: this.resource.resource_type,
+        plugin: plugin
+      });
+    },
     launch: function(entry) {
       let params = {
         url: "/api/launch_plugin",
@@ -123,7 +134,7 @@ export default {
         plugin_name: entry.name
       };
 
-      // TODO: Signal plugin launching
+      this.loading(entry.name);
       api_call(params);
     },
 
