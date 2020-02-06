@@ -6,7 +6,8 @@ import api_call from "../../utils/api";
 Vue.use(Vuex);
 
 const state = {
-  resources: []
+  resources: [],
+  running: []
 };
 
 const actions = {

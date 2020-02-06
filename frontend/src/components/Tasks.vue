@@ -4,6 +4,8 @@
       <template v-slot:activator>
         <v-btn flat icon dark>
           <v-progress-circular
+            :size="20"
+            :width="2"
             indeterminate
             color="primary"
           ></v-progress-circular>
