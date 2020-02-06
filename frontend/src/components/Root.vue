@@ -11,7 +11,7 @@
         class="ma-2 title"
         >{{ get_opened_project.name }}</v-chip
       >
-      <tasks v-if="loadingResources"></tasks>
+      <tasks v-if="loadingResources.length > 0"></tasks>
       <v-menu offset-y dark>
         <template v-slot:activator="{ on }">
           <v-avatar size="36" color="#666666" v-on="on">

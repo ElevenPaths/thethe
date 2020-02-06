@@ -142,6 +142,11 @@ const getters = {
   // reusable data accessors
   get_resources: state => resource_type => {
     return state.resources.filter(elem => elem.resource_type === resource_type);
+  },
+  loadingResources: state => {
+    return state.resources.filter(plugins =>
+      plugins.plugins.some(results => results.results === "loading")
+    );
   }
 };
 

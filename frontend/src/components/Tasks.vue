@@ -11,13 +11,11 @@
       </template>
       <v-list>
         <v-subheader>Remaining tasks...</v-subheader>
-        <!-- <h3>No remaining tasks now!</h3> -->
-        <v-list-tile
-          v-for="tile in tiles"
-          :key="tile.title"
-          @click="sheet = false"
-        >
-          <v-list-tile-title>{{ tile.title }}</v-list-tile-title>
+        <v-list-tile v-for="resource in loadingResources" :key="resource._id">
+          <v-list-tile-title
+            >Type: {{ resource.resource_type }} Name:
+            {{ resource.canonical_name }}</v-list-tile-title
+          >
         </v-list-tile>
       </v-list>
     </v-bottom-sheet>
@@ -27,14 +25,12 @@
 <script>
 export default {
   data: () => ({
-    sheet: false,
-    tiles: [
-      { img: "keep.png", title: "Keep" },
-      { img: "inbox.png", title: "Inbox" },
-      { img: "hangouts.png", title: "Hangouts" },
-      { img: "messenger.png", title: "Messenger" },
-      { img: "google.png", title: "Google+" }
-    ]
-  })
+    sheet: false
+  }),
+  computed: {
+    loadingResources() {
+      return this.$store.getters.loadingResources;
+    }
+  }
 };
 </script>
