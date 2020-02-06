@@ -55,6 +55,11 @@ class Plugin:
 
 def onyphe_threatlist(ip):
     try:
+        API_KEY = KeyRing().get("onyphe")
+        if not API_KEY:
+            print("No API key...!")
+            return None
+
         URL = f"https://www.onyphe.io/api/threatlist/{ip}?apikey={API_KEY}"
         response = urllib.request.urlopen(URL).read()
         response = json.loads(response)
@@ -76,6 +81,11 @@ def onyphe_threatlist(ip):
 
 def onyphe_synscan(ip):
     try:
+        API_KEY = KeyRing().get("onyphe")
+        if not API_KEY:
+            print("No API key...!")
+            return None
+
         URL = f"https://www.onyphe.io/api/synscan/{ip}?apikey={API_KEY}"
         response = urllib.request.urlopen(URL).read()
         return response

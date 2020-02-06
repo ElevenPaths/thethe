@@ -109,6 +109,7 @@ def get_key_from_paste_key(item):
 
 def pastebin_get_results(results):
     try:
+        API_KEY = KeyRing().get("pastebin")
         if not API_KEY:
             raise Exception("No API_KEY for pastebin")
 

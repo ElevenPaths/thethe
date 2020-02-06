@@ -66,6 +66,7 @@ class Plugin:
 @celery_app.task
 def vt_domain(plugin_name, project_id, resource_id, resource_type, target):
     try:
+        API_KEY = KeyRing().get("virustotal")
         if not API_KEY:
             print("No API key...!")
             return None

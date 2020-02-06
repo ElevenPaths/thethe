@@ -126,6 +126,12 @@ __OUT_FIELDS = [
 def tacyt(plugin_name, project_id, resource_id, resource_type, apk_hash):
     application = None
     try:
+        APP_ID = KeyRing().get("tacyt-appid")
+        SECRET_KEY = KeyRing().get("tacyt-secret")
+
+        if not APP_ID or not SECRET_KEY:
+            print("APP_ID o SECRET_KEY in database")
+
         api = tacytsdk.TacytApp(APP_ID, SECRET_KEY)
         search = api.search_apps(query=apk_hash, outfields=__OUT_FIELDS)
 

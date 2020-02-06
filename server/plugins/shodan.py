@@ -56,9 +56,13 @@ class Plugin:
 @celery_app.task
 def shodan(plugin_name, project_id, resource_id, resource_type, ip):
     try:
+        API_KEY = KeyRing().get("shodan")
+
         if not API_KEY:
             print("No API key...!")
             return None
+
+        URL = "https://api.shodan.io/shodan/host/{ip}?key={API_KEY}"
 
         response = {}
         ipinfo = requests.get(URL.format(**{"ip": ip, "API_KEY": API_KEY}))

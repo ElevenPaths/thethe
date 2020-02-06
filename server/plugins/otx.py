@@ -74,6 +74,7 @@ class Plugin:
 
 def otx_iocs_file(file_hash, section):
     try:
+        API_KEY = KeyRing().get("otx")
         if not API_KEY:
             print("No API key...!")
             return None
@@ -105,6 +106,7 @@ def otx_iocs_file(file_hash, section):
 
 def otx_iocs_url(url, section):
     try:
+        API_KEY = KeyRing().get("otx")
         if not API_KEY:
             print("No API key...!")
             return None
@@ -134,6 +136,7 @@ def otx_iocs_url(url, section):
 
 def otx_iocs_hostname(hostname, section):
     try:
+        API_KEY = KeyRing().get("otx")
         if not API_KEY:
             print("No API key...!")
             return None
@@ -164,6 +167,7 @@ def otx_iocs_hostname(hostname, section):
 
 def otx_iocs_ipv4(ip, section):
     try:
+        API_KEY = KeyRing().get("otx")
         if not API_KEY:
             print("No API key...!")
             return None
@@ -193,6 +197,7 @@ def otx_iocs_ipv4(ip, section):
 
 def otx_iocs_ipv6(ip, section):
     try:
+        API_KEY = KeyRing().get("otx")
         if not API_KEY:
             print("No API key...!")
             return None

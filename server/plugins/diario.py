@@ -62,10 +62,12 @@ class Plugin:
 def old_diario(document_hash):
     result = {"is_document": False}
     try:
+        APP_ID = KeyRing().get("diario-appid")
         if not APP_ID:
             print("No App ID key...!")
             return None
 
+        SECRET_KEY = KeyRing().get("diario-secret")
         if not SECRET_KEY:
             print("No secret key...!")
             return None
@@ -92,10 +94,12 @@ def old_diario(document_hash):
 def diario(plugin_name, project_id, resource_id, resource_type, document_hash):
     result = {"is_document": False}
     try:
+        APP_ID = KeyRing().get("diario-appid")
         if not APP_ID:
             print("No App ID key...!")
             return None
 
+        SECRET_KEY = KeyRing().get("diario-secret")
         if not SECRET_KEY:
             print("No secret key...!")
             return None

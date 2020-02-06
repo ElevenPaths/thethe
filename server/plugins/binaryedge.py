@@ -59,7 +59,7 @@ class Plugin:
 @celery_app.task
 def binaryedge(plugin_name, project_id, resource_id, resource_type, ip):
     try:
-
+        API_KEY = KeyRing().get("binaryedge")
         if not API_KEY:
             print("No API key...!")
             return {}

@@ -12,14 +12,14 @@ from server.plugins.plugin_base import finishing_task
 RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a description, if target is actively reached and name}
-PLUGIN_DESCRIPTION = "Use a GeoIP service to geolocate an IP address"
-PLUGIN_API_KEY = False
+PLUGIN_DESCRIPTION = "Use IpStack service to geolocate an IP address"
+PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "geoip"
 PLUGIN_AUTOSTART = True
 PLUGIN_DISABLE = False
 
-API_KEY = KeyRing().get("ipstack")
+API_KEY = KeyRing().get("geoip")
 
 
 class Plugin:
@@ -27,7 +27,7 @@ class Plugin:
     is_active = PLUGIN_IS_ACTIVE
     name = PLUGIN_NAME
     api_key = PLUGIN_API_KEY
-    api_doc = ""
+    api_doc = "https://ipstack.com/signup/free"
     autostart = PLUGIN_AUTOSTART
     apikey_in_ddbb = bool(API_KEY)
 
@@ -56,6 +56,11 @@ class Plugin:
 @celery_app.task
 def geoip(plugin_name, project_id, resource_id, resource_type, ip):
     try:
+        API_KEY = KeyRing().get("geoip")
+        if not API_KEY:
+            print("No API key...!")
+            return None
+
         URL = f"http://api.ipstack.com/{ip}?access_key={API_KEY}&format=1"
         response = urllib.request.urlopen(URL).read()
         result = json.loads(response)
