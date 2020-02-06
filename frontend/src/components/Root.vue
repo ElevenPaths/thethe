@@ -11,7 +11,19 @@
         class="ma-2 title"
         >{{ get_opened_project.name }}</v-chip
       >
-      <tasks v-if="loadingResources.length > 0"></tasks>
+      <v-badge
+        v-if="loadingResources.length > 0"
+        class="mr-3 ml-1"
+        overlap
+        top
+        color="red"
+      >
+        <span slot="badge">{{ loadingResources.length }}</span>
+        <v-avatar size="28">
+          <tasks></tasks>
+        </v-avatar>
+      </v-badge>
+
       <v-menu offset-y dark>
         <template v-slot:activator="{ on }">
           <v-avatar size="36" color="#666666" v-on="on">
