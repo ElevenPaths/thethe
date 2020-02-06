@@ -73,25 +73,7 @@ class Project:
             {"resource_refs": 1},
         )
 
-    def get_resources(self, resource_type):
-        result = self.db.collection.find_one(
-            {
-                "_id": self.project_id,
-                "resource_refs.resource_type": resource_type.value,
-            },
-            {"resource_refs": 1},
-        )
-
-        if result and "resource_refs" in result.keys():
-            return [
-                item["resource_id"]
-                for item in result["resource_refs"]
-                if item["resource_type"] == resource_type.value
-            ]
-        else:
-            return []
-
-    def get_resources2(self):
+    def get_resources(self):
         result = self.db.collection.find_one(
             {"_id": self.project_id,}, {"resource_refs": 1},
         )
