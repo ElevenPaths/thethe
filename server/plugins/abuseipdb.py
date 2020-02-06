@@ -57,6 +57,7 @@ class Plugin:
 @celery_app.task
 def abuseipdb(ip, plugin_name, project_id, resource_id, resource_type):
     try:
+        API_KEY = KeyRing().get("abuseipdb")
         if not API_KEY:
             print("No API key...!")
             return None

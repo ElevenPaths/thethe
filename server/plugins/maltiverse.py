@@ -11,6 +11,8 @@ from server.entities.resource import Resources, ResourceType
 from tasks.tasks import celery_app
 from server.plugins.plugin_base import finishing_task
 
+# Maltiverse does not need api key in some operations
+# Keeping this if they change their mind in a future
 MALTIVERSE_EMAIL = KeyRing().get("maltiverse_email")
 MALTIVERSE_PASS = KeyRing().get("maltiverse_pass")
 
@@ -33,7 +35,7 @@ RESOURCE_TARGET = [
 
 # Plugin Metadata {a description, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Search indicators of compromise or something related"
-PLUGIN_API_KEY = True
+PLUGIN_API_KEY = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "maltiverse"
 PLUGIN_AUTOSTART = False

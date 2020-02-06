@@ -24,6 +24,7 @@ RESOURCE_TARGET = []
 ## Function OK
 def pulsedive_get_ioc_byvalue(param):
     try:
+        API_KEY = KeyRing().get("pulsedive")
         if not API_KEY:
             print("No API key...!")
             return None
@@ -59,6 +60,7 @@ print(pulsedive_get_ioc_byvalue("com1.ru"))
 # {'success': 'Added indicator to queue.', 'qid': 98643407}
 def pulsedive_analyze(domain):
     try:
+        API_KEY = KeyRing().get("pulsedive")
         if not API_KEY:
             print("No API key...!")
             return None
@@ -97,6 +99,7 @@ def pulsedive_analyze(domain):
 # In progress. API response ok but results not found always. Review!
 def pulsedive_getreport(qid):
     try:
+        API_KEY = KeyRing().get("pulsedive")
         if not API_KEY:
             print("No API key...!")
             return None
@@ -125,9 +128,7 @@ def pulsedive_getreport(qid):
 
 
 @celery_app.task
-def pulsedive_task(
-    plugin_name, project_id, resource_id, resource_type, domain_or_hash
-):
+def pulsedive_task(plugin_name, project_id, resource_id, resource_type, domain_or_hash):
     try:
         resource_type = ResourceType(resource_type)
         if resource_type == ResourceType.DOMAIN or resource_type == ResourceType.HASH:

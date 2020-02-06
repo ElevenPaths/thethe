@@ -72,6 +72,7 @@ def breach_detail_filler(sites):
 @celery_app.task
 def haveibeenpwned(plugin_name, project_id, resource_id, resource_type, email):
     try:
+        API_KEY = KeyRing().get("haveibeenpwned")
         if not API_KEY:
             print("No API key...!")
             return None

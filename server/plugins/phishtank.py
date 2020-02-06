@@ -63,6 +63,7 @@ class Plugin:
 
 def phishtank_check(url):
     try:
+        API_KEY = KeyRing().get("phishtank")
         if not API_KEY:
             print("No API key...!")
             return None
@@ -146,6 +147,7 @@ def phishtank_tech_details(phish_id):
 
         URL_main = f"https://www.phishtank.com/phish_detail.php?phish_id={phish_id}"
 
+        API_KEY = KeyRing().get("phishtank")
         if not API_KEY:
             print("No API key...!")
             return None

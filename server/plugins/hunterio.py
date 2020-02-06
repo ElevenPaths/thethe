@@ -61,6 +61,7 @@ class Plugin:
 
 def send_request(url):
     try:
+        API_KEY = KeyRing().get("hunterio")
         if not API_KEY:
             print("No API key...!")
             return None

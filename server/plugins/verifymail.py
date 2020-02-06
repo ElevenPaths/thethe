@@ -58,6 +58,7 @@ class Plugin:
 @celery_app.task
 def verifymail(plugin_name, project_id, resource_id, resource_type, email):
     try:
+        API_KEY = KeyRing().get("verify-email")
         if not API_KEY:
             print("No API key...!")
             return None
