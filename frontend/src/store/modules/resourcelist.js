@@ -46,13 +46,6 @@ const actions = {
       .catch(err => console.log(err));
   },
 
-  resource_action: async function({ commit }, payload) {
-    await api_call({ ...payload.to_server }).then(resp => {
-      payload.server_response = resp.data;
-      commit(payload.mutation, { ...payload });
-    });
-  },
-
   update: async function({ commit }) {
     let url = "/api/ping";
 
@@ -104,12 +97,9 @@ const mutations = {
       resource_id: resource_id
     }).then(resp => {
       let resp_as_json = null;
+
       try {
         resp_as_json = JSON.parse(resp.data);
-        // state[resource_list] = state[resource_list].filter(
-        //   el => el._id !== resp_as_json._id
-        // );
-        // state[resource_list].push(resp_as_json);
       } catch (error) {
         resp_as_json = resp.data;
       }
@@ -122,7 +112,6 @@ const mutations = {
 };
 
 const getters = {
-  // reusable data accessors
   get_resources: state => resource_type => {
     return state.resources.filter(elem => elem.resource_type === resource_type);
   }
