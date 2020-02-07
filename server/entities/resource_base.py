@@ -2,34 +2,135 @@ import traceback
 import json
 import bson
 import time
+import urllib.parse
+
 
 from server.db import DB
-from server.plugins.plugins import Plugins
+from server.entities.plugins import Plugins
 from server.entities.update_central import UpdateCentral
+from server.entities.resource_types import ResourceType
+from server.entities.hash_types import HashType
+
+COLLECTION = "resources"
+
+# TODO: Legacy method for old database resources
+# TODO: Get rid of this legacy method
+def get_resource_legacy_method(resource_id):
+    """
+        Lookup the resource_id in all old documents
+        Returns resource and doc name to change global COLLECTION
+    """
+    docs = ["ip", "url", "username", "hash", "email", "domain"]
+
+    for doc in docs:
+        collection = DB(doc).collection
+        resource = collection.find_one({"_id": resource_id})
+
+        if resource:
+            return (resource, doc)
+
+    print(f"[resource_base/get_resource_legacy_method]: {resource_id}")
+
+    return (None, None)
 
 
-class ResourceBase:
-    def __init__(self, resource_id, resource_type):
+def enrich_by_type(args):
+    resource_type = ResourceType(args["resource_type"])
+
+    if resource_type == ResourceType.IPv4:
+        args["address"] = args["canonical_name"]
+
+    elif resource_type == ResourceType.USERNAME:
+        args["username"] = args["canonical_name"]
+
+    elif resource_type == ResourceType.URL:
+        args["full_url"] = args["canonical_name"]
+
+        url_parts = urllib.parse.urlparse(args["full_url"])
+        args["scheme"] = url_parts.scheme
+        args["netloc"] = url_parts.netloc
+        args["path"] = url_parts.path
+        args["params"] = url_parts.params
+        args["query"] = url_parts.query
+        args["fragment"] = url_parts.fragment
+
+    elif resource_type == ResourceType.HASH:
+        args["hash"] = args["canonical_name"]
+        args["hash_type"] = HashType.hash_detection(args["hash"]).value
+        # canonical_name == printable name in the view
+        args["canonical_name"] = args["hash"][:8]
+
+    elif resource_type == ResourceType.EMAIL:
+        args["email"] = args["canonical_name"]
+        if "@" in args["email"]:
+            args["domain"] = args["email"].split("@")[1]
+        else:
+            args["domain"] = None
+
+    elif resource_type == ResourceType.DOMAIN:
+        args["domain"] = args["canonical_name"]
+
+    else:
+        print(
+            f"[entities/resource_base/enrich_by_type]: Unknown resource type {args['resource_type']} when creating resource."
+        )
+
+    return args
+
+
+class Resource:
+    @staticmethod
+    def collection(collection=COLLECTION):
+        return DB(collection).collection
+
+    @staticmethod
+    def create(name, resource_type):
+        """
+            name: name of the resource
+            type: type as ResourceType
+        """
+        args = {
+            "canonical_name": name,
+            "resource_type": resource_type.value,
+            "creation_time": time.time(),
+            "plugins": [],
+            "tags": [],
+        }
+
+        args = enrich_by_type(args)
+        result = Resource.collection().insert_one(args)
+        print(f"Creating new resource with {args}")
+        return Resource(str(result.inserted_id))
+
+    def __init__(self, resource_id):
         self.resource_id = bson.ObjectId(resource_id)
-        self.type = resource_type
+        collection = COLLECTION
+        self.resource = Resource.collection(collection).find_one(
+            {"_id": self.resource_id}
+        )
+        # TODO: Get rid of this legacy method
+        # We have found anything, try legacy database method
+        if not self.resource:
+            # If found, change global resource database
+            self.resource, collection = get_resource_legacy_method(self.resource_id)
 
-    def collection(self):
-        return DB(self.get_type_value()).collection
+        # Store collection name
+        self.own_collection = collection
 
-    def get_id(self):
-        return self.resource_id
+    def get_collection(self):
+        return Resource.collection(self.own_collection)
 
     def get_id_as_string(self):
         return str(self.resource_id)
 
     def get_type(self):
-        return self.type
+        return ResourceType.get_type_from_string(self.resource["resource_type"])
 
     def get_type_value(self):
-        return self.type.value
+        return self.get_type().value
 
     def get_data(self):
-        return DB(self.get_type_value()).collection.find_one({"_id": self.resource_id})
+        return self.resource
 
     def launch_plugins(self, project_id, profile=None):
         try:
@@ -47,16 +148,14 @@ class ResourceBase:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
 
-    def set_plugin_results(
-        self, plugin_name, project_id, resource_id, resource_type, query_result
-    ):
+    def set_plugin_results(self, plugin_name, project_id, query_result):
         # TODO: Should we store an time-based diff of results if they differ?
-        result_exists = self.collection().find_one(
+        result_exists = self.get_collection().find_one(
             {"_id": self.resource_id, f"plugins.name": plugin_name}
         )
 
         if not result_exists:
-            self.collection().update_one(
+            self.get_collection().update_one(
                 {"_id": self.resource_id},
                 {
                     "$addToSet": {
@@ -76,10 +175,10 @@ class ResourceBase:
                     plugin["results"] = query_result
                     plugin["update_time"] = time.time()
 
-            self.collection().replace_one({"_id": self.resource_id}, result_exists)
+            self.get_collection().replace_one({"_id": self.resource_id}, result_exists)
 
         UpdateCentral().set_pending_update(
-            project_id, resource_id, resource_type, plugin_name
+            project_id, self.get_id_as_string(), self.get_type(), plugin_name
         )
 
     def get_plugins(self, project_id):
@@ -92,7 +191,7 @@ class ResourceBase:
 
     def manage_tag(self, tag):
         try:
-            resource = self.collection().find_one({"_id": self.get_id()})
+            resource = self.get_collection().find_one({"_id": self.resource_id})
 
             if "tags" in resource:
                 if tag["name"] in [t["name"] for t in resource["tags"]]:
@@ -106,7 +205,7 @@ class ResourceBase:
             else:
                 resource["tags"] = [tag]
 
-            self.collection().replace_one({"_id": self.resource_id}, resource)
+            self.get_collection().replace_one({"_id": self.resource_id}, resource)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
@@ -125,9 +224,10 @@ class ResourceBase:
                 )
             return entry
 
-        doc = DB(self.get_type_value()).collection.find_one({"_id": self.resource_id})
+        # doc = self.get_collection().find_one({"_id": self.resource_id})
         # HACK:  Curiously, this seens to work in order to eliminated the double "" JSON encoding
         #       when converting from ObjectId to String
+        doc = self.resource
 
         for plugin in doc["plugins"]:
             if "results" in plugin and isinstance(plugin["results"], list):

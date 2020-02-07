@@ -1,46 +1,23 @@
 <template>
   <v-app :dark="true">
-    <v-toolbar
-      class="grey darken-3"
-      dark
-      flat
-      dense
-    >
+    <v-toolbar class="grey darken-3" dark flat dense>
       <!-- <v-toolbar-title class="light-grey--text">TheehT</v-toolbar-title> -->
-      <img
-        src="static/images/thethe_big.png"
-        height="36"
-        width="100"
-      >
+      <img src="static/images/thethe_big.png" height="36" width="100" />
       <v-spacer />
       <v-chip
         v-if="is_project_opened"
         label
         color="primary"
         class="ma-2 title"
-      >
-        {{ get_opened_project.name }}
-      </v-chip>
-      <v-menu
-        offset-y
-        dark
-      >
+      >{{ get_opened_project.name }}</v-chip>
+      <v-menu offset-y dark>
         <template v-slot:activator="{ on }">
-          <v-avatar
-            size="36"
-            color="#666666"
-            v-on="on"
-          >
-            <v-icon dark>
-              mdi-account-circle-outline
-            </v-icon>
+          <v-avatar size="36" color="#666666" v-on="on">
+            <v-icon dark>mdi-account-circle-outline</v-icon>
           </v-avatar>
         </template>
         <v-list class="text-lg-left">
-          <v-list-tile
-            v-if="is_project_opened"
-            @click="switch_project"
-          >
+          <v-list-tile v-if="is_project_opened" @click="switch_project">
             <v-list-tile-avatar>
               <v-icon>eject</v-icon>
             </v-list-tile-avatar>
@@ -50,14 +27,8 @@
           </v-list-tile>
           <v-divider />
 
-          <v-list-tile
-            class="caption"
-            @click.stop="show_apikeys_f(true)"
-          >
-            <api-keys
-              :show="show_apikeys"
-              @apikeys-closed="show_apikeys_f(false)"
-            />
+          <v-list-tile class="caption" @click.stop="show_apikeys_f(true)">
+            <api-keys :show="show_apikeys" @apikeys-closed="show_apikeys_f(false)" />
 
             <v-list-tile-avatar>
               <v-icon>call</v-icon>
@@ -69,10 +40,7 @@
 
           <v-divider />
 
-          <v-list-tile
-            class="caption"
-            @click.stop="show_change_password_dialog(true)"
-          >
+          <v-list-tile class="caption" @click.stop="show_change_password_dialog(true)">
             <change-password-dialog
               :show="show_change_password"
               @change-password-closed="show_change_password_dialog(false)"
@@ -88,10 +56,7 @@
 
           <v-divider />
 
-          <v-list-tile
-            class="caption"
-            @click="logout"
-          >
+          <v-list-tile class="caption" @click="logout">
             <v-list-tile-avatar>
               <v-icon>logout</v-icon>
             </v-list-tile-avatar>
@@ -102,20 +67,12 @@
         </v-list>
       </v-menu>
     </v-toolbar>
-    <v-container
-      fluid
-      grid-list-lg
-      pt-1
-      px-0
-    >
+    <v-container fluid grid-list-lg pt-1 px-0>
       <div v-if="!is_project_opened">
         <project-selector />
       </div>
       <v-flex v-else>
-        <v-tabs
-          v-model="active"
-          slider-color="red"
-        >
+        <v-tabs v-model="active" slider-color="red">
           <v-tab>NETWORK</v-tab>
           <v-tab>DOMAIN</v-tab>
           <v-tab>URL</v-tab>
@@ -132,12 +89,10 @@
                   <resource-listing
                     :sortcriteria="sort_ip_addresses"
                     :headers="ip_table_headers"
-                    :resource-description="ip_resource_description"
+                    resource-type="ip"
                     :grid_space="3"
                   >
-                    <template v-slot:title>
-                      IP Address
-                    </template>
+                    <template v-slot:title>IP Address</template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
@@ -146,103 +101,72 @@
               <v-layout wrap>
                 <v-flex>
                   <resource-listing
-                    :resource-description="domain_resource_description"
+                    resource-type="domain"
                     :headers="domain_table_headers"
                     :grid_space="3"
                   >
-                    <template v-slot:title>
-                      Domains
-                    </template>
+                    <template v-slot:title>Domains</template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
             </v-tab-item>
             <v-tab-item>
-              <v-layout
-                row
-                wrap
-              >
+              <v-layout row wrap>
                 <v-flex>
                   <resource-listing
-                    :resource-description="url_resource_description"
+                    resource-type="url"
                     :headers="url_table_headers"
                     :grid_space="4"
                   >
-                    <template v-slot:title>
-                      URLs
-                    </template>
+                    <template v-slot:title>URLs</template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
             </v-tab-item>
             <v-tab-item>
-              <v-layout
-                row
-                wrap
-              >
+              <v-layout row wrap>
                 <v-flex>
                   <resource-listing
-                    :resource-description="hash_resource_description"
+                    resource-type="hash"
                     :headers="hash_table_headers"
                     :grid_space="3"
                   >
-                    <template v-slot:title>
-                      Hashes
-                    </template>
+                    <template v-slot:title>Hashes</template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
             </v-tab-item>
             <v-tab-item>
-              <v-layout
-                row
-                wrap
-              >
+              <v-layout row wrap>
                 <v-flex>
                   <resource-listing
-                    :resource-description="email_resource_description"
+                    resource-type="email"
                     :headers="email_table_headers"
                     :grid_space="3"
                   >
-                    <template v-slot:title>
-                      Emails
-                    </template>
+                    <template v-slot:title>Emails</template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
             </v-tab-item>
             <v-tab-item>
-              <v-layout
-                row
-                wrap
-              >
+              <v-layout row wrap>
                 <v-flex>
                   <resource-listing
-                    :resource-description="username_resource_description"
+                    resource-type="username"
                     :headers="username_table_headers"
                     :grid_space="3"
                   >
-                    <template v-slot:title>
-                      Usernames
-                    </template>
+                    <template v-slot:title>Usernames</template>
                   </resource-listing>
                 </v-flex>
               </v-layout>
             </v-tab-item>
             <v-tab-item>
-              <v-layout
-                row
-                wrap
-                pt-2
-              >
-                Flows
-              </v-layout>
+              <v-layout row wrap pt-2>Flows</v-layout>
             </v-tab-item>
             <v-tab-item lazy>
-              <v-flex
-                offset-lg1
-                lg10
-              >
+              <v-flex offset-lg1 lg10>
                 <simple-vis-network />
               </v-flex>
             </v-tab-item>
@@ -252,10 +176,7 @@
       <multiple-resource-input v-if="is_project_opened" />
     </v-container>
     <status-bar />
-    <notifications
-      position="bottom right"
-      :ignore-duplicates="true"
-    />
+    <notifications position="bottom right" :ignore-duplicates="true" />
   </v-app>
 </template>
 
@@ -291,30 +212,7 @@ export default {
       show_apikeys: false,
       show_change_password: false,
       update_interval: null,
-      hash_resource_description: {
-        type: "hash",
-        resource_list: "hashlist"
-      },
-      ip_resource_description: {
-        type: "ip",
-        resource_list: "iplist"
-      },
-      domain_resource_description: {
-        type: "domain",
-        resource_list: "domainlist"
-      },
-      email_resource_description: {
-        type: "email",
-        resource_list: "emaillist"
-      },
-      username_resource_description: {
-        type: "username",
-        resource_list: "usernamelist"
-      },
-      url_resource_description: {
-        type: "url",
-        resource_list: "urllist"
-      },
+
       ip_table_headers: [
         {
           text: "IP",
@@ -387,7 +285,11 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["get_opened_project", "is_project_opened", "auth_status"]),
+    ...mapGetters([
+      "get_opened_project",
+      "is_project_opened",
+      "is_authenticated"
+    ]),
     username: function() {
       return this.$store.getters["username"];
     }
@@ -396,14 +298,14 @@ export default {
   mounted: function() {
     let self = this;
     this.update_interval = setInterval(function() {
-      if (self.auth_status === "success") {
+      if (self.is_authenticated) {
         self.$store.dispatch("update").catch();
       }
     }, 10000);
   },
 
   beforeMount: function() {
-    if (this.$store.getters["auth_status"] === "") {
+    if (!this.$store.getters["is_authenticated"]) {
       this.$router.push("/login");
     }
   }

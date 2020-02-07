@@ -2,7 +2,8 @@
 import json
 import traceback
 
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
+from server.entities.resource_manager import ResourceManager
 from tasks.tasks import celery_app
 import json
 import requests
@@ -210,7 +211,7 @@ def threatminer_task(plugin_name, project_id, resource_id, resource_type, domain
         else:
             print("threatminer resource type does not found")
 
-        resource = Resources.get(resource_id, resource_type)
+        resource = ResourceManager.get(resource_id, resource_type)
         resource.set_plugin_results(
             plugin_name, project_id, resource_id, resource_type, query_result
         )

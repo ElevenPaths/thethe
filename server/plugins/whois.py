@@ -4,9 +4,9 @@ import whois as whois_pkg
 import json
 import traceback
 
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
-from server.plugins.plugin_base import finishing_task
+from server.entities.plugin_base import finishing_task
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.DOMAIN, ResourceType.EMAIL]

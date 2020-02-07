@@ -24,6 +24,7 @@ const getters = {
 const actions = {
   [SET_PROJECT]: ({ commit, dispatch }, project) => {
     commit(SET_PROJECT, project);
+    dispatch("get_resources", null, { root: true });
   },
   [RESET_PROJECT]: ({ state, commit, dispatch }) => {
     dispatch("reset_resource_lists", null, { root: true });

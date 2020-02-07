@@ -124,7 +124,13 @@ export default {
     preprocess_resources() {
       if (!this.resource_list_model) return;
 
-      let values = this.resource_list_model.trim().split("\n");
+      let values = this.resource_list_model
+        .trim()
+        .split("\n")
+        .filter(elem => elem.length > 0);
+
+      values = [...new Set(values)];
+
       let classified_resources = [];
 
       values.forEach(element => {
@@ -210,14 +216,10 @@ export default {
     send() {
       this.preprocess_resources.forEach(new_resource => {
         let payload = {
-          to_server: {
-            url: "/api/create_resource",
-            resource_name: new_resource.resource,
-            resource_type: new_resource.type
-          },
-          mutation: "add_resource"
+          resource_name: new_resource.resource,
+          resource_type: new_resource.type
         };
-        this.$store.dispatch("resource_action", payload);
+        this.$store.dispatch("add_new_resource", payload);
       });
     },
     patch_type(resource, type) {
@@ -240,12 +242,9 @@ export default {
   max-height: 500px;
   overflow-y: auto;
   overflow-x: hidden;
-
 }
 
 .v-btn--bottom:not(.v-btn--absolute) {
   bottom: 50px;
 }
-
-
 </style>

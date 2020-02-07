@@ -1,5 +1,6 @@
 import traceback
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
+from server.entities.resource_manager import ResourceManager
 
 # TODO: Unused base class. Either deleted it or refactor plugins base class
 class PluginBase:
@@ -24,11 +25,9 @@ def finishing_task(plugin_name, project_id, resource_id, resource_type, result):
 
         print(result)
 
-        resource_type = ResourceType(resource_type)
-        resource = Resources.get(resource_id, resource_type)
-        resource.set_plugin_results(
-            plugin_name, project_id, resource_id, resource_type, result
-        )
+        resource = ResourceManager.get(resource_id)
+        resource.set_plugin_results(plugin_name, project_id, result)
+
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))

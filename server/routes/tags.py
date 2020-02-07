@@ -9,7 +9,7 @@ from flask import Blueprint, request, abort, jsonify
 
 from server.utils.password import token_required
 
-from server.entities.resource import Resources
+from server.entities.resource_manager import ResourceManager
 from server.entities.resource_types import ResourceType, ResourceTypeException
 from server.entities.user import User
 
@@ -83,7 +83,7 @@ def tag_to_resource(user):
         tag = request.json["tag"]
 
         resource_type = ResourceType(resource_type_as_string)
-        resource = Resources.get(resource_id, resource_type)
+        resource = ResourceManager.get(resource_id)
         resource.manage_tag(tag)
 
         return jsonify({"sucess_message": "ok"})

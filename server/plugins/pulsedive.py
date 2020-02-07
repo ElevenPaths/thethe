@@ -7,8 +7,8 @@ import json
 import requests, base64
 
 from tasks.api_keys import KeyRing
-
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_manager import ResourceManager
+from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 
 API_KEY = KeyRing().get("pulsedive")
@@ -136,7 +136,7 @@ def pulsedive_task(plugin_name, project_id, resource_id, resource_type, domain_o
         else:
             print("PulseDive resource type does not found")
 
-        resource = Resources.get(resource_id, resource_type)
+        resource = ResourceManager.get(resource_id, resource_type)
         resource.set_plugin_results(
             plugin_name, project_id, resource_id, resource_type, query_result
         )

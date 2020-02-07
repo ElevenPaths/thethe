@@ -7,9 +7,9 @@ import requests
 from tasks.deps.maltiverse import Maltiverse
 from tasks.api_keys import KeyRing
 
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
-from server.plugins.plugin_base import finishing_task
+from server.entities.plugin_base import finishing_task
 
 # Maltiverse does not need api key in some operations
 # Keeping this if they change their mind in a future
