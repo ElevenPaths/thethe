@@ -1,7 +1,8 @@
 import traceback
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
+
 from tasks.tasks import celery_app
-from server.plugins.plugin_base import finishing_task
+from server.entities.plugin_base import finishing_task
 
 # Login with the following information:
 # Login Name: zigineki@getnada.com
@@ -12,6 +13,7 @@ from server.plugins.plugin_base import finishing_task
 import json
 import urllib.request
 from bs4 import BeautifulSoup
+from server.entities.resource_manager import ResourceManager
 
 from tasks.api_keys import KeyRing
 
@@ -109,7 +111,7 @@ def botscout_task(plugin_name, project_id, resource_id, resource_type, ip):
         else:
             print("BotScout resource type does not found")
 
-        resource = Resources.get(resource_id, resource_type)
+        resource = ResourceManager.get(resource_id)
         resource.set_plugin_results(
             plugin_name, project_id, resource_id, resource_type, query_result
         )

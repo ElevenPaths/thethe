@@ -10,7 +10,7 @@ from flask import Blueprint, request, abort, jsonify
 
 from server.utils.password import token_required
 
-from server.entities.resource import Resources
+from server.entities.resource_manager import ResourceManager
 from server.entities.resource_types import ResourceType, ResourceTypeException
 from server.entities.user import User
 from server.entities.pastebin_manager import PastebinManager
@@ -38,7 +38,7 @@ def get_all_plugins(user):
         return json.dumps(plugins)
 
     except Exception as e:
-        print(e)
+        print(f"[get_all_plugins]: {e}")
         return jsonify({"error_message": "Error gettings plugins"}), 400
 
 
@@ -52,7 +52,7 @@ def get_plugins(user):
 
         project = User(user).get_active_project()
         resource_type = ResourceType(resource_type_as_string)
-        resource = Resources.get(resource_id, resource_type)
+        resource = ResourceManager.get(resource_id)
         plugin_list = resource.get_plugins(project_id)
 
         return json.dumps(plugin_list, default=str)
@@ -72,7 +72,7 @@ def launch_plugin(user):
 
         project = User(user).get_active_project()
         resource_type = ResourceType(resource_type_as_string)
-        resource = Resources.get(resource_id, resource_type)
+        resource = ResourceManager.get(resource_id)
 
         resource.launch_plugin(project.get_id(), plugin_name)
         return jsonify({"sucess_message": "ok"})

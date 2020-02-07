@@ -4,9 +4,9 @@ import requests
 
 from diario import Diario
 
-from server.plugins.plugin_base import finishing_task
+from server.entities.plugin_base import finishing_task
 from tasks.api_keys import KeyRing
-from server.entities.resource import Resources, ResourceType
+from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 
 APP_ID = KeyRing().get("diario-appid")

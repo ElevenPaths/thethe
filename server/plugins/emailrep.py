@@ -4,8 +4,8 @@ import requests
 
 from tasks.api_keys import KeyRing
 from tasks.tasks import celery_app
-from server.entities.resource import Resources, ResourceType
-from server.plugins.plugin_base import finishing_task
+from server.entities.resource_types import ResourceType
+from server.entities.plugin_base import finishing_task
 
 # At this time there is no need for an APIKEY
 # API_KEY = KeyRing().get("emailrep")

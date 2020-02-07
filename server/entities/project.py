@@ -4,7 +4,6 @@ import time
 import bson
 
 from server.db import DB
-from server.entities.resource import Resources
 from server.entities.resource_types import ResourceType
 from server.entities.update_central import UpdateCentral
 
@@ -60,7 +59,7 @@ class Project:
 
     def add_resource(self, resource):
         data = {
-            "resource_id": resource.get_id(),
+            "resource_id": resource.resource_id,
             "resource_type": resource.get_type_value(),
         }
 
@@ -74,21 +73,13 @@ class Project:
             {"resource_refs": 1},
         )
 
-    def get_resources(self, resource_type):
+    def get_resources(self):
         result = self.db.collection.find_one(
-            {
-                "_id": self.project_id,
-                "resource_refs.resource_type": resource_type.value,
-            },
-            {"resource_refs": 1},
+            {"_id": self.project_id,}, {"resource_refs": 1},
         )
 
         if result and "resource_refs" in result.keys():
-            return [
-                item["resource_id"]
-                for item in result["resource_refs"]
-                if item["resource_type"] == resource_type.value
-            ]
+            return [item["resource_id"] for item in result["resource_refs"]]
         else:
             return []
 
