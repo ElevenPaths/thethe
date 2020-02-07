@@ -66,7 +66,7 @@
         </v-card>
       </v-flex>
 
-      <v-flex v-if="resource.results.act">
+      <v-flex v-if="resource.results.act && resource.results.act.length > 0">
         <v-card>
           <v-card-title primary-title>
             <span class="subheading">Active (forward) DNS</span>
@@ -89,7 +89,7 @@
         </v-card>
       </v-flex>
 
-      <v-flex v-if="resource.results.acth">
+      <v-flex v-if="resource.results.acth && resource.results.acth.length > 0">
         <v-card>
           <v-card-title primary-title>
             <span class="subheading">Active DNS history</span>
@@ -112,7 +112,7 @@
         </v-card>
       </v-flex>
 
-      <v-flex v-if="resource.results.pas">
+      <v-flex v-if="resource.results.pas && resource.results.pas.length > 0">
         <v-card>
           <v-card-title primary-title>
             <span class="subheading">Pasive DNS</span>
@@ -135,7 +135,7 @@
         </v-card>
       </v-flex>
 
-      <v-flex v-if="resource.results.pash">
+      <v-flex v-if="resource.results.pash && resource.results.pash.length > 0">
         <v-card>
           <v-card-title primary-title>
             <span class="subheading">Pasive DNS history</span>
