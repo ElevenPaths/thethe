@@ -5,12 +5,11 @@ from enum import Enum, unique
 from server.entities.resource_types import ResourceType
 from server.entities.resource_manager import ResourceManager
 
-# TODO: Unused base class. Either deleted it or refactor plugins base class
-class PluginBase:
+
+class Plugin:
     def __init__(self, resource, project_id):
         """
             Base class for plugins
-            Loads args from its children
         """
         self.resource = resource
         self.project_id = project_id

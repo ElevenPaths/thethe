@@ -6,7 +6,8 @@ import urllib.parse
 
 
 from server.db import DB
-from server.entities.plugins import Plugins
+from server.entities.plugin_manager import PluginManager
+from server.entities.plugin_result_types import PluginResultStatus
 from server.entities.update_central import UpdateCentral
 from server.entities.resource_types import ResourceType
 from server.entities.hash_types import HashType
@@ -109,7 +110,7 @@ class Resource:
             {"_id": self.resource_id}
         )
         # TODO: Get rid of this legacy method
-        # We have found anything, try legacy database method
+        # We have not found anything, try legacy database method
         if not self.resource:
             # If found, change global resource database
             self.resource, collection = get_resource_legacy_method(self.resource_id)
@@ -134,7 +135,7 @@ class Resource:
 
     def launch_plugins(self, project_id, profile=None):
         try:
-            Plugins(self, project_id).launch_all()
+            PluginManager(self, project_id).launch_all()
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
@@ -142,48 +143,58 @@ class Resource:
 
     def launch_plugin(self, project_id, plugin_name, profile=None):
         try:
-            return Plugins(self, project_id).launch(plugin_name)
+            return PluginManager(self, project_id).launch(plugin_name)
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
 
-    def set_plugin_results(self, plugin_name, project_id, query_result):
+    def set_plugin_results(
+        self,
+        plugin_name,
+        project_id,
+        query_result,
+        result_status=PluginResultStatus.COMPLETED,
+    ):
         # TODO: Should we store an time-based diff of results if they differ?
-        result_exists = self.get_collection().find_one(
-            {"_id": self.resource_id, f"plugins.name": plugin_name}
-        )
+        if result_status == PluginResultStatus.COMPLETED:
 
-        if not result_exists:
-            self.get_collection().update_one(
-                {"_id": self.resource_id},
-                {
-                    "$addToSet": {
-                        "plugins": {
-                            "name": plugin_name,
-                            "results": query_result,
-                            "creation_time": time.time(),
-                            "update_time": time.time(),
-                        }
-                    }
-                },
+            result_exists = self.get_collection().find_one(
+                {"_id": self.resource_id, f"plugins.name": plugin_name}
             )
 
-        else:
-            for plugin in result_exists["plugins"]:
-                if plugin["name"] == plugin_name:
-                    plugin["results"] = query_result
-                    plugin["update_time"] = time.time()
+            if not result_exists:
+                self.get_collection().update_one(
+                    {"_id": self.resource_id},
+                    {
+                        "$addToSet": {
+                            "plugins": {
+                                "name": plugin_name,
+                                "results": query_result,
+                                "creation_time": time.time(),
+                                "update_time": time.time(),
+                            }
+                        }
+                    },
+                )
 
-            self.get_collection().replace_one({"_id": self.resource_id}, result_exists)
+            else:
+                for plugin in result_exists["plugins"]:
+                    if plugin["name"] == plugin_name:
+                        plugin["results"] = query_result
+                        plugin["update_time"] = time.time()
+
+                self.get_collection().replace_one(
+                    {"_id": self.resource_id}, result_exists
+                )
 
         UpdateCentral().set_pending_update(
-            project_id, self.get_id_as_string(), self.get_type(), plugin_name
+            project_id, self.get_id_as_string(), plugin_name, result_status,
         )
 
     def get_plugins(self, project_id):
         try:
-            return Plugins(self, project_id).get_plugins()
+            return PluginManager(self, project_id).get_plugins()
 
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)

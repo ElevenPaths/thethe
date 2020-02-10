@@ -25,7 +25,10 @@ projects_api = Blueprint("projects", __name__)
 def ping(user):
     try:
         timestamp = time.time()
-        updates = User(user).get_active_project().get_updates(timestamp)
+        active_project = User(user).get_active_project()
+        if not active_project:
+            return jsonify({"error_message": "No active project"})
+        updates = active_project.get_updates(timestamp)
         return jsonify(updates)
 
     except Exception as e:

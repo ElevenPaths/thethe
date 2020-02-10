@@ -2,22 +2,40 @@ import bson
 import time
 
 from server.db import DB
+from server.entities.plugin_result_types import PluginResultStatus
 
 
 class UpdateCentral:
     def __init__(self):
         self.db = DB("update")
 
-    def set_pending_update(self, project_id, resource_id, resource_type, plugin_name):
+    def set_pending_update(self, project_id, resource_id, plugin_name, result_status):
         project_id = bson.ObjectId(project_id)
+
+        message = ""
+        status = ""
+
+        if result_status == PluginResultStatus.NO_API_KEY:
+            message = f"no apikey in database"
+            status = "error"
+        elif result_status == PluginResultStatus.RETURN_NONE:
+            message = f"received no results"
+            status = "info"
+        elif result_status == PluginResultStatus.FAILED:
+            message = f"failed"
+            status = "error"
+        elif result_status == PluginResultStatus.COMPLETED:
+            message = f"successfully completed"
+            status = "success"
 
         self.db.collection.insert_one(
             {
                 "project_id": project_id,
                 "resource_id": resource_id,
-                "resource_type": resource_type.value,
                 "plugin_name": plugin_name,
                 "timestamp": time.time(),
+                "message": message,
+                "status": status,
             }
         )
 
@@ -32,7 +50,8 @@ class UpdateCentral:
             updates.append(
                 {
                     "resource_id": update["resource_id"],
-                    "resource_type": update["resource_type"],
+                    "message": update["message"],
+                    "status": update["status"],
                 }
             )
 

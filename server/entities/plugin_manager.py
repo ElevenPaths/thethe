@@ -1,6 +1,7 @@
 import os
 import importlib
 import traceback
+from enum import Enum, unique
 
 from server.entities.resource_types import ResourceType
 
@@ -25,7 +26,7 @@ def _load_plugins(resource_type, name=None):
     return plugins
 
 
-class Plugins:
+class PluginManager:
     def __init__(self, resource, project_id):
         self.resource = resource
         self.plugins = _load_plugins(resource.get_type())
