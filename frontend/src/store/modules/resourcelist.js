@@ -109,12 +109,9 @@ const mutations = {
       resource_id: resource_id
     }).then(resp => {
       let resp_as_json = null;
+
       try {
         resp_as_json = JSON.parse(resp.data);
-        // state[resource_list] = state[resource_list].filter(
-        //   el => el._id !== resp_as_json._id
-        // );
-        // state[resource_list].push(resp_as_json);
       } catch (error) {
         resp_as_json = resp.data;
       }
@@ -128,6 +125,11 @@ const mutations = {
       const index = state.running.indexOf(resourcesRunning);
       if (index > -1) {
         state.running.splice(index, 1);
+        Vue.notify({
+          type: update.status,
+          title: `<b>${resourcesRunning.canonicalName}</b>`,
+          text: `<b>${resourcesRunning.plugin}</b> ${update.message}`
+        });
       }
     });
   },
