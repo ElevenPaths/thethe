@@ -1,13 +1,42 @@
 import os
 import importlib
 import traceback
-from enum import Enum, unique
 
+from server.db import DB
 from server.entities.resource_types import ResourceType
 
 PLUGIN_DIRECTORY = "server/plugins/"
 PLUGIN_HIERARCHY = "server.plugins"
 EXCLUDE_SET = ["__init__.py", "TEMPLATE.py"]
+
+
+def _get_module_names():
+    plugins = []
+    for root, dirs, files in os.walk("server/plugins"):
+        for file in files:
+            if ".py" in file[-3:] and not file in EXCLUDE_SET:
+                plugins.append("server.plugins.{}".format(os.path.splitext(file)[0]))
+    return plugins
+
+
+def register_plugins():
+    db = DB("plugins")
+    db.collection.delete_many({})
+
+    for module in _get_module_names():
+        module = importlib.import_module(module)
+        if not module.PLUGIN_DISABLE:
+            print(f"registering {module.PLUGIN_NAME}")
+            db.collection.insert_one(
+                {
+                    "name": module.PLUGIN_NAME,
+                    "is_active": module.PLUGIN_IS_ACTIVE,
+                    "description": module.PLUGIN_DESCRIPTION,
+                    "autostart": module.PLUGIN_AUTOSTART,
+                    "api_key": module.PLUGIN_API_KEY,
+                    "target": [resource.value for resource in module.RESOURCE_TARGET],
+                }
+            )
 
 
 def _load_plugins(resource_type, name=None):

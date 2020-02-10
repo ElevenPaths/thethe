@@ -4,6 +4,7 @@ version: "3.3"
 services:
   mongo:
     image: mongo
+    container_name: thethe_mongo
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
@@ -16,6 +17,7 @@ services:
 
   redis:
     image: redis
+    container_name: thethe_redis
     restart: always
 
   celery:
@@ -44,7 +46,9 @@ services:
   server:
     build: .
     container_name: thethe_server
-    command: /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000
+    command: >
+      sh -c "python server/register_plugins.py &&
+      /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000"
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
