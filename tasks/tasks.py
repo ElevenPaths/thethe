@@ -3,7 +3,7 @@ import os
 from celery import Celery
 
 # TODO: Integrar en una sola funcion, se repeite en plugins.py
-EXCLUDE_SET = ["plugins.py", "__init__.py", "plugin_base.py", "TEMPLATE.py"]
+EXCLUDE_SET = ["__init__.py", "TEMPLATE.py"]
 
 plugins = []
 for root, dirs, files in os.walk("server/plugins"):
