@@ -122,6 +122,13 @@ const mutations = {
       let resource = state.resources.find(el => el._id === resource_id);
       resource.plugins = resp_as_json.plugins;
       resource.tags = resp_as_json.tags;
+
+      // Remove resources running
+      let resourcesRunning = state.running.find(el => el._id === resource_id);
+      const index = state.running.indexOf(resourcesRunning);
+      if (index > -1) {
+        state.running.splice(index, 1);
+      }
     });
   },
 
@@ -136,6 +143,10 @@ const mutations = {
         results: "loading"
       });
     }
+
+    let runningPayload = payload;
+    runningPayload.canonicalName = resource.canonical_name;
+    state.running.push(runningPayload);
   }
 };
 
@@ -144,7 +155,7 @@ const getters = {
   get_resources: state => resource_type => {
     return state.resources.filter(elem => elem.resource_type === resource_type);
   },
-  loadingResources: state => {
+  runningTasks: state => {
     return state.resources.filter(plugins =>
       plugins.plugins.some(results => results.results === "loading")
     );

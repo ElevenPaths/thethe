@@ -9,16 +9,9 @@
         label
         color="primary"
         class="ma-2 title"
-        >{{ get_opened_project.name }}</v-chip
-      >
-      <v-badge
-        v-if="loadingResources.length > 0"
-        class="mr-3 ml-1"
-        overlap
-        top
-        color="red"
-      >
-        <span slot="badge">{{ loadingResources.length }}</span>
+      >{{ get_opened_project.name }}</v-chip>
+      <v-badge v-if="runningTasks.length > 0" class="mr-3 ml-1" overlap top color="red">
+        <span slot="badge">{{ runningTasks.length }}</span>
         <v-avatar size="28">
           <tasks></tasks>
         </v-avatar>
@@ -42,10 +35,7 @@
           <v-divider />
 
           <v-list-tile class="caption" @click.stop="show_apikeys_f(true)">
-            <api-keys
-              :show="show_apikeys"
-              @apikeys-closed="show_apikeys_f(false)"
-            />
+            <api-keys :show="show_apikeys" @apikeys-closed="show_apikeys_f(false)" />
 
             <v-list-tile-avatar>
               <v-icon>call</v-icon>
@@ -57,10 +47,7 @@
 
           <v-divider />
 
-          <v-list-tile
-            class="caption"
-            @click.stop="show_change_password_dialog(true)"
-          >
+          <v-list-tile class="caption" @click.stop="show_change_password_dialog(true)">
             <change-password-dialog
               :show="show_change_password"
               @change-password-closed="show_change_password_dialog(false)"
@@ -314,8 +301,8 @@ export default {
     username: function() {
       return this.$store.getters["username"];
     },
-    loadingResources() {
-      return this.$store.getters.loadingResources;
+    runningTasks: function() {
+      return this.$store.state.resourcelist.running;
     }
   },
 

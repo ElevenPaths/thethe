@@ -3,21 +3,20 @@
     <v-bottom-sheet v-model="sheet" inset>
       <template v-slot:activator>
         <v-btn flat icon dark>
-          <v-progress-circular
-            :size="20"
-            :width="2"
-            indeterminate
-            color="primary"
-          ></v-progress-circular>
+          <v-progress-circular :size="20" :width="2" indeterminate color="primary"></v-progress-circular>
         </v-btn>
       </template>
       <v-list>
         <v-subheader>Remaining tasks...</v-subheader>
-        <v-list-tile v-for="resource in loadingResources" :key="resource._id">
-          <v-list-tile-title
-            >Type: {{ resource.resource_type }} Name:
-            {{ resource.canonical_name }}</v-list-tile-title
-          >
+        <v-list-tile v-for="resource in runningTasks" :key="resource._id">
+          <v-list-tile-avatar>
+            <v-progress-circular :size="20" :width="2" indeterminate color="primary"></v-progress-circular>
+          </v-list-tile-avatar>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ resource.plugin }}</v-list-tile-title>
+            <v-list-tile-sub-title>{{ resource.canonicalName }} - {{ resource.resourceType }}</v-list-tile-sub-title>
+          </v-list-tile-content>
+          <!-- <v-list-tile-title>Resource: {{ resource.canonicalName }} Plugin: {{ resource.plugin }} Type: {{ resource.resourceType }}</v-list-tile-title> -->
         </v-list-tile>
       </v-list>
     </v-bottom-sheet>
@@ -30,8 +29,8 @@ export default {
     sheet: false
   }),
   computed: {
-    loadingResources() {
-      return this.$store.getters.loadingResources;
+    runningTasks: function() {
+      return this.$store.state.resourcelist.running;
     }
   }
 };
