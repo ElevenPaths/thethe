@@ -6,7 +6,8 @@ from tasks.api_keys import KeyRing
 from tasks.tasks import celery_app
 from server.entities.resource_base import Resource
 from server.entities.resource_types import ResourceType
-from server.entities.plugin_base import finishing_task
+from server.entities.plugin_result_types import PluginResultStatus
+
 
 # At this time there is no need for an APIKEY
 URL = "https://emailrep.io/{email}"

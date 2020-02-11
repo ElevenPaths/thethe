@@ -5,6 +5,8 @@ import requests
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 from server.entities.resource_base import Resource
+from server.entities.plugin_result_types import PluginResultStatus
+
 
 URL_IP = "https://www.threatcrowd.org/searchApi/v2/ip/report/?ip={ip}"
 URL_DOMAIN = "https://www.threatcrowd.org/searchApi/v2/domain/report/?domain={domain}"
