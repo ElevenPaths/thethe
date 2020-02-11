@@ -4,33 +4,29 @@ import requests
 
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
-from server.entities.plugin_base import finishing_task
+
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "Search for an IP number and get which hostnames points to it"
-PLUGIN_API_KEY = False
+PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "robtex"
-PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = False
 
 URL = "https://freeapi.robtex.com/ipquery/{ip}"
 
 API_KEY = False
+# API_KEY = KeyRing().get("robtex")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = ""
+API_KEY_NAMES = []
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = ""
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -55,16 +51,24 @@ class Plugin:
 
 @celery_app.task
 def robtex(plugin_name, project_id, resource_id, resource_type, ip):
+    response = {}
+    result_status = PluginResultStatus.STARTED
+
     try:
-        response = {}
+
         robtex_response = requests.get(URL.format(**{"ip": ip}))
         if not robtex_response.status_code == 200:
             print("Robtext error!")
-            response = None
+            result_status = PluginResultStatus.RETURN_NONE
         else:
             response = json.loads(robtex_response.content)
+            result_status = PluginResultStatus.COMPLETED
 
-        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, response, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

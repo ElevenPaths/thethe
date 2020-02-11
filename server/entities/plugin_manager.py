@@ -11,6 +11,9 @@ EXCLUDE_SET = ["__init__.py", "TEMPLATE.py"]
 
 
 def _get_module_names():
+    """
+        Get all the plugins names to load on
+    """
     plugins = []
     for root, dirs, files in os.walk("server/plugins"):
         for file in files:
@@ -20,6 +23,9 @@ def _get_module_names():
 
 
 def register_plugins():
+    """
+        This function register metadata from enabled plugins upon container startup
+    """
     db = DB("plugins")
     db.collection.delete_many({})
 
@@ -33,8 +39,11 @@ def register_plugins():
                     "is_active": module.PLUGIN_IS_ACTIVE,
                     "description": module.PLUGIN_DESCRIPTION,
                     "autostart": module.PLUGIN_AUTOSTART,
-                    "api_key": module.PLUGIN_API_KEY,
                     "target": [resource.value for resource in module.RESOURCE_TARGET],
+                    "needs_apikey": module.PLUGIN_NEEDS_API_KEY,
+                    "apikey_in_ddbb": module.API_KEY_IN_DDBB,
+                    "apikey_doc": module.API_KEY_DOC,
+                    "apikey_names": module.API_KEY_NAMES,
                 }
             )
 
@@ -56,6 +65,29 @@ def _load_plugins(resource_type, name=None):
 
 
 class PluginManager:
+    @staticmethod
+    def get_plugin_names():
+        db = DB("plugins")
+        return [plugin["name"] for plugin in db.collection.find({})]
+
+    @staticmethod
+    def get_plugins_for_resource(resource_type_as_string):
+        db = DB("plugins")
+        plugins = db.collection.find({"target": [resource_type_as_string]})
+        results = []
+        for entry in plugins:
+            results.append(
+                {
+                    "name": entry["name"],
+                    "description": entry["description"],
+                    "api_key": entry["needs_apikey"],
+                    "api_docs": entry["apikey_doc"],
+                    "is_active": entry["is_active"],
+                    "apikey_in_ddbb": entry["apikey_in_ddbb"],
+                }
+            )
+        return results
+
     def __init__(self, resource, project_id):
         self.resource = resource
         self.plugins = _load_plugins(resource.get_type())

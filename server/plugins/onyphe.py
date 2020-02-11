@@ -8,29 +8,25 @@ from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 from server.entities.plugin_base import finishing_task
 
-API_KEY = KeyRing().get("onyphe")
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a description, if target is actively reached and name}
-PLUGIN_DESCRIPTION = "Lookup onyphe.io wether this IP is included in threatlists"
-PLUGIN_API_KEY = True
-PLUGIN_IS_ACTIVE = False
-PLUGIN_NAME = "onyphe"
 PLUGIN_AUTOSTART = False
+PLUGIN_DESCRIPTION = "Lookup onyphe.io wether this IP is included in threatlists"
+PLUGIN_IS_ACTIVE = False
 PLUGIN_DISABLE = False
+PLUGIN_NAME = "onyphe"
+PLUGIN_NEEDS_API_KEY = True
+
+API_KEY = KeyRing().get("onyphe")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://www.onyphe.io/documentation/api"
+API_KEY_NAMES = ["onyphe"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://www.onyphe.io/documentation/api"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -75,7 +71,15 @@ def onyphe_threatlist(ip):
 
 
 def onyphe_synscan(ip):
+    result_status = PluginResultStatus.STARTED
+    reponse
+
     try:
+        API_KEY = KeyRing().get("onyphe")
+        if not API_KEY:
+            print("No API key...!")
+            result_status = PluginResultStatus.NO_API_KEY
+
         URL = f"https://www.onyphe.io/api/synscan/{ip}?apikey={API_KEY}"
         response = urllib.request.urlopen(URL).read()
         return response
@@ -88,15 +92,28 @@ def onyphe_synscan(ip):
 
 @celery_app.task
 def onyphe(plugin_name, project_id, resource_id, resource_type, ip):
-    try:
-        query_result = onyphe_threatlist(ip)
-        if not query_result:
-            return
-        print(query_result)
+    result_status = PluginResultStatus.STARTED
+    query_result = None
 
-        finishing_task(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
+    try:
+        API_KEY = KeyRing().get("onyphe")
+        if not API_KEY:
+            print("No API key...!")
+            result_status = PluginResultStatus.NO_API_KEY
+
+        else:
+            query_result = onyphe_threatlist(ip)
+            if not query_result:
+                result_status = PluginResultStatus.RETURN_NONE
+            else:
+                print(query_result)
+                result_status = PluginResultStatus.COMPLETED
+
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, query_result, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

@@ -13,20 +13,23 @@ RESOURCE_TARGET = [ResourceType.USERNAME]
 
 # Plugin Metadata {a description, if target is actively reached and name}
 PLUGIN_DESCRIPTION = "Use Sherlock to find usernames across many social networks"
-PLUGIN_API_KEY = False
+PLUGIN_NEEDS_API_KEY = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "sherlock"
 PLUGIN_AUTOSTART = False
 PLUGIN_DISABLE = False
 
 API_KEY = False
+API_KEY_IN_DDBB = False
+API_KEY_DOC = ""
+API_KEY_NAMES = []
 
 
 class Plugin:
     description = PLUGIN_DESCRIPTION
     is_active = PLUGIN_IS_ACTIVE
     name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
+    api_key = PLUGIN_NEEDS_API_KEY
     api_doc = ""
     autostart = PLUGIN_AUTOSTART
     apikey_in_ddbb = bool(API_KEY)

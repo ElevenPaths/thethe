@@ -192,14 +192,6 @@ class Resource:
             project_id, self.get_id_as_string(), plugin_name, result_status,
         )
 
-    def get_plugins(self, project_id):
-        try:
-            return PluginManager(self, project_id).get_plugins()
-
-        except Exception as e:
-            tb1 = traceback.TracebackException.from_exception(e)
-            print("".join(tb1.format()))
-
     def manage_tag(self, tag):
         try:
             resource = self.get_collection().find_one({"_id": self.resource_id})

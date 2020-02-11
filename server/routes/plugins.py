@@ -14,6 +14,7 @@ from server.entities.resource_manager import ResourceManager
 from server.entities.resource_types import ResourceType, ResourceTypeException
 from server.entities.user import User
 from server.entities.pastebin_manager import PastebinManager
+from server.entities.plugin_manager import PluginManager
 
 plugins_api = Blueprint("plugins", __name__)
 
@@ -22,20 +23,8 @@ plugins_api = Blueprint("plugins", __name__)
 @token_required
 def get_all_plugins(user):
     try:
-        PLUGIN_DIRECTORY = "server/plugins/"
-        PLUGIN_HIERARCHY = "server.plugins"
-        EXCLUDE_SET = ["plugins.py", "__init__.py", "plugin_base.py", "TEMPLATE.py"]
-
-        plugins = []
-        files = os.scandir(PLUGIN_DIRECTORY)
-
-        for f in files:
-            if f.is_file() and f.name.endswith(".py") and not f.name in EXCLUDE_SET:
-                module = importlib.import_module(f"{PLUGIN_HIERARCHY}.{f.name[:-3]}")
-                if module.PLUGIN_API_KEY and not module.PLUGIN_DISABLE:
-                    plugins.append(module.PLUGIN_NAME)
-
-        return json.dumps(plugins)
+        plugin_names = PluginManager.get_plugin_names()
+        return json.dumps(plugin_names)
 
     except Exception as e:
         print(f"[get_all_plugins]: {e}")
@@ -44,22 +33,17 @@ def get_all_plugins(user):
 
 @plugins_api.route("/api/get_related_plugins", methods=["POST"])
 @token_required
-def get_plugins(user):
+def get_related_plugins(user):
     try:
         resource_id = bson.ObjectId(request.json["resource_id"])
-        project_id = bson.ObjectId(request.json["project_id"])
         resource_type_as_string = request.json["resource_type"]
-
-        project = User(user).get_active_project()
-        resource_type = ResourceType(resource_type_as_string)
-        resource = ResourceManager.get(resource_id)
-        plugin_list = resource.get_plugins(project_id)
+        plugin_list = PluginManager.get_plugins_for_resource(resource_type_as_string)
 
         return json.dumps(plugin_list, default=str)
 
     except Exception as e:
         print(e)
-        return jsonify({"error_message": "Error unlinking resource from project"}), 400
+        return jsonify({"error_message": "Error getting related plugins"}), 400
 
 
 @plugins_api.route("/api/launch_plugin", methods=["POST"])

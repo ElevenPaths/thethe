@@ -1,3 +1,5 @@
+# TODO: needs heavy testing before enabling
+
 import traceback
 from server.entities.resource_types import ResourceType
 
@@ -23,24 +25,20 @@ API_KEY = KeyRing().get("botscout")
 RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "BotScout helps prevent automated web scripts, known as 'bots', from multiples sources"
-PLUGIN_API_KEY = True
+PLUGIN_DISABLE = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "botscout"
-PLUGIN_AUTOSTART = False
-# TODO: needs heavy testing before enabling
-PLUGIN_DISABLE = True
+PLUGIN_NEEDS_API_KEY = True
+
+API_KEY = KeyRing().get("botscout")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://botscout.com/getkey.htm"
+API_KEY_NAMES = ["botscout"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://botscout.com/getkey.htm"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource

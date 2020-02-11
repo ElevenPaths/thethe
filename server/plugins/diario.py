@@ -5,38 +5,33 @@ import requests
 from diario import Diario
 
 from server.entities.plugin_base import finishing_task
-from tasks.api_keys import KeyRing
 from server.entities.resource_types import ResourceType
+from server.entities.plugin_result_types import PluginResultStatus
+from tasks.api_keys import KeyRing
 from tasks.tasks import celery_app
-
-APP_ID = KeyRing().get("diario-appid")
-SECRET_KEY = KeyRing().get("diario-secret")
 
 __PREDICTION = {"M": "Malware", "G": "Goodware", "NM": "No macros"}
 __STATUS = {"A": "Analyzed", "P": "Processing", "F": "Failed"}
-
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.HASH]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "Scans and analyzes pdf and office documents in a static way keeping users content private"
-PLUGIN_API_KEY = True
+PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "diario"
-PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = True
+
+APP_ID = KeyRing().get("diario-appid")
+SECRET_KEY = KeyRing().get("diario-secret")
+API_KEY_IN_DDBB = bool(APP_ID) & bool(SECRET_KEY)
+API_KEY_DOC = "https://diario.e-paths.com"
+API_KEY_NAMES = ["diario-appid", "diario-secret"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://diario.e-paths.com"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(APP_ID) & bool(SECRET_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -59,73 +54,34 @@ class Plugin:
             print("".join(tb1.format()))
 
 
-def old_diario(document_hash):
-    result = {"is_document": False}
-    try:
-        if not APP_ID:
-            print("No App ID key...!")
-            return None
-
-        if not SECRET_KEY:
-            print("No secret key...!")
-            return None
-
-        diariosdk = Diario(APP_ID, SECRET_KEY)
-        response = diariosdk.get_pdf_info(document_hash)
-
-        if not response.data:
-            response = diariosdk.get_office_info(document_hash)
-            if response.data:
-                result = get_result(diariosdk, response.data)
-        else:
-            result = get_result(diariosdk, response.data)
-
-    except Exception as e:
-        tb1 = traceback.TracebackException.from_exception(e)
-        print("".join(tb1.format()))
-        result = None
-
-    return result
-
-
 @celery_app.task
 def diario(plugin_name, project_id, resource_id, resource_type, document_hash):
+    result_status = PluginResultStatus.STARTED
     result = {"is_document": False}
+
     try:
-        if not APP_ID:
+        if APP_ID and SECRET_KEY:
             print("No App ID key...!")
-            return None
+            result_status = PluginResultStatus.NO_API_KEY
 
-        if not SECRET_KEY:
-            print("No secret key...!")
-            return None
+        else:
+            diariosdk = Diario(APP_ID, SECRET_KEY)
+            response = diariosdk.search(document_hash)
 
-        diariosdk = Diario(APP_ID, SECRET_KEY)
-        response = diariosdk.search(document_hash)
+            if response.data:
+                result = get_result(diariosdk, response.data)
+                result_status = PluginResultStatus.COMPLETED
+            else:
+                result_status = PluginResultStatus.RETURN_NONE
 
-        if response.data:
-            result = get_result(diariosdk, response.data)
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(plugin_name, project_id, result, result_status)
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
         print("".join(tb1.format()))
         result = None
-
-    finishing_task(plugin_name, project_id, resource_id, resource_type, result)
-
-
-def old_get_result(diariosdk, data):
-    document_type = data.get("type")
-    if not document_type:
-        document_type = "pdf"
-
-    return {
-        "is_document": True,
-        "document_type": document_type,
-        "prediction": __PREDICTION.get(data.get("prediction")),
-        "status": __STATUS.get(data.get("status")),
-        "sub_documents": get_subdocument(diariosdk, data, document_type),
-    }
 
 
 def get_result(diariosdk, data):
@@ -178,3 +134,46 @@ def get_subdocument(diariosdk, data, document_type):
             sub_documents.append(sd_response.data)
 
     return sub_documents
+
+
+def old_get_result(diariosdk, data):
+    document_type = data.get("type")
+    if not document_type:
+        document_type = "pdf"
+
+    return {
+        "is_document": True,
+        "document_type": document_type,
+        "prediction": __PREDICTION.get(data.get("prediction")),
+        "status": __STATUS.get(data.get("status")),
+        "sub_documents": get_subdocument(diariosdk, data, document_type),
+    }
+
+
+def old_diario(document_hash):
+    result = {"is_document": False}
+    try:
+        if not APP_ID:
+            print("No App ID key...!")
+            return None
+
+        if not SECRET_KEY:
+            print("No secret key...!")
+            return None
+
+        diariosdk = Diario(APP_ID, SECRET_KEY)
+        response = diariosdk.get_pdf_info(document_hash)
+
+        if not response.data:
+            response = diariosdk.get_office_info(document_hash)
+            if response.data:
+                result = get_result(diariosdk, response.data)
+        else:
+            result = get_result(diariosdk, response.data)
+
+    except Exception as e:
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+        result = None
+
+    return result

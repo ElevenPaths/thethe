@@ -5,10 +5,9 @@ import requests
 from tasks.api_keys import KeyRing
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
-from server.entities.plugin_base import finishing_task
+from server.entities.plugin_result_types import PluginResultStatus
 
 
-API_KEY = KeyRing().get("hunterio")
 URL_DOMAIN = "https://api.hunter.io/v2/domain-search?domain={domain}&api_key={key}"
 URL_EMAIL_VERIFIER = (
     "https://api.hunter.io/v2/email-verifier?email={email}&api_key={key}"
@@ -20,23 +19,20 @@ URL_EMAIL_VERIFIER = (
 RESOURCE_TARGET = [ResourceType.DOMAIN, ResourceType.EMAIL]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "Lists all the people working in a company with their name and email address found on the web"
-PLUGIN_API_KEY = True
+PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "hunterio"
-PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = True
+
+API_KEY = KeyRing().get("hunterio")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://hunter.io/api"
+API_KEY_NAMES = ["hunterio"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://hunter.io/api"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -61,9 +57,6 @@ class Plugin:
 
 def send_request(url):
     try:
-        if not API_KEY:
-            print("No API key...!")
-            return None
 
         response = {}
         headers = {"Accept": "application/json", "Content-Type": "application/json"}
@@ -96,18 +89,29 @@ def hunterio_email(email):
 def hunterio(plugin_name, project_id, resource_id, resource_type, target):
     try:
         query_result = None
-
-        resource_type = ResourceType(resource_type)
-        if resource_type == ResourceType.DOMAIN:
-            query_result = hunterio_domain(target)
-        elif resource_type == ResourceType.EMAIL:
-            query_result = hunterio_email(target)
+        if not API_KEY:
+            print("No API key...!")
+            result_status = PluginResultStatus.NO_API_KEY
         else:
-            print("Hunter.io resource type does not found")
+            result_status = PluginResultStatus.STARTED
 
-        finishing_task(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
+            resource_type = ResourceType(resource_type)
+            if resource_type == ResourceType.DOMAIN:
+                query_result = hunterio_domain(target)
+            elif resource_type == ResourceType.EMAIL:
+                query_result = hunterio_email(target)
+            else:
+                print("Hunter.io resource type does not found")
+                result_status = PluginResultStatus.RETURN_NONE
+
+            if query_result:
+                result_status = PluginResultStatus.COMPLETED
+
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, query_result, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

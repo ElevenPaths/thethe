@@ -20,25 +20,20 @@ RESOURCE_TARGET = [
 ]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "Allows you to quickly identify related infrastructure and malware"
-PLUGIN_API_KEY = False
+PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "threatcrowd"
-PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = False
 
 API_KEY = False
+API_KEY_IN_DDBB = False
+API_KEY_DOC = ""
+API_KEY_NAMES = []
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = ""
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -101,6 +96,9 @@ def threatcrowd_hash(hash):
 
 @celery_app.task
 def threatcrowd(plugin_name, project_id, resource_id, resource_type, target):
+    result_status = PluginResultStatus.STARTED
+    query_result = {}
+
     try:
         resource_type = ResourceType(resource_type)
         if resource_type == ResourceType.IPv4:
@@ -113,16 +111,20 @@ def threatcrowd(plugin_name, project_id, resource_id, resource_type, target):
             query_result = threatcrowd_hash(target)
         else:
             print("ThreatCrowd resource type does not found")
+            result_status = PluginResultStatus.FAILED
 
         if not query_result:
             print("No results from ThreatCrowd plugin")
-            return
+            result_status = PluginResultStatus.RETURN_NONE
+        else:
+            print(query_result)
+            result_status = PluginResultStatus.COMPLETED
 
-        print("********************************")
-        print(query_result)
-        finishing_task(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, query_result, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
