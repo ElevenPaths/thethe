@@ -52,12 +52,22 @@ class Plugin:
 
 @celery_app.task
 def geoip(plugin_name, project_id, resource_id, resource_type, ip):
+    result_status = PluginResultStatus.STARTED
+    response = None
+
     try:
         URL = f"http://api.ipstack.com/{ip}?access_key={API_KEY}&format=1"
         response = urllib.request.urlopen(URL).read()
 
         result = json.loads(response)
-        result_status = PluginResultStatus.COMPLETED
+        if "success" in result:
+            if not result["success"]:
+                if result["error"]["code"] in [101, 102, 103, 104, 105]:
+                    result_status = PluginResultStatus.NO_API_KEY
+                elif result["error"]["code"] == 404:
+                    result_status = PluginResultStatus.RETURN_NONE
+        else:
+            result_status = PluginResultStatus.COMPLETED
 
         resource = Resource(resource_id)
         if resource:

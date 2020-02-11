@@ -60,6 +60,10 @@ class Plugin:
 
 @celery_app.task
 def sherlock(username, plugin_name, project_id, resource_id, resource_type):
+
+    response = []
+    result_status = PluginResultStatus.STARTED
+
     try:
         site_data_all = None
         data_file_path = os.path.join(
@@ -83,7 +87,6 @@ def sherlock(username, plugin_name, project_id, resource_id, resource_type):
 
         result = _sherlock.sherlock(username, site_data_all, print_found_only=False)
 
-        response = []
         for service in result:
             temp_result = {}
             temp_result["sitename"] = service
@@ -91,7 +94,16 @@ def sherlock(username, plugin_name, project_id, resource_id, resource_type):
             temp_result["url_user"] = result.get(service).get("url_user")
             response.append(temp_result)
 
-        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
+        if response:
+            result_status = PluginResultStatus.COMPLETED
+        else:
+            result_status = PluginResultStatus.RETURN_NONE
+
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, response, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

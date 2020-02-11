@@ -49,22 +49,6 @@ def register_plugins():
             )
 
 
-def _load_plugins(resource_type, name=None):
-    """
-        Load effective plugins for this resource based on its type
-    """
-    plugins = []
-    files = os.scandir(PLUGIN_DIRECTORY)
-
-    for f in files:
-        if f.is_file() and f.name.endswith(".py") and not f.name in EXCLUDE_SET:
-            module = importlib.import_module(f"{PLUGIN_HIERARCHY}.{f.name[:-3]}")
-            if resource_type in module.RESOURCE_TARGET and not module.PLUGIN_DISABLE:
-                plugins.append(module.Plugin)
-
-    return plugins
-
-
 def _load_module(plugin_name):
     try:
         module = importlib.import_module(f"{PLUGIN_HIERARCHY}.{plugin_name}")
@@ -100,6 +84,20 @@ class PluginManager:
             print("".join(tb1.format()))
 
     @staticmethod
+    def get_autostart_plugins_for_resource(resource_type_as_string):
+        try:
+            db = DB("plugins")
+            plugins = db.collection.find(
+                {"autostart": True, "target": resource_type_as_string}
+            )
+            return [plugin["name"] for plugin in plugins]
+
+        except Exception as e:
+            print(f"[PluginManager.get_autostart_plugins_for_resource] {e}")
+            tb1 = traceback.TracebackException.from_exception(e)
+            print("".join(tb1.format()))
+
+    @staticmethod
     def get_plugins_for_resource(resource_type_as_string):
         db = DB("plugins")
         plugins = db.collection.find({"target": resource_type_as_string}).sort(
@@ -123,16 +121,28 @@ class PluginManager:
         self.resource = resource
         self.project_id = project_id
 
+    # TODO: Profiles are not implemented yet (11/02/2020)
     def launch_all(self, profile="pasive"):
         """
             Launch all the loaded plugins based on a profile (by default non active or noisy modules)
         """
-        for module in PluginManager.get_plugins_for_resource(
-            self.resource.get_type_value()
-        ):
-            if module.PLUGIN_AUTOSTART:
-                print(f"Launching {module.PLUGIN_NAME}")
+        try:
+            plugins = PluginManager.get_autostart_plugins_for_resource(
+                self.resource.get_type_value()
+            )
+            name_list = " ".join(plugins)
+            print(
+                f"[PluginManager.launch_all]: Launching autostart plugins...{name_list}"
+            )
+
+            for plugin in plugins:
+                module = _load_module(plugin)
                 module.Plugin(self.resource, self.project_id).do()
+
+        except Exception as e:
+            print(f"[PluginManager.launch_all] {e}")
+            tb1 = traceback.TracebackException.from_exception(e)
+            print("".join(tb1.format()))
 
     def launch(self, plugin_name):
         try:
