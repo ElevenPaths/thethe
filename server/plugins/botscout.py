@@ -4,7 +4,9 @@ import traceback
 from server.entities.resource_types import ResourceType
 
 from tasks.tasks import celery_app
-from server.entities.plugin_base import finishing_task
+from server.entities.plugin_result_types import PluginResultStatus
+from server.entities.resource_base import Resource
+
 
 # Login with the following information:
 # Login Name: zigineki@getnada.com

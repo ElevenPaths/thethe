@@ -14,6 +14,7 @@ API_KEY = KeyRing().get("YOUR_PLUGIN_NAME")
 from server.entities.resource_types import ResourceType
 from server.entities.resource_base import Resource
 from tasks.tasks import celery_app
+from server.entities.plugin_result_types import PluginResultStatus
 
 
 """

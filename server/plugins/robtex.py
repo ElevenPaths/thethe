@@ -5,6 +5,7 @@ import requests
 from server.entities.resource_base import Resource
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
+from server.entities.plugin_result_types import PluginResultStatus
 
 
 # Which resources are this plugin able to work with

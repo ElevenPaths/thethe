@@ -9,7 +9,8 @@ from server.entities.resource_base import Resource
 
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
-from server.entities.plugin_base import finishing_task
+from server.entities.plugin_result_types import PluginResultStatus
+
 
 # https://docs.binaryedge.io/api-v2/
 URL = "https://api.binaryedge.io/v2/query/ip/{ip}"

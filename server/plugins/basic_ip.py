@@ -19,7 +19,7 @@ PLUGIN_AUTOSTART = True
 PLUGIN_DESCRIPTION = "Run a subset of plugins to gather ASN, Network and rDNS information on a IP address"
 PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
-PLUGIN_NAME = "basic"
+PLUGIN_NAME = "basic_ip"
 PLUGIN_NEEDS_API_KEY = False
 
 API_KEY = False
