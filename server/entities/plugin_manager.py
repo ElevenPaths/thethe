@@ -80,7 +80,7 @@ class PluginManager:
     @staticmethod
     def get_plugin_names():
         db = DB("plugins")
-        return [plugin["name"] for plugin in db.collection.find({})]
+        return [plugin["name"] for plugin in db.collection.find({"needs_apikey": True})]
 
     @staticmethod
     def get_plugins_for_resource(resource_type_as_string):
