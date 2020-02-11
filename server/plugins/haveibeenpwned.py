@@ -1,12 +1,13 @@
 import traceback
 
 from server.entities.resource_types import ResourceType
+from server.entities.resource_base import Resource
 from tasks.tasks import celery_app
 import json
 import requests
 
 from tasks.api_keys import KeyRing
-from server.entities.plugin_base import finishing_task
+
 
 URL = "https://haveibeenpwned.com/api/v3/{service}/{account}"
 

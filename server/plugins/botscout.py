@@ -15,6 +15,8 @@ from server.entities.plugin_base import finishing_task
 import json
 import urllib.request
 from bs4 import BeautifulSoup
+from server.entities.resource_base import Resource
+
 from server.entities.resource_manager import ResourceManager
 
 from tasks.api_keys import KeyRing

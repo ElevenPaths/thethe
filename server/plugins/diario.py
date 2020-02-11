@@ -4,7 +4,7 @@ import requests
 
 from diario import Diario
 
-from server.entities.plugin_base import finishing_task
+from server.entities.resource_base import Resource
 from server.entities.resource_types import ResourceType
 from server.entities.plugin_result_types import PluginResultStatus
 from tasks.api_keys import KeyRing

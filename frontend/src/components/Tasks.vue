@@ -8,7 +8,7 @@
       </template>
       <v-list>
         <v-subheader>Remaining tasks...</v-subheader>
-        <v-list-tile v-for="resource in runningTasks" :key="resource._id">
+        <v-list-tile v-for="(resource, index) in runningTasks" :key="index">
           <v-list-tile-avatar>
             <v-progress-circular :size="20" :width="2" indeterminate color="primary"></v-progress-circular>
           </v-list-tile-avatar>

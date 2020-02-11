@@ -6,6 +6,7 @@ import requests, base64
 
 from tasks.api_keys import KeyRing
 from server.entities.resource_manager import ResourceManager
+from server.entities.resource_base import Resource
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 from server.entities.plugin_result_types import PluginResultStatus

@@ -10,7 +10,7 @@ from flask import Blueprint, request, abort, jsonify
 
 from server.utils.password import token_required
 
-from server.entities.resource_manager import ResourceManager
+from server.entities.resource_base import Resource
 from server.entities.resource_types import ResourceType, ResourceTypeException
 from server.entities.user import User
 from server.entities.pastebin_manager import PastebinManager
@@ -42,7 +42,7 @@ def get_related_plugins(user):
         return json.dumps(plugin_list, default=str)
 
     except Exception as e:
-        print(e)
+        print(f"[get_related_plugins]: {e}")
         return jsonify({"error_message": "Error getting related plugins"}), 400
 
 
@@ -51,19 +51,17 @@ def get_related_plugins(user):
 def launch_plugin(user):
     try:
         resource_id = bson.ObjectId(request.json["resource_id"])
-        resource_type_as_string = request.json["resource_type"]
         plugin_name = request.json["plugin_name"]
 
         project = User(user).get_active_project()
-        resource_type = ResourceType(resource_type_as_string)
-        resource = ResourceManager.get(resource_id)
+        resource = Resource(resource_id)
 
         resource.launch_plugin(project.get_id(), plugin_name)
         return jsonify({"sucess_message": "ok"})
 
     except Exception as e:
-        print(e)
-        return jsonify({"error_message": "Error unlinking resource from project"}), 400
+        print(f"[launch_plugin]: {e}")
+        return jsonify({"error_message": "Error launching plugin"}), 400
 
 
 @plugins_api.route("/api/load_paste", methods=["POST"])

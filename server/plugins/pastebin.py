@@ -6,6 +6,7 @@ import requests
 
 from server.db import DB
 from server.entities.pastebin_manager import PastebinManager, Paste
+from server.entities.resource_base import Resource
 from server.entities.resource_types import ResourceType
 from server.entities.plugin_result_types import PluginResultStatus
 

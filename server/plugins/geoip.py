@@ -6,7 +6,8 @@ import urllib.request
 from tasks.api_keys import KeyRing
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
-from server.entities.plugin_base import finishing_task
+from server.entities.resource_base import Resource
+
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.IPv4]
