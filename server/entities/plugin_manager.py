@@ -79,8 +79,25 @@ def _load_module(plugin_name):
 class PluginManager:
     @staticmethod
     def get_plugin_names():
-        db = DB("plugins")
-        return [plugin["name"] for plugin in db.collection.find({"needs_apikey": True})]
+        try:
+            db = DB("plugins")
+            plugins = db.collection.find({"needs_apikey": True})
+
+            non_apikeys_fields = []
+            for plugin in plugins:
+                non_apikeys_fields.extend(plugin["apikey_names"])
+
+            db = DB("apikeys")
+            apikeys = [apikey["name"] for apikey in db.collection.find({})]
+
+            non_apikeys_fields = set(non_apikeys_fields) - set(apikeys)
+
+            return list(non_apikeys_fields)
+
+        except Exception as e:
+            print(f"[PluginManager.get_plugin_names] {e}")
+            tb1 = traceback.TracebackException.from_exception(e)
+            print("".join(tb1.format()))
 
     @staticmethod
     def get_plugins_for_resource(resource_type_as_string):
