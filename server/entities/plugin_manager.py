@@ -85,7 +85,7 @@ class PluginManager:
     @staticmethod
     def get_plugins_for_resource(resource_type_as_string):
         db = DB("plugins")
-        plugins = db.collection.find({"target": [resource_type_as_string]}).sort(
+        plugins = db.collection.find({"target": resource_type_as_string}).sort(
             [("name", pymongo.ASCENDING)]
         )
         results = []
