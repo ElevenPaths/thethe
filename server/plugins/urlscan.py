@@ -43,7 +43,7 @@ class Plugin:
                 "resource_id": self.resource.get_id_as_string(),
                 "project_id": self.project_id,
                 "resource_type": resource_type.value,
-                "plugin_name": Plugin.name,
+                "plugin_name": PLUGIN_NAME,
             }
             urlscan.delay(**to_task)
 
