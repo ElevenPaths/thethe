@@ -1,3 +1,4 @@
+# TODO: Plugin need testing before enabling it
 # User zigineki@getnada.com
 # https://otx.alienvault.com/settings
 
@@ -6,11 +7,12 @@ import json
 import requests, base64
 
 from server.entities.resource_manager import ResourceManager
+from server.entities.plugin_result_types import PluginResultStatus
+
 
 from tasks.api_keys import KeyRing
 
 # https://otx.alienvault.com/api/v1/indicators/file/6c5360d41bd2b14b1565f5b18e5c203cf512e493/analysis
-API_KEY = KeyRing().get("otx")
 
 URL_HASH = "https://otx.alienvault.com/api/v1/indicators/file/{file_hash}/{section}"
 URL_URL = "https://otx.alienvault.com/api/v1/indicators/url/{url}/{section}"
@@ -34,24 +36,20 @@ RESOURCE_TARGET = [
 ]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "OTX AlienVault Feeds Threats"
-PLUGIN_API_KEY = True
+PLUGIN_DISABLE = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "otx"
-PLUGIN_AUTOSTART = False
-# TODO: Plugin need testing before enabling it
-PLUGIN_DISABLE = True
+PLUGIN_NEEDS_API_KEY = True
+
+API_KEY = KeyRing().get("otx")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://otx.alienvault.com/api"
+API_KEY_NAMES = ["otx"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://otx.alienvault.com/api"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource

@@ -8,30 +8,26 @@ import requests
 from tasks.api_keys import KeyRing
 from server.entities.plugin_base import finishing_task
 
-API_KEY = KeyRing().get("haveibeenpwned")
 URL = "https://haveibeenpwned.com/api/v3/{service}/{account}"
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.EMAIL]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "Check if this account has been compromised in a data breach"
-PLUGIN_API_KEY = True
+PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "haveibeenpwned"
-PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = True
+
+API_KEY = KeyRing().get("haveibeenpwned")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://haveibeenpwned.com/API/v3"
+API_KEY_NAMES = ["haveibeenpwned"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://haveibeenpwned.com/API/v3"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -72,31 +68,41 @@ def breach_detail_filler(sites):
 @celery_app.task
 def haveibeenpwned(plugin_name, project_id, resource_id, resource_type, email):
     try:
+        API_KEY = KeyRing().get("haveibeenpwned")
         if not API_KEY:
             print("No API key...!")
-            return None
+            result_status = PluginResultStatus.NO_API_KEY
 
-        response = []
-        headers = {
-            "user-agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:64.0) Gecko/20100101 Firefox/64.0",
-            "hibp-api-key": API_KEY,
-        }
-        hibp = requests.get(
-            URL.format(**{"service": "breachedaccount", "account": email}),
-            headers=headers,
-        )
-        if not hibp.status_code == 200:
-            print("HIBP Request error!")
-            return None
         else:
-            hibp = json.loads(hibp.content)
-            response = hibp
+            response = []
+            headers = {
+                "user-agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:64.0) Gecko/20100101 Firefox/64.0",
+                "hibp-api-key": API_KEY,
+            }
+            hibp = requests.get(
+                URL.format(**{"service": "breachedaccount", "account": email}),
+                headers=headers,
+            )
 
-        details = breach_detail_filler(response)
-        if not len(details) == len(response):
-            print("[HIBP] An update should be needed in breaches.json file")
+            if not hibp.status_code == 200:
+                print("HIBP Request error!")
+                result_status = PluginResultStatus.RETURN_NONE
 
-        finishing_task(plugin_name, project_id, resource_id, resource_type, details)
+            else:
+                hibp = json.loads(hibp.content)
+                response = hibp
+                result_status = PluginResultStatus.COMPLETED
+
+            details = breach_detail_filler(response)
+            if not len(details) == len(response):
+                print("[HIBP] An update should be needed in breaches.json file")
+                result_status = PluginResultStatus.FAILED
+
+            resource = Resource(resource_id)
+            if resource:
+                resource.set_plugin_results(
+                    plugin_name, project_id, response, result_status
+                )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

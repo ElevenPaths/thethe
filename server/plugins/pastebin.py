@@ -7,19 +7,12 @@ import requests
 from server.db import DB
 from server.entities.pastebin_manager import PastebinManager, Paste
 from server.entities.resource_types import ResourceType
-from server.entities.plugin_base import finishing_task
+from server.entities.plugin_result_types import PluginResultStatus
+
 from tasks.api_keys import KeyRing
 from tasks.googlesearch import restricted_googlesearch
 from tasks.tasks import celery_app
 
-
-API_KEY = KeyRing().get("pastebin")
-# pastebin.com says 1 second between queries, so be cautious and lets it be 1.1 seconds
-# https://pastebin.com/doc_scraping_api#5
-RATE_LIMIT = 1.1
-
-METADATA_URL = "https://scrape.pastebin.com/api_scrape_item_meta.php?i="
-RAWPASTE_URL = "https://scrape.pastebin.com/api_scrape_item.php?i="
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [
@@ -32,26 +25,31 @@ RESOURCE_TARGET = [
 ]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "Use Google Search API to retrieve 'pastebin.com' results"
-PLUGIN_API_KEY = True
+PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "pastebin"
-PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = True
+
+API_KEY = KeyRing().get("pastebin")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://pastebin.com/doc_scraping_api"
+API_KEY_NAMES = ["pastebin"]
+
 
 # This is the engine for pastebin, other sites should be created in control panel (GMAIL ACCOUNT REQUIRED)
 SEARCH_ENGINE = "002161999705497793957:w2bsgwyai92"
 
+# pastebin.com says 1 second between queries, so be cautious and lets it be 1.1 seconds
+# https://pastebin.com/doc_scraping_api#5
+RATE_LIMIT = 1.1
+
+METADATA_URL = "https://scrape.pastebin.com/api_scrape_item_meta.php?i="
+RAWPASTE_URL = "https://scrape.pastebin.com/api_scrape_item.php?i="
+
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://pastebin.com/doc_scraping_api"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -86,17 +84,28 @@ def pastebin(
     plugin_name, project_id, resource_id, resource_type, target, search_engine
 ):
     try:
-        # We use "googlesearch" subtask to gather results as pastebin.com does not
-        # have a in-search engine
-        query_result = restricted_googlesearch(search_engine, target)
+        query_result = None
+        API_KEY = KeyRing().get("pastebin")
+        if not API_KEY:
+            print("No API key...!")
+            result_status = PluginResultStatus.NO_API_KEY
+        else:
+            # We use "googlesearch" subtask to gather results as pastebin.com does not
+            # have a in-search engine
+            query_result = restricted_googlesearch(search_engine, target)
 
-        # Now, process google results and get the pastes and metadata
-        if query_result:
-            query_result = pastebin_get_results(query_result)
+            # Now, process google results and get the pastes and metadata
+            if query_result:
+                query_result = pastebin_get_results(query_result)
+                result_status = PluginResultStatus.COMPLETED
+            else:
+                result_status = PluginResultStatus.RETURN_NONE
 
-        finishing_task(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, query_result, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

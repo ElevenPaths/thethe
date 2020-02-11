@@ -5,33 +5,28 @@ import requests
 from tasks.api_keys import KeyRing
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
-from server.entities.plugin_base import finishing_task
+from server.entities.plugin_result_types import PluginResultStatus
 
-API_KEY = KeyRing().get("abuseipdb")
 URL = "https://api.abuseipdb.com/api/v2/check"
-
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "Check the report history of any IP address to see if anyone else has reported malicious activities"
-PLUGIN_API_KEY = True
+PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "abuseipdb"
-PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = True
+
+API_KEY = KeyRing().get("abuseipdb")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://www.abuseipdb.com/api"
+API_KEY_NAMES = ["abuseipdb"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://docs.abuseipdb.com/"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -57,22 +52,33 @@ class Plugin:
 @celery_app.task
 def abuseipdb(ip, plugin_name, project_id, resource_id, resource_type):
     try:
-        if not API_KEY:
-            print("No API key...!")
-            return None
-
+        result_status = PluginResultStatus.STARTED
+        API_KEY = KeyRing().get("abuseipdb")
         response = {}
-        headers = {"Accept": "application/json", "Key": API_KEY}
-        data = {"ipAddress": ip}
-        abuse_response = requests.get(URL, headers=headers, json=data)
-        if not abuse_response.status_code == 200:
-            print("API key error!")
-            return None
-        else:
-            response = json.loads(abuse_response.content)
-            print(response)
 
-        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
+        if not API_KEY:
+            print("[abuseipdb]: No API key...!")
+            result_status = PluginResultStatus.NO_API_KEY
+
+        else:
+            headers = {"Accept": "application/json", "Key": API_KEY}
+            data = {"ipAddress": ip}
+            abuse_response = requests.get(URL, headers=headers, json=data)
+
+            if not abuse_response.status_code == 200:
+                print("[abuseipdb]: Return non 200 code")
+                result_status = PluginResultStatus.RETURN_NONE
+
+            else:
+                response = json.loads(abuse_response.content)
+                print(response)
+                result_status = PluginResultStatus.COMPLETED
+
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, response, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

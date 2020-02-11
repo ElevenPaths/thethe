@@ -4,32 +4,28 @@ from tasks.tasks import celery_app
 
 from tasks.deps.tacyt import TacytApp as tacytsdk
 from tasks.api_keys import KeyRing
-from server.entities.plugin_base import finishing_task
+from server.entities.plugin_result_types import PluginResultStatus
 
-APP_ID = KeyRing().get("tacyt-appid")
-SECRET_KEY = KeyRing().get("tacyt-secret")
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.HASH]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "Search an APK in Tacyt and retrieve all its info"
-PLUGIN_API_KEY = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "tacyt"
-PLUGIN_AUTOSTART = False
 PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = True
+
+APP_ID = KeyRing().get("tacyt-appid")
+SECRET_KEY = KeyRing().get("tacyt-secret")
+API_KEY_IN_DDBB = bool(APP_ID) & bool(SECRET_KEY)
+API_KEY_DOC = "https://tacyt.elevenpaths.com/"
+API_KEY_NAMES = ["tacyt-appid", "tacyt-secret"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://tacyt.elevenpaths.com/"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(APP_ID) & bool(SECRET_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -125,19 +121,37 @@ __OUT_FIELDS = [
 @celery_app.task
 def tacyt(plugin_name, project_id, resource_id, resource_type, apk_hash):
     application = None
+    result_status = PluginResultStatus.STARTED
+
     try:
-        api = tacytsdk.TacytApp(APP_ID, SECRET_KEY)
-        search = api.search_apps(query=apk_hash, outfields=__OUT_FIELDS)
+        APP_ID = KeyRing().get("tacyt-appid")
+        SECRET_KEY = KeyRing().get("tacyt-secret")
+        API_KEY_IN_DDBB = bool(APP_ID) & bool(SECRET_KEY)
+        if not API_KEY_IN_DDBB:
+            print("No App ID key...!")
+            result_status = PluginResultStatus.NO_API_KEY
+        else:
+            api = tacytsdk.TacytApp(APP_ID, SECRET_KEY)
+            search = api.search_apps(query=apk_hash, outfields=__OUT_FIELDS)
 
-        if (
-            search.data
-            and search.data.get("data")
-            and search.data.get("data").get("result")
-            and search.data.get("data").get("result").get("numResults") == 1
-        ):
-            application = search.data.get("data").get("result").get("applications")[0]
+            if (
+                search.data
+                and search.data.get("data")
+                and search.data.get("data").get("result")
+                and search.data.get("data").get("result").get("numResults") == 1
+            ):
+                application = (
+                    search.data.get("data").get("result").get("applications")[0]
+                )
+                result_status = PluginResultStatus.COMPLETED
+            else:
+                result_status = PluginResultStatus.RETURN_NONE
 
-        finishing_task(plugin_name, project_id, resource_id, resource_type, application)
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, application, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

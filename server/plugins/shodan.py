@@ -12,26 +12,22 @@ from tasks.tasks import celery_app
 RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a description, if target is actively reached and name}
-PLUGIN_API_KEY = True
 PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "Use Shodan to get information about an IP address"
 PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "shodan"
+PLUGIN_NEEDS_API_KEY = True
 
 API_KEY = KeyRing().get("shodan")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://developer.shodan.io/api"
+API_KEY_NAMES = ["shodan"]
+
 URL = "https://api.shodan.io/shodan/host/{ip}?key={API_KEY}"
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://developer.shodan.io/api"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -54,11 +50,12 @@ class Plugin:
 
 
 @celery_app.task
-def shodan(plugin_name, project_id, resource_id, ip):
+def shodan(plugin_name, project_id, resource_id, resource_type, ip):
     result_status = PluginResultStatus.STARTED
     response = {}
 
     try:
+        API_KEY = KeyRing().get("shodan")
         if not API_KEY:
             print("No API key...!")
             result_status = PluginResultStatus.NO_API_KEY

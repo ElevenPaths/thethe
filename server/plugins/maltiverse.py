@@ -9,13 +9,8 @@ from tasks.api_keys import KeyRing
 
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
-from server.entities.plugin_base import finishing_task
+from server.entities.plugin_result_types import PluginResultStatus
 
-MALTIVERSE_EMAIL = KeyRing().get("maltiverse_email")
-MALTIVERSE_PASS = KeyRing().get("maltiverse_pass")
-
-api = Maltiverse()
-api.login(MALTIVERSE_EMAIL, password=MALTIVERSE_PASS)
 
 URL_IP = "https://api.maltiverse.com/ip/{ip}"
 URL_DOMAIN = "https://api.maltiverse.com/hostname/{hostname}"
@@ -32,23 +27,24 @@ RESOURCE_TARGET = [
 ]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "Search indicators of compromise or something related"
-PLUGIN_API_KEY = True
+PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "maltiverse"
-PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = True
+
+MALTIVERSE_EMAIL = KeyRing().get("maltiverse_email")
+MALTIVERSE_PASS = KeyRing().get("maltiverse_pass")
+API_KEY_IN_DDBB = bool(MALTIVERSE_EMAIL) & bool(MALTIVERSE_PASS)
+API_KEY_DOC = "https://app.swaggerhub.com/apis-docs/maltiverse/api/1.0.0-oas3"
+API_KEY_NAMES = ["maltiverse_email", "maltiverse_pass"]
+
+api = Maltiverse()
+api.login(MALTIVERSE_EMAIL, password=MALTIVERSE_PASS)
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://app.swaggerhub.com/apis-docs/maltiverse/api/1.0.0-oas3"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(MALTIVERSE_PASS) & bool(MALTIVERSE_EMAIL)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -118,27 +114,44 @@ def maltiverse_hash(hash):
 @celery_app.task
 def maltiverse(plugin_name, project_id, resource_id, resource_type, target):
     try:
+        MALTIVERSE_EMAIL = KeyRing().get("maltiverse_email")
+        MALTIVERSE_PASS = KeyRing().get("maltiverse_pass")
+        API_KEY = bool(MALTIVERSE_EMAIL) & bool(MALTIVERSE_PASS)
         query_result = None
-        resource_type = ResourceType(resource_type)
-        if resource_type == ResourceType.IPv4:
-            query_result = maltiverse_ip(target)
-        elif resource_type == ResourceType.DOMAIN:
-            query_result = maltiverse_domain(target)
-        elif resource_type == ResourceType.URL:
-            query_result = maltiverse_url(target)
-        elif resource_type == ResourceType.HASH:
-            query_result = maltiverse_hash(target)
+
+        if not API_KEY:
+            print(["[maltiverse]: No API Keys..."])
+            result_status = PluginResultStatus.NO_API_KEY
+
         else:
-            print("Maltiverse resource type does not found")
 
-        if not query_result:
-            return
+            result_status = PluginResultStatus.STARTED
 
-        print(query_result)
+            resource_type = ResourceType(resource_type)
+            if resource_type == ResourceType.IPv4:
+                query_result = maltiverse_ip(target)
+            elif resource_type == ResourceType.DOMAIN:
+                query_result = maltiverse_domain(target)
+            elif resource_type == ResourceType.URL:
+                query_result = maltiverse_url(target)
+            elif resource_type == ResourceType.HASH:
+                query_result = maltiverse_hash(target)
+            else:
+                print("Maltiverse resource type does not found")
+                result_status = PluginResultStatus.RETURN_NONE
 
-        finishing_task(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
+            if not query_result:
+                result_status = PluginResultStatus.RETURN_NONE
+            else:
+                result_status = PluginResultStatus.COMPLETED
+
+            print(query_result)
+
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, response, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

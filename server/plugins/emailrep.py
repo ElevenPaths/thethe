@@ -8,32 +8,26 @@ from server.entities.resource_types import ResourceType
 from server.entities.plugin_base import finishing_task
 
 # At this time there is no need for an APIKEY
-# API_KEY = KeyRing().get("emailrep")
 URL = "https://emailrep.io/{email}"
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.EMAIL]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = 'Illuminate the "reputation" behind an email address'
-PLUGIN_API_KEY = False
+PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "emailrep"
-PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = False
 
-API_KEY = False
+API_KEY = KeyRing().get("emailrep")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://emailrep.io/key"
+API_KEY_NAMES = ["emailrep"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = ""
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -65,18 +59,25 @@ def emailrep(plugin_name, project_id, resource_id, resource_type, email):
         #     return None
 
         response = {}
+        result_status = PluginResultStatus.STARTED
+
         headers = {"Accept": "application/json"}
         emailrep_response = requests.get(
             URL.format(**{"email": email}), json={}, headers=headers
         )
         if not emailrep_response.status_code == 200:
-            # print("API key error!")
             print("Emailrep error!")
-            return None
+            result_status = PluginResultStatus.RETURN_NONE
+
         else:
             response = json.loads(emailrep_response.content)
+            result_status = PluginResultStatus.COMPLETED
 
-        finishing_task(plugin_name, project_id, resource_id, resource_type, response)
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, response, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

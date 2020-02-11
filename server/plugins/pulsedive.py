@@ -1,6 +1,4 @@
 # TODO: Plugin pending of testing
-# user: user11 o zigineki@getnada.com
-# pass: Developer_11
 
 import traceback
 import json
@@ -10,14 +8,26 @@ from tasks.api_keys import KeyRing
 from server.entities.resource_manager import ResourceManager
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
+from server.entities.plugin_result_types import PluginResultStatus
 
-API_KEY = KeyRing().get("pulsedive")
-PLUGIN_API_KEY = True
-URL = "https://pulsedive.com/api/analyze.php"
-URL_INFO = "https://pulsedive.com/api/info.php"
-PLUGIN_DISABLE = True
 RESOURCE_TARGET = []
 
+# Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
+PLUGIN_DESCRIPTION = ""
+PLUGIN_DISABLE = True
+PLUGIN_IS_ACTIVE = False
+PLUGIN_NAME = "pulsedive"
+PLUGIN_NEEDS_API_KEY = True
+
+API_KEY = KeyRing().get("pulsedive")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = ""
+API_KEY_NAMES = ["pulsedive"]
+
+PLUGIN_NEEDS_API_KEY = True
+URL = "https://pulsedive.com/api/analyze.php"
+URL_INFO = "https://pulsedive.com/api/info.php"
 
 ## Indicator(https://pulsedive.com/api/?q=indicators)
 ## param = domain, md5, sha1, sha256

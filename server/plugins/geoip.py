@@ -12,25 +12,20 @@ from server.entities.plugin_base import finishing_task
 RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = True
 PLUGIN_DESCRIPTION = "Use a GeoIP service to geolocate an IP address"
-PLUGIN_API_KEY = False
+PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "geoip"
-PLUGIN_AUTOSTART = True
-PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = False
 
 API_KEY = KeyRing().get("ipstack")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://ipstack.com/signup/free"
+API_KEY_NAMES = ["ipstack"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = ""
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -58,8 +53,15 @@ def geoip(plugin_name, project_id, resource_id, resource_type, ip):
     try:
         URL = f"http://api.ipstack.com/{ip}?access_key={API_KEY}&format=1"
         response = urllib.request.urlopen(URL).read()
+
         result = json.loads(response)
-        finishing_task(plugin_name, project_id, resource_id, resource_type, result)
+        result_status = PluginResultStatus.COMPLETED
+
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, response, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)

@@ -1,3 +1,5 @@
+# TODO: Unfinished plugin need refactoring
+
 import traceback
 import json
 import requests
@@ -7,8 +9,6 @@ from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 from server.entities.plugin_base import finishing_task
 
-# 250 requests left, 31 days until renewal.
-API_KEY = KeyRing().get("binaryedge")
 # https://docs.binaryedge.io/api-v2/
 URL = "https://api.binaryedge.io/v2/query/ip/{ip}"
 
@@ -16,24 +16,21 @@ URL = "https://api.binaryedge.io/v2/query/ip/{ip}"
 RESOURCE_TARGET = [ResourceType.IPv4]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "List of recent events for the specified host, including details of exposed ports and services"
-PLUGIN_API_KEY = True
+PLUGIN_DISABLE = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "binaryedge"
-PLUGIN_AUTOSTART = False
-# TODO: Needs heavy testing
-PLUGIN_DISABLE = True
+PLUGIN_NEEDS_API_KEY = True
+
+# 250 requests left, 31 days until renewal.
+API_KEY = KeyRing().get("binaryedge")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://docs.binaryedge.io/api-v2/"
+API_KEY_NAMES = ["binaryedge"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://docs.binaryedge.io/api-v2/"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -59,7 +56,7 @@ class Plugin:
 @celery_app.task
 def binaryedge(plugin_name, project_id, resource_id, resource_type, ip):
     try:
-
+        API_KEY = KeyRing().get("binaryedge")
         if not API_KEY:
             print("No API key...!")
             return {}

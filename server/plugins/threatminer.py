@@ -4,38 +4,32 @@ import traceback
 
 from server.entities.resource_types import ResourceType
 from server.entities.resource_manager import ResourceManager
+from server.entities.plugin_result_types import PluginResultStatus
+
 from tasks.tasks import celery_app
 import json
 import requests
 
-# from tasks.api_keys import KeyRing
-
-# API_KEY = KeyRing().get("binaryedge")
-
-# IMPORTANT NOTE: Please note that the rate limit is set to 10 queries per minute.
-API_KEY = False
 
 # Which resources are this plugin able to work with
 RESOURCE_TARGET = [ResourceType.DOMAIN]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "List Threats for domain"
-PLUGIN_API_KEY = False
+PLUGIN_DISABLE = True
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "threatminer"
-PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = True
+PLUGIN_NEEDS_API_KEY = False
+
+# IMPORTANT NOTE: Please note that the rate limit is set to 10 queries per minute.
+API_KEY = False
+API_KEY_IN_DDBB = False
+API_KEY_DOC = ""
+API_KEY_NAMES = []
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = ""
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource

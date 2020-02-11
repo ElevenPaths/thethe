@@ -8,9 +8,8 @@ from urllib.parse import urlparse
 from tasks.api_keys import KeyRing
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
-from server.entities.plugin_base import finishing_task
+from server.entities.plugin_result_types import PluginResultStatus
 
-API_KEY = KeyRing().get("phishtank")
 
 URL = "https://checkurl.phishtank.com/checkurl/"
 SCREENSHOTS_STORAGE_PATH = "/temp/phishtank"
@@ -22,23 +21,20 @@ USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36
 RESOURCE_TARGET = [ResourceType.URL]
 
 # Plugin Metadata {a description, if target is actively reached and name}
+PLUGIN_AUTOSTART = False
 PLUGIN_DESCRIPTION = "Check in PhishTank if this URL is marked as a phishing"
-PLUGIN_API_KEY = True
+PLUGIN_DISABLE = False
 PLUGIN_IS_ACTIVE = False
 PLUGIN_NAME = "phishtank"
-PLUGIN_AUTOSTART = False
-PLUGIN_DISABLE = False
+PLUGIN_NEEDS_API_KEY = True
+
+API_KEY = KeyRing().get("phishtank")
+API_KEY_IN_DDBB = bool(API_KEY)
+API_KEY_DOC = "https://www.phishtank.com/api_info.php"
+API_KEY_NAMES = ["phishtank"]
 
 
 class Plugin:
-    description = PLUGIN_DESCRIPTION
-    is_active = PLUGIN_IS_ACTIVE
-    name = PLUGIN_NAME
-    api_key = PLUGIN_API_KEY
-    api_doc = "https://www.phishtank.com/api_info.php"
-    autostart = PLUGIN_AUTOSTART
-    apikey_in_ddbb = bool(API_KEY)
-
     def __init__(self, resource, project_id):
         self.project_id = project_id
         self.resource = resource
@@ -63,9 +59,10 @@ class Plugin:
 
 def phishtank_check(url):
     try:
+        API_KEY = KeyRing().get("phishtank")
         if not API_KEY:
             print("No API key...!")
-            return None
+            result_status = PluginResultStatus.NO_API_KEY
 
         response = {}
 
@@ -107,9 +104,10 @@ def phishtank_screenshot(phish_id):
 
         regex_url = "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 
+        API_KEY = KeyRing().get("phishtank")
         if not API_KEY:
             print("No API key...!")
-            return None
+            result_status = PluginResultStatus.NO_API_KEY
 
         response = {}
 
@@ -143,12 +141,12 @@ def phishtank_screenshot(phish_id):
 
 def phishtank_tech_details(phish_id):
     try:
-
         URL_main = f"https://www.phishtank.com/phish_detail.php?phish_id={phish_id}"
 
+        API_KEY = KeyRing().get("phishtank")
         if not API_KEY:
             print("No API key...!")
-            return None
+            result_status = PluginResultStatus.NO_API_KEY
 
         response = {}
 
@@ -171,16 +169,30 @@ def phishtank_tech_details(phish_id):
 
 @celery_app.task
 def phishtank(plugin_name, project_id, resource_id, resource_type, url):
-    try:
-        resource_type = ResourceType(resource_type)
-        if resource_type == ResourceType.URL:
-            query_result = phishtank_check(url)
-        else:
-            print("phishtank resource type does not found")
+    result_status = PluginResultStatus.STARTED
+    query_result = None
 
-        finishing_task(
-            plugin_name, project_id, resource_id, resource_type, query_result
-        )
+    try:
+        API_KEY = KeyRing().get("phishtank")
+        if not API_KEY:
+            print("No API key...!")
+            result_status = PluginResultStatus.NO_API_KEY
+
+        else:
+            resource_type = ResourceType(resource_type)
+            if resource_type == ResourceType.URL:
+                query_result = phishtank_check(url)
+                result_status = PluginResultStatus.COMPLETED
+
+            else:
+                print("phishtank resource type does not found")
+                result_status = PluginResultStatus.RETURN_NONE
+
+        resource = Resource(resource_id)
+        if resource:
+            resource.set_plugin_results(
+                plugin_name, project_id, response, result_status
+            )
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
