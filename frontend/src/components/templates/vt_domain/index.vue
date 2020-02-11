@@ -389,6 +389,8 @@ export default {
 
   methods: {
     get_percentage: function(positives, total) {
+      if (total == 0) return 0;
+
       return Math.round((positives / total) * 100);
     },
 
