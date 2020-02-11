@@ -1,6 +1,7 @@
 import os
 import importlib
 import traceback
+import pymongo
 
 from server.db import DB
 from server.entities.resource_types import ResourceType
@@ -64,6 +65,17 @@ def _load_plugins(resource_type, name=None):
     return plugins
 
 
+def _load_module(plugin_name):
+    try:
+        module = importlib.import_module(f"{PLUGIN_HIERARCHY}.{plugin_name}")
+        return module
+
+    except Exception as e:
+        print(f"[_load_module] {e}")
+        tb1 = traceback.TracebackException.from_exception(e)
+        print("".join(tb1.format()))
+
+
 class PluginManager:
     @staticmethod
     def get_plugin_names():
@@ -73,7 +85,9 @@ class PluginManager:
     @staticmethod
     def get_plugins_for_resource(resource_type_as_string):
         db = DB("plugins")
-        plugins = db.collection.find({"target": [resource_type_as_string]})
+        plugins = db.collection.find({"target": [resource_type_as_string]}).sort(
+            [("name", pymongo.ASCENDING)]
+        )
         results = []
         for entry in plugins:
             results.append(
@@ -90,49 +104,26 @@ class PluginManager:
 
     def __init__(self, resource, project_id):
         self.resource = resource
-        self.plugins = _load_plugins(resource.get_type())
         self.project_id = project_id
 
     def launch_all(self, profile="pasive"):
         """
             Launch all the loaded plugins based on a profile (by default non active or noisy modules)
         """
-        for plugin in self.plugins:
-            if plugin.autostart:
-                print(f"Launching {plugin.name}")
-                plugin(self.resource, self.project_id).do()
+        for module in PluginManager.get_plugins_for_resource(
+            self.resource.get_type_value()
+        ):
+            if module.PLUGIN_AUTOSTART:
+                print(f"Launching {module.PLUGIN_NAME}")
+                module.Plugin(self.resource, self.project_id).do()
 
     def launch(self, plugin_name):
         try:
-            for plugin in self.plugins:
-                if plugin.name == plugin_name:
-                    return plugin(self.resource, self.project_id).do()
+            module = _load_module(plugin_name)
+            print(f"Launching {module.PLUGIN_NAME}")
+            return module.Plugin(self.resource, self.project_id).do()
 
         except Exception as e:
+            print(f"[PluginManager.launch] {e}")
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
-
-    def get_plugins(self):
-        """
-            Return a list of relevant plugins for a resource
-        """
-
-        def by_name(elem):
-            return elem["name"]
-
-        plugin_list = []
-        for plugin in self.plugins:
-            plugin = plugin(self.resource, self.project_id)
-            plugin_list.append(
-                {
-                    "name": plugin.name,
-                    "description": plugin.description,
-                    "api_key": plugin.api_key,
-                    "api_doc": plugin.api_doc,
-                    "is_active": plugin.is_active,
-                    "apikey_in_ddbb": plugin.apikey_in_ddbb,
-                }
-            )
-
-        plugin_list.sort(key=by_name)
-        return plugin_list
