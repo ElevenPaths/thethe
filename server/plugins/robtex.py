@@ -57,14 +57,16 @@ def robtex(plugin_name, project_id, resource_id, resource_type, ip):
     result_status = PluginResultStatus.STARTED
 
     try:
-
         robtex_response = requests.get(URL.format(**{"ip": ip}))
         if not robtex_response.status_code == 200:
             print("Robtext error!")
-            result_status = PluginResultStatus.RETURN_NONE
+            result_status = PluginResultStatus.FAILED
         else:
             response = json.loads(robtex_response.content)
-            result_status = PluginResultStatus.COMPLETED
+            if response:
+                result_status = PluginResultStatus.COMPLETED
+            else:
+                result_status = PluginResultStatus.RETURN_NONE
 
         resource = Resource(resource_id)
         if resource:
