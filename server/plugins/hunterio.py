@@ -58,7 +58,6 @@ class Plugin:
 
 def send_request(url):
     try:
-
         response = {}
         headers = {"Accept": "application/json", "Content-Type": "application/json"}
         hunterio_response = requests.get(url, headers=headers)

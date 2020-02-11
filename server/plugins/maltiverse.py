@@ -150,7 +150,7 @@ def maltiverse(plugin_name, project_id, resource_id, resource_type, target):
         resource = Resource(resource_id)
         if resource:
             resource.set_plugin_results(
-                plugin_name, project_id, response, result_status
+                plugin_name, project_id, query_result, result_status
             )
 
     except Exception as e:

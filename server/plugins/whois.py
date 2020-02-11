@@ -56,7 +56,7 @@ class Plugin:
 
 @celery_app.task
 def whois(plugin_name, project_id, resource_id, resource_type, domain):
-    response = None
+    query_result = None
     result_status = PluginResultStatus.STARTED
 
     try:
@@ -69,7 +69,7 @@ def whois(plugin_name, project_id, resource_id, resource_type, domain):
         resource = Resource(resource_id)
         if resource:
             resource.set_plugin_results(
-                plugin_name, project_id, response, result_status
+                plugin_name, project_id, query_result, result_status
             )
 
     except whois.parser.PywhoisError:

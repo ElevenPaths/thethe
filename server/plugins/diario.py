@@ -60,7 +60,7 @@ def diario(plugin_name, project_id, resource_id, resource_type, document_hash):
     result = {"is_document": False}
 
     try:
-        if APP_ID and SECRET_KEY:
+        if not (APP_ID and SECRET_KEY):
             print("No App ID key...!")
             result_status = PluginResultStatus.NO_API_KEY
 

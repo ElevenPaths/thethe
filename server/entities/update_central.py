@@ -16,17 +16,19 @@ class UpdateCentral:
         status = ""
 
         if result_status == PluginResultStatus.NO_API_KEY:
-            message = f"no apikey in database"
+            message = f"there is a problem with de API KEY!"
             status = "error"
         elif result_status == PluginResultStatus.RETURN_NONE:
             message = f"received no results"
             status = "info"
         elif result_status == PluginResultStatus.FAILED:
-            message = f"failed"
+            message = f"plugin failed to run"
             status = "error"
         elif result_status == PluginResultStatus.COMPLETED:
             message = f"successfully completed"
             status = "success"
+
+        print(f"[UpdateCentral.set_pending_update]: {status} {message}")
 
         self.db.collection.insert_one(
             {
