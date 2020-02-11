@@ -5,6 +5,8 @@ import json
 import requests
 
 from tasks.api_keys import KeyRing
+from server.entities.resource_base import Resource
+
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 from server.entities.plugin_base import finishing_task

@@ -39,7 +39,7 @@ services:
     build: .
     container_name: thethe_server
     command: >
-      sh -c "python server/register_plugins.py && /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=debug -b 0.0.0.0:8000 --reload"
+      sh -c "python server/register_plugins.py && /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000 --reload"
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks

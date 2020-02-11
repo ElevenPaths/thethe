@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 
 import tasks.deps.metagoofil.metagoofil as _metagoofil
 
+from server.entities.resource_base import Resource
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 from server.entities.plugin_result_types import PluginResultStatus

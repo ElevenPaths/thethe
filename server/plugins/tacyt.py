@@ -1,4 +1,5 @@
 import traceback
+from server.entities.resource_base import Resource
 from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 

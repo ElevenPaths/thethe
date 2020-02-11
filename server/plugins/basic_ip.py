@@ -4,10 +4,11 @@ import json
 import traceback
 
 from ipwhois import IPWhois
+from server.entities.resource_base import Resource
 from server.entities.resource_types import ResourceType
+from server.entities.plugin_result_types import PluginResultStatus
 from tasks.tasks import celery_app
 from dns import resolver, reversename
-from server.entities.plugin_result_types import PluginResultStatus
 
 
 # Which resources are this plugin able to work with
@@ -123,7 +124,7 @@ def basic_ip(ip, plugin_name, project_id, resource_id, resource_type):
         resource = Resource(resource_id)
         if resource:
             resource.set_plugin_results(
-                plugin_name, project_id, response, result_status
+                plugin_name, project_id, query_result, result_status
             )
 
     except Exception as e:

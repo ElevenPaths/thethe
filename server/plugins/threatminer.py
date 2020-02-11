@@ -2,6 +2,7 @@
 import json
 import traceback
 
+from server.entities.resource_base import Resource
 from server.entities.resource_types import ResourceType
 from server.entities.resource_manager import ResourceManager
 from server.entities.plugin_result_types import PluginResultStatus
