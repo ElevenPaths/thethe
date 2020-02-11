@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap class="subheading"></v-layout>
+  <v-layout row wrap class="subheading">{{ resource }}</v-layout>
 </template>
 
 <script>
