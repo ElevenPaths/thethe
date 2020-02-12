@@ -7,9 +7,7 @@
       >
         <v-card-title>
           <v-card-text>
-            <p class="headline blue--text text--lighten-2 text-xs-center">
-              Project selection
-            </p>
+            <p class="headline blue--text text--lighten-2 text-xs-center">Project selection</p>
           </v-card-text>
         </v-card-title>
         <v-data-table v-if="true" :headers="headers" :items="projects">
@@ -21,12 +19,10 @@
               <td
                 class="text-xs-left subheading"
                 v-on:dblclick="open_project()"
-              >
-                {{ props.item.name }}
-              </td>
-              <td class="text-xs-left subheading">
-                {{ new Date(props.item.creation_date * 1000).toDateString() }}
-              </td>
+              >{{ props.item.name }}</td>
+              <td
+                class="text-xs-left subheading"
+              >{{ new Date(props.item.creation_date * 1000).toDateString() }}</td>
             </tr>
           </template>
         </v-data-table>
@@ -45,24 +41,21 @@
           small
           color="success"
           @click="user_is_creating_project = !user_is_creating_project"
-          >New</v-btn
-        >
+        >New</v-btn>
         <v-btn
           class="font-weight-bold"
           :disabled="!is_project_selected"
           small
           color="primary"
           @click="open_project"
-          >Open</v-btn
-        >
+        >Open</v-btn>
         <v-btn
           class="font-weight-bold"
           :disabled="!is_project_selected"
           small
           color="error"
           @click="delete_dialog = true"
-          >Delete</v-btn
-        >
+        >Delete</v-btn>
       </v-flex>
       <v-flex v-else>
         <v-form ref="new_project_form">
@@ -75,20 +68,13 @@
                 v-model.trim="new_project_name"
               ></v-text-field>
               <v-flex>
-                <v-btn
-                  class="font-weight-bold"
-                  small
-                  color="success"
-                  @click="create_project"
-                  >Add</v-btn
-                >
+                <v-btn class="font-weight-bold" small color="success" @click="create_project">Add</v-btn>
                 <v-btn
                   class="font-weight-bold"
                   small
                   color="warning"
                   @click="user_is_creating_project = !user_is_creating_project"
-                  >Cancel</v-btn
-                >
+                >Cancel</v-btn>
               </v-flex>
             </v-layout>
           </v-container>
@@ -128,7 +114,8 @@ export default {
       selected_project: {},
       user_is_creating_project: false,
       new_project_name: "",
-      delete_dialog: false
+      delete_dialog: false,
+      active_project: ""
     };
   },
   methods: {
@@ -141,6 +128,18 @@ export default {
         this.$store.dispatch(SET_PROJECT, selected_project);
         this.set_active_project();
       }
+    },
+
+    get_active_project: function() {
+      api_call({ url: "/api/get_active_project" })
+        .then(resp => {
+          if (resp.data.project_id) {
+            this.active_project = resp.data.project_id;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
 
     set_active_project: function() {
@@ -242,9 +241,12 @@ export default {
       maxLength: maxLength(64)
     }
   },
-  mounted: function() {
+  mounted: async function() {
     // Load projects when the component is drawn for the first time
-    this.get_projects();
+    if (this.$store.getters["is_authenticated"]) {
+      await this.get_projects();
+      await this.get_active_project();
+    }
   }
 };
 </script>

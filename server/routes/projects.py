@@ -26,10 +26,11 @@ def ping(user):
     try:
         timestamp = time.time()
         active_project = User(user).get_active_project()
-        if not active_project:
-            return jsonify({"error_message": "No active project"})
-        updates = active_project.get_updates(timestamp)
-        return jsonify(updates)
+        if active_project:
+            updates = active_project.get_updates(timestamp)
+            return jsonify(updates)
+        else:
+            return jsonify([])
 
     except Exception as e:
         tb1 = traceback.TracebackException.from_exception(e)
@@ -43,12 +44,15 @@ def ping(user):
 def get_projects(user):
     try:
         projects = User(user).get_projects()
+        if not projects:
+            return jsonify([])
+
         user_projects = Projects.get_project_docs(projects, ["name", "creation_date"])
         return jsonify(desobjectid_cursor(user_projects))
 
     except Exception as e:
-        print(f"Error when retrieving project {e}")
-        return jsonify({"error_message": "Error when retrieving a project"}), 400
+        print(f"Error when retrieving projects")
+        return jsonify({"error_message": "Error when retrieving projects"}), 400
 
 
 @projects_api.route("/api/new_project", methods=["POST"])
@@ -114,3 +118,18 @@ def set_active_project(user):
     except Exception as e:
         print(f"Error when setting an active project {e}")
         return jsonify({"error_message": "Error during active project setting"}), 400
+
+
+@projects_api.route("/api/get_active_project", methods=["POST"])
+@token_required
+def get_active_project(user):
+    try:
+        active_project = User(user).get_active_project()
+        if not active_project:
+            return jsonify({})
+        else:
+            return jsonify({"project_id": active_project.get_id()})
+
+    except Exception as e:
+        print(f"Error when getting active project {e}")
+        return jsonify({"error_message": "Error during active project getting"}), 400

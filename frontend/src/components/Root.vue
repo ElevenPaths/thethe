@@ -309,7 +309,7 @@ export default {
   mounted: function() {
     let self = this;
     this.update_interval = setInterval(function() {
-      if (self.is_authenticated) {
+      if (self.is_authenticated && self.is_project_opened) {
         self.$store.dispatch("update").catch();
       }
     }, 10000);

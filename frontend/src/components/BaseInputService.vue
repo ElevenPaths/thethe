@@ -50,13 +50,15 @@ export default {
     }
   },
   mounted: function() {
-    let params = {
-      url: "/api/get_all_plugins"
-    };
+    if (this.$store.getters["is_authenticated"]) {
+      let params = {
+        url: "/api/get_all_plugins"
+      };
 
-    api_call(params).then(resp => {
-      this.plugins = resp.data.sort();
-    });
+      api_call(params).then(resp => {
+        this.plugins = resp.data.sort();
+      });
+    }
   },
   watch: {
     reset: function(oldValue, newValue) {
