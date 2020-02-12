@@ -68,6 +68,7 @@ def abuseipdb(ip, plugin_name, project_id, resource_id, resource_type):
 
             if not abuse_response.status_code == 200:
                 print("[abuseipdb]: Return non 200 code")
+                print(abuse_response.content)
                 result_status = PluginResultStatus.RETURN_NONE
 
             else:
