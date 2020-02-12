@@ -56,6 +56,11 @@ def geoip(plugin_name, project_id, resource_id, resource_type, ip):
     response = None
 
     try:
+        API_KEY = KeyRing().get("geoip")
+        if not API_KEY:
+            print("No API key...!")
+            return None
+
         URL = f"http://api.ipstack.com/{ip}?access_key={API_KEY}&format=1"
         response = urllib.request.urlopen(URL).read()
 

@@ -11,7 +11,6 @@ from server.entities.resource_types import ResourceType
 from tasks.tasks import celery_app
 from server.entities.plugin_result_types import PluginResultStatus
 
-
 URL_IP = "https://api.maltiverse.com/ip/{ip}"
 URL_DOMAIN = "https://api.maltiverse.com/hostname/{hostname}"
 URL_URL = "https://api.maltiverse.com/url/{url}"
