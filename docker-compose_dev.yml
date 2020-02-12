@@ -1,4 +1,3 @@
-# Use root/example as user/password credentials
 version: "3.3"
 
 services:
@@ -31,9 +30,19 @@ services:
     volumes:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
-      - ./frontend/public/static/phishtank:/temp/phishtank
+      - ./external/phishtank:/temp/phishtank
     depends_on:
       - redis
+
+    celery:
+      build:
+        context: https://github.com/ElevenPaths/thethe_server.git
+      container_name: thethe_celery
+      command: /usr/local/bin/celery -A tasks.tasks:celery_app worker -l info
+      volumes:
+        - ./external/phishtank:/temp/phishtank
+      depends_on:
+        - redis
 
   server:
     build: .
@@ -44,8 +53,22 @@ services:
       - ./server:/usr/src/thethe/server
       - ./tasks:/usr/src/thethe/tasks
       - ./frontend/public/static/phishtank:/temp/phishtank
+
     ports:
       - 8000:8000
     depends_on:
       - mongo
       - celery
+
+    server:
+      build:
+        context: https://github.com/ElevenPaths/thethe_server.git
+      container_name: thethe_server
+      command: >
+        sh -c "python server/register_plugins.py &&
+        /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000"
+      volumes:
+        - ./external/phishtank:/temp/phishtank
+      depends_on:
+        - mongo
+        - celery

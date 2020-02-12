@@ -8,7 +8,9 @@ theTHE also contains some command-line tools integrated so you don't have to ope
 
 Your feedback is welcome.
 
-## Installation
+---
+
+### Installation
 
 First, clone this repository with:
 
@@ -24,15 +26,19 @@ docker-compose up -d
 
 You should see **thethe** in [https://localhost](https://localhost) after a :coffee:
 
-## Default user
+---
+
+### Default user
 
 By default, there is a single user **admin** with password **admin**
 
 Change the **admin** password as soon as you log into **thethe** the very first time.
 
+_(It is planned to have a proper multiuser support)_
+
 ---
 
-## API keys
+### API keys
 
 There are not API keys stored by default on the system.
 
@@ -40,7 +46,7 @@ To add an API key, there is an option in the user menu (upper-right corner) to m
 
 ---
 
-## Database backups and restoration
+### Database backups and restoration
 
 Mongodb has a bind volume to ease external storage and backups in a folder **mongodb_data**
 
@@ -62,14 +68,21 @@ restore_thethe_db.sh <mongodb_container_name>
 
 ---
 
-## Updating thethe
+### External storage
 
-See [updating thethe](https://github.com/ElevenPaths/thethe/wiki/How-to-update-thethe)
+There is a folder called **extenal** for everything theTHE should store outside a database: files, images, etc.
 
+Backup this folder according to your backup policy.
 
 ---
 
-## Development environment
+### Updating thethe
+
+See [updating thethe](https://github.com/ElevenPaths/thethe/wiki/How-to-update-thethe)
+
+---
+
+### Development environment
 
 If you want to collaborate with the project, a development version is provided:
 
@@ -95,7 +108,7 @@ npm run serve
 
 ---
 
-## More info
+### More info
 
 Website: [https://thethe.e-paths.com](https://thethe.e-paths.com/)
 
