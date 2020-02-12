@@ -16,11 +16,7 @@
             ></api-keys-item>
           </div>
           <b v-else>No API Keys yet...</b>
-          <base-input-service
-            v-show="add"
-            :reset="!add"
-            @add="addKey"
-          ></base-input-service>
+          <base-input-service v-show="add" :reset="!add" @add="addKey"></base-input-service>
         </v-container>
       </v-card-text>
       <v-card-actions>
@@ -31,8 +27,7 @@
             flat
             :disabled="!modified"
             @click.stop="send_apikeys(), $emit('apikeys-closed')"
-            >Save</v-btn
-          >
+          >Save</v-btn>
           <v-btn
             color="red darken-1"
             flat
@@ -40,8 +35,7 @@
               $emit('apikeys-closed');
               add = false;
             "
-            >Close</v-btn
-          >
+          >Close</v-btn>
         </v-flex>
       </v-card-actions>
     </v-card>
@@ -121,7 +115,9 @@ export default {
     }
   },
   mounted: function() {
-    this.load_keys();
+    if (this.$store.getters["is_authenticated"]) {
+      this.load_keys();
+    }
   }
 };
 </script>

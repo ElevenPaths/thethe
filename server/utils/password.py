@@ -22,7 +22,7 @@ def token_required(f):
             if not "Authorization" in request.headers:
                 return (
                     jsonify({"error_message": "No authorization header in request"}),
-                    400,
+                    401,
                 )
 
             token = request.headers["Authorization"]
@@ -31,6 +31,6 @@ def token_required(f):
         except Exception as e:
             tb1 = traceback.TracebackException.from_exception(e)
             print("".join(tb1.format()))
-            return jsonify({"error_message": "Insecure request"}), 400
+            return jsonify({"error_message": "Insecure request"}), 401
 
     return decorated_function

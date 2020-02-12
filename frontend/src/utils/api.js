@@ -2,7 +2,7 @@ const axios = require("axios").create();
 
 if (process.env.NODE_ENV === "development") {
   console.log("Starting development mode...");
-    axios.defaults.baseURL = "http://localhost:8000"
+  axios.defaults.baseURL = "http://localhost:8000";
 } else {
 }
 
@@ -21,9 +21,15 @@ axios.interceptors.response.use(
     return response;
   },
   function(error) {
-    if (error.response && error.response.status === 401) {
+    if (error.response) {
       //store.dispatch(AUTH_LOGOUT);
       //router.push("/login");
+      switch (error.response.status) {
+        case 401:
+          store.dispatch(AUTH_LOGOUT);
+          router.push("/login");
+          break;
+      }
     }
     return Promise.reject(error.response);
   }

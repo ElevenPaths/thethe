@@ -13,6 +13,10 @@ class User:
         result = self.db.collection.find_one(
             {"_id": self.user_id}, {"active_project": 1}
         )
+
+        if not "active_project" in result:
+            return None
+
         return Project(result["active_project"])
 
     def set_active_project(self, project_id):
