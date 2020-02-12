@@ -56,7 +56,6 @@ def abuseipdb(ip, plugin_name, project_id, resource_id, resource_type):
         result_status = PluginResultStatus.STARTED
         API_KEY = KeyRing().get("abuseipdb")
         response = {}
-
         if not API_KEY:
             print("[abuseipdb]: No API key...!")
             result_status = PluginResultStatus.NO_API_KEY

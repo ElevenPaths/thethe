@@ -67,6 +67,11 @@ class Plugin:
 
 def botscout_ip(ip):
     try:
+        API_KEY = KeyRing().get("botscout")
+        if not API_KEY:
+            print("No API key...!")
+            return None
+
         URL = f"http://botscout.com/test/?ip={ip}&key={API_KEY}&format=xml"
         response = urllib.request.urlopen(URL).read()
         return response

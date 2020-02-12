@@ -35,6 +35,7 @@ URL_INFO = "https://pulsedive.com/api/info.php"
 ## Function OK
 def pulsedive_get_ioc_byvalue(param):
     try:
+        API_KEY = KeyRing().get("pulsedive")
         if not API_KEY:
             print("No API key...!")
             return None
@@ -70,6 +71,7 @@ print(pulsedive_get_ioc_byvalue("com1.ru"))
 # {'success': 'Added indicator to queue.', 'qid': 98643407}
 def pulsedive_analyze(domain):
     try:
+        API_KEY = KeyRing().get("pulsedive")
         if not API_KEY:
             print("No API key...!")
             return None
@@ -108,6 +110,7 @@ def pulsedive_analyze(domain):
 # In progress. API response ok but results not found always. Review!
 def pulsedive_getreport(qid):
     try:
+        API_KEY = KeyRing().get("pulsedive")
         if not API_KEY:
             print("No API key...!")
             return None
