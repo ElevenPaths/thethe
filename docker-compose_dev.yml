@@ -28,21 +28,11 @@ services:
     container_name: thethe_celery
     command: /usr/local/bin/watchmedo auto-restart -d tasks -p '*.py' -- celery -A tasks.tasks:celery_app worker -l info
     volumes:
-      - ./server:/usr/src/thethe/server
-      - ./tasks:/usr/src/thethe/tasks
+      - ./thethe_server/server:/usr/src/thethe/server
+      - ./thethe_server/tasks:/usr/src/thethe/tasks
       - ./external/phishtank:/temp/phishtank
     depends_on:
       - redis
-
-    celery:
-      build:
-        context: https://github.com/ElevenPaths/thethe_server.git
-      container_name: thethe_celery
-      command: /usr/local/bin/celery -A tasks.tasks:celery_app worker -l info
-      volumes:
-        - ./external/phishtank:/temp/phishtank
-      depends_on:
-        - redis
 
   server:
     build: .
@@ -50,25 +40,11 @@ services:
     command: >
       sh -c "python server/register_plugins.py && /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000 --reload"
     volumes:
-      - ./server:/usr/src/thethe/server
-      - ./tasks:/usr/src/thethe/tasks
-      - ./frontend/public/static/phishtank:/temp/phishtank
-
+      - ./thethe_server/server:/usr/src/thethe/server
+      - ./thethe_server/tasks:/usr/src/thethe/tasks
+      - ./external/phishtank:/temp/phishtank
     ports:
       - 8000:8000
     depends_on:
       - mongo
       - celery
-
-    server:
-      build:
-        context: https://github.com/ElevenPaths/thethe_server.git
-      container_name: thethe_server
-      command: >
-        sh -c "python server/register_plugins.py &&
-        /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000"
-      volumes:
-        - ./external/phishtank:/temp/phishtank
-      depends_on:
-        - mongo
-        - celery
