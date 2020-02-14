@@ -1,4 +1,3 @@
-# Use root/example as user/password credentials
 version: "3.3"
 
 services:
@@ -25,25 +24,27 @@ services:
       - 6379:6379
 
   celery:
-    build: .
+    build:
+      context: thethe_server/
     container_name: thethe_celery
-    command: /usr/local/bin/watchmedo auto-restart -d tasks -p '*.py' -- celery -A tasks.tasks:celery_app worker -l info
+    command: /usr/local/bin/watchmedo auto-restart -d ./tasks -p '*.py' -- celery -A tasks.tasks:celery_app worker --concurrency 1 -l info
     volumes:
-      - ./server:/usr/src/thethe/server
-      - ./tasks:/usr/src/thethe/tasks
-      - ./frontend/public/static/phishtank:/temp/phishtank
+      - ./thethe_server/server:/usr/src/thethe/server
+      - ./thethe_server/tasks:/usr/src/thethe/tasks
+      - ./external/phishtank:/temp/phishtank
     depends_on:
       - redis
 
   server:
-    build: .
+    build:
+      context: thethe_server/
     container_name: thethe_server
     command: >
       sh -c "python server/register_plugins.py && /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000 --reload"
     volumes:
-      - ./server:/usr/src/thethe/server
-      - ./tasks:/usr/src/thethe/tasks
-      - ./frontend/public/static/phishtank:/temp/phishtank
+      - ./thethe_server/server:/usr/src/thethe/server
+      - ./thethe_server/tasks:/usr/src/thethe/tasks
+      - ./external/phishtank:/temp/phishtank
     ports:
       - 8000:8000
     depends_on:

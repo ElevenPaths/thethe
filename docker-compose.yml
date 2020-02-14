@@ -1,4 +1,3 @@
-# Use root/example as user/password credentials
 version: "3.3"
 
 services:
@@ -10,7 +9,6 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
       MONGO_INITDB_DATABASE: thethe
-
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - ./mongodb_data/:/data/db
@@ -21,22 +19,21 @@ services:
     restart: always
 
   celery:
-    build: .
+    build:
+      context: https://github.com/ElevenPaths/thethe_server.git
     container_name: thethe_celery
-    command: /usr/local/bin/celery -A tasks.tasks:celery_app worker -l info
+    command: /usr/local/bin/celery -A tasks.tasks:celery_app worker --concurrency 1 -l info
     volumes:
-      - ./server:/usr/src/thethe/server
-      - ./tasks:/usr/src/thethe/tasks
-      - ./frontend/public/static/phishtank:/temp/phishtank
+      - ./external/phishtank:/temp/phishtank
     depends_on:
       - redis
 
-  nginx:
+  frontend:
     build:
-      context: ./frontend
-    container_name: thethe_nginx
+      context: https://github.com/ElevenPaths/thethe_frontend.git
+    container_name: thethe_frontend
     volumes:
-      - ./frontend/public/static/phishtank:/usr/share/nginx/html/static/phishtank
+      - ./external/phishtank:/usr/share/nginx/html/static/phishtank
     ports:
       - 80:80
       - 443:443
@@ -44,15 +41,14 @@ services:
       - server
 
   server:
-    build: .
+    build:
+      context: https://github.com/ElevenPaths/thethe_server.git
     container_name: thethe_server
     command: >
       sh -c "python server/register_plugins.py &&
       /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000"
     volumes:
-      - ./server:/usr/src/thethe/server
-      - ./tasks:/usr/src/thethe/tasks
-      - ./frontend/public/static/phishtank:/temp/phishtank
+      - ./external/phishtank:/temp/phishtank
     depends_on:
       - mongo
       - celery
