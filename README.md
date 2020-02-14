@@ -68,7 +68,7 @@ restore_thethe_db.sh <mongodb_container_name>
 
 ---
 
-### External storage
+### External storage
 
 There is a folder called **extenal** for everything theTHE should store outside a database: files, images, etc.
 
@@ -86,10 +86,24 @@ See [updating thethe](https://github.com/ElevenPaths/thethe/wiki/How-to-update-t
 
 If you want to collaborate with the project, a development version is provided:
 
-### Get the repository
+### Get the repositories
 
 ```bash
 git clone https://github.com/ElevenPaths/thethe.git
+```
+
+Inside **thethe** main repo:
+
+for the server:
+
+```bash
+git clone https://github.com/ElevenPaths/thethe_server.git
+```
+
+for the frontend:
+
+```bash
+git clone https://github.com/ElevenPaths/thethe_frontend.git
 ```
 
 ### Docker (don't forget your :coffee:)
@@ -100,8 +114,10 @@ docker-compose -f docker-compose_dev.yml up -d
 
 ### Run the frontend
 
+In develop mode the frontnd does not run inside a container, do:
+
 ```bash
-cd frontend
+cd thethe_frontend
 npm install
 npm run serve
 ```
