@@ -22,7 +22,7 @@ services:
     build:
       context: https://github.com/ElevenPaths/thethe_server.git
     container_name: thethe_celery
-    command: /usr/local/bin/celery -A tasks.tasks:celery_app worker -l info
+    command: /usr/local/bin/celery -A tasks.tasks:celery_app worker --concurrency 1 -l info
     volumes:
       - ./external/phishtank:/temp/phishtank
     depends_on:
