@@ -8,6 +8,10 @@ theTHE also contains some command-line tools integrated so you don't have to ope
 
 Your feedback is welcome.
 
+### What's new
+
+See [releases](https://github.com/ElevenPaths/thethe/releases)
+
 ---
 
 ### Installation
