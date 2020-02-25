@@ -20,7 +20,7 @@ services:
 
   celery:
     build:
-      context: https://github.com/ElevenPaths/thethe_server.git
+      context: ./thethe_server
     container_name: thethe_celery
     command: /usr/local/bin/celery -A tasks.tasks:celery_app worker --concurrency 1 -l info
     volumes:
@@ -30,11 +30,11 @@ services:
 
   frontend:
     build:
-      context: https://github.com/ElevenPaths/thethe_frontend.git
+      context: ./thethe_frontend
     container_name: thethe_frontend
     volumes:
       - ./external/phishtank:/usr/share/nginx/html/static/phishtank
-      - ./external/certs:/etc/nginx/certs
+      - ./external/certs:/etc/nginx/certificates
     ports:
       - 80:80
       - 443:443
@@ -43,7 +43,7 @@ services:
 
   server:
     build:
-      context: https://github.com/ElevenPaths/thethe_server.git
+      context: ./thethe_server
     container_name: thethe_server
     environment:
       - THETHE_SECRET
