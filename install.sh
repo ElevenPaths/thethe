@@ -45,7 +45,7 @@ echo "        \|__|  \|__|\|__|\|_______|   \|__|  \|__|\|__|\|_______| "
 echo "                                                                  "
 echo "                                                                  "
 echo "                                                                  "
-echo -e "${Blue}Welcome to The Threat Hunting Environment ${Color_Off} "
+echo -e "${Blue}Welcome to The Threat Hunting Environment Installer${Color_Off} "
 echo "                                                                  "
 
 KEY_NAME=thethe

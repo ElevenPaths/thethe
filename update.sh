@@ -45,5 +45,17 @@ echo "        \|__|  \|__|\|__|\|_______|   \|__|  \|__|\|__|\|_______| "
 echo "                                                                  "
 echo "                                                                  "
 echo "                                                                  "
-echo -e "${Blue}Welcome to The Threat Hunting Environment ${Color_Off} "
+echo -e "${Blue}Welcome to The Threat Hunting Environment Updater${Color_Off} "
 echo "                                                                  "
+
+echo -e "${Blue}Updating repo and submodules{Color_Off}"
+git pull --recurse-submodules
+
+echo -e "${Blue}Stopping thethe containers{Color_Off}"
+docker-compose stop
+
+echo -e "${Blue}Updating images{Color_Off}"
+docker-compose pull
+
+echo -e "${Blue}Recreating images{Color_Off}"
+docker-compose build
