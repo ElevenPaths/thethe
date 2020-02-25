@@ -85,13 +85,13 @@ set_secret
 
 if [[ $1 == "dev" ]]; then
     echo -e "${Red}Development mode on${Color_Off}"
-    docker-compose -f docker-compose_dev.yml up -d
+    docker-compose -f docker-compose_dev.yml up -d --remove-orphans
     cd thethe_frontend
     echo -e "${Red}Running Webpack dev server${Color_Off}"
     npm run serve
 else
     check_certs
-    docker-compose up -d
+    docker-compose up -d --remove-orphans
     echo -e "${Blue}[+] Running thethe${Color_Off}"
     echo -e "${BBlue}[*] Please, wait a minute, server is warming up${Color_Off}"
 fi
