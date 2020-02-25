@@ -1,0 +1,6 @@
+[submodule "thethe_frontend"]
+	path = thethe_frontend
+	url = https://github.com/ElevenPaths/thethe_frontend.git
+[submodule "thethe_server"]
+	path = thethe_server
+	url = https://github.com/ElevenPaths/thethe_server.git
