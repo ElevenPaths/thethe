@@ -86,7 +86,7 @@ check_dependencies
 echo -e "${BGreen}[*] Dependencies checked.${Color_Off}"
 
 if git rev-parse >/dev/null 2>&1; then
-    echo -e "${Red}[!] Aborting. This is a git repository. Should you mean ${BRed}update.sh?${Color_Off}"
+    echo -e "${Red}[!] Aborting. This is a git repository. Did you mean ${BRed}update.sh?${Color_Off}"
     exit 1
 fi
 
