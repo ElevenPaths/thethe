@@ -38,6 +38,8 @@ services:
   server:
     build:
       context: thethe_server/
+    environment:
+      - THETHE_SECRET
     container_name: thethe_server
     command: >
       sh -c "python server/register_plugins.py && /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000 --reload"

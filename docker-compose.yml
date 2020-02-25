@@ -34,6 +34,7 @@ services:
     container_name: thethe_frontend
     volumes:
       - ./external/phishtank:/usr/share/nginx/html/static/phishtank
+      - ./external/certs:/etc/nginx/certs
     ports:
       - 80:80
       - 443:443
@@ -44,6 +45,8 @@ services:
     build:
       context: https://github.com/ElevenPaths/thethe_server.git
     container_name: thethe_server
+    environment:
+      - THETHE_SECRET
     command: >
       sh -c "python server/register_plugins.py &&
       /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000"
