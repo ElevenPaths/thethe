@@ -45,32 +45,53 @@ echo "        \|__|  \|__|\|__|\|_______|   \|__|  \|__|\|__|\|_______| "
 echo "                                                                  "
 echo "                                                                  "
 echo "                                                                  "
-echo -e "${Blue}Welcome to The Threat Hunting Environment Updater${Color_Off} "
+echo -e "${Blue}Welcome to The Threat Hunting Environment ${Color_Off} "
 echo "                                                                  "
 
-echo -e "${Blue}[+] Updating repo and submodules{Color_Off}"
-git pull --recurse-submodules
+function set_secret() {
+    secret=$(openssl rand -hex 64)
+    echo -e "${BGreen}[*] Generating secret...${Color_Off}"
+    export THETHE_SECRET=$secret
+}
 
-echo -e "${Blue}[+] Stopping thethe containers{Color_Off}"
+function check_certs() {
+    CERT_CRT=./external/certs/thethe.crt
+    if [ -f "$CERT_CRT" ]; then
+        echo -e "${Green}[+] Good. $CERT_CRT exists.${Color_Off}"
+    else
+        echo -e "${Yellow}[?] $CERT_CRT is missing. Generating certificate and key...${Color_Off}"
+        source certs.sh
+        return
+    fi
+
+    CERT_KEY=./external/certs/thethe.key
+    if [ -f "$CERT_KEY" ]; then
+        echo -e "${Green}[+] Good. $CERT_KEY exists.${Color_Off}"
+    else
+        echo -e "${Yellow}[?] $CERT_KEY is missing. Generating certificate and key...${Color_Off}"
+        source certs.sh
+        return
+    fi
+
+    return
+}
+
+development=$1
+
+echo -e "${Blue}[+] Stopping containers${Color_Off}"
 docker-compose stop
 
-echo -e "${Blue}[+] Updating images{Color_Off}"
-docker-compose pull
+set_secret
 
-echo -e "${Blue}[+] Recreating images{Color_Off}"
-docker-compose build
-
-echo -e "${Green}[?] Do you want to remove old images? [y/n] {Color_Off}"
-while true; do
-    read yn
-    case $yn in
-    [Yy]*)
-        docker image prune
-        break
-        ;;
-    [Nn]*) exit ;;
-    *) echo "Please answer [y]es or [n]o." ;;
-    esac
-done
-
-echo -e "${BBlue}[*] Process completed. Run start.sh to start thethe.{Color_Off}"
+if [[ $1 == "dev" ]]; then
+    echo -e "${Red}Development mode on${Color_Off}"
+    docker-compose -f docker-compose_dev.yml up -d
+    cd thethe_frontend
+    echo -e "${Red}Running Webpack dev server${Color_Off}"
+    npm run serve
+else
+    check_certs
+    docker-compose up -d
+    echo -e "${Blue}[+] Running thethe${Color_Off}"
+    echo -e "${BBlue}[*] Please, wait a minute, server is warming up${Color_Off}"
+fi
