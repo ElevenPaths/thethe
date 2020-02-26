@@ -91,7 +91,7 @@ check_dependencies
 echo -e "${BGreen}[*] Dependencies checked.${Color_Off}"
 
 echo -e "${Green}[+] Cloning repository thethe from https://github.com/ElevenPaths/thethe...${Color_Off}"
-git clone --depth=1 https://github.com/ElevenPaths/thethe >/dev/null 2>&1
+git clone --recurse-submodules https://github.com/ElevenPaths/thethe >/dev/null 2>&1
 
 echo -e "${Green}[+] Entering repository${Color_Off}"
 cd thethe
