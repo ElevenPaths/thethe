@@ -96,7 +96,6 @@ git clone --recurse-submodules https://github.com/ElevenPaths/thethe >/dev/null 
 echo -e "${Green}[+] Entering repository${Color_Off}"
 cd thethe
 
-set_secret
 source certs.sh
 
 echo -e "${Green}[+] Building docker images. It will take a while.${Color_Off}"
