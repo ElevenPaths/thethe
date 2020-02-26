@@ -78,9 +78,6 @@ function check_certs() {
 
 development=$1
 
-echo -e "${Blue}[+] Stopping containers${Color_Off}"
-docker-compose stop
-
 set_secret
 
 if [[ $1 == "dev" ]]; then
