@@ -78,17 +78,17 @@ function check_dependencies() {
     fi
 }
 
-# Main
+# If this is a git repo do nothing
+if git rev-parse >/dev/null 2>&1; then
+    echo -e "${Red}[!] Aborting. This is a git repository. Did you mean ${BRed}update.sh?${Color_Off}"
+    echo -e "${BBlue}[!] This script is meant to be ran outside thethe repository.${Color_Off}"
+    exit 1
+fi
 
 echo -e "${Green}[+] Installing thethe.${Color_Off}"
 
 check_dependencies
 echo -e "${BGreen}[*] Dependencies checked.${Color_Off}"
-
-if git rev-parse >/dev/null 2>&1; then
-    echo -e "${Red}[!] Aborting. This is a git repository. Did you mean ${BRed}update.sh?${Color_Off}"
-    exit 1
-fi
 
 echo -e "${Green}[+] Cloning repository thethe from https://github.com/ElevenPaths/thethe...${Color_Off}"
 git clone --depth=1 https://github.com/ElevenPaths/thethe >/dev/null 2>&1
@@ -103,4 +103,4 @@ echo -e "${Green}[+] Building docker images. It will take a while.${Color_Off}"
 docker-compose build
 
 echo -e "${BGreen}[*] Installation completed.${Color_Off}"
-echo -e "${Blue}Run start.sh if you want to launch thethe.${Color_Off}"
+echo -e "${Blue}Run start.sh (inside thethe directory) if you want to launch thethe.${Color_Off}"
