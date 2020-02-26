@@ -48,19 +48,19 @@ echo "                                                                  "
 echo -e "${Blue}Welcome to The Threat Hunting Environment Updater${Color_Off} "
 echo "                                                                  "
 
-echo -e "${Blue}[+] Updating repo and submodules{Color_Off}"
+echo -e "${Blue}[+] Updating repo and submodules${Color_Off}"
 git pull --recurse-submodules
 
-echo -e "${Blue}[+] Stopping thethe containers{Color_Off}"
+echo -e "${Blue}[+] Stopping thethe containers${Color_Off}"
 docker-compose stop
 
-echo -e "${Blue}[+] Updating images{Color_Off}"
+echo -e "${Blue}[+] Updating images${Color_Off}"
 docker-compose pull
 
-echo -e "${Blue}[+] Recreating images{Color_Off}"
+echo -e "${Blue}[+] Recreating images${Color_Off}"
 docker-compose build
 
-echo -e "${Green}[?] Do you want to remove old images? [y/n] {Color_Off}"
+echo -e "${Green}[?] Do you want to remove old images? [y/n] ${Color_Off}"
 while true; do
     read yn
     case $yn in
@@ -73,4 +73,4 @@ while true; do
     esac
 done
 
-echo -e "${BBlue}[*] Process completed. Run start.sh to start thethe.{Color_Off}"
+echo -e "${BBlue}[*] Process completed. Run start.sh to start thethe.${Color_Off}"
