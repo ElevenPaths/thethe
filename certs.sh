@@ -27,9 +27,9 @@ KEY_NAME=thethe
 CERTS_PATH=./external/certs/
 
 if [ -d "external/certs" ]; then
-    echo -e "${Green}Directory ${CERTS_PATH} exists, skipping.${Color_Off}"
+    echo -e "${Green}[+] Directory ${CERTS_PATH} exists, skipping.${Color_Off}"
 else
-    echo -e "${Green}Creating ${CERTS_PATH}${Color_Off}"
+    echo -e "${Green}[+] Creating ${CERTS_PATH}${Color_Off}"
     mkdir -p external/certs
 fi
 
@@ -39,7 +39,7 @@ read -r -p "[?] Do you want to create a self-signed certificate? (skip if you wi
 if command -v openssl >/dev/null 2>&1; then
     echo -e "${Green}[+] openssl is installed. Good.${Color_Off}"
 else
-    echo -e "${Red}[?] Missing openssl installation. We won't be able to generate certificates.${Color_Off}"
+    echo -e "${Red}[-] Missing openssl installation. We won't be able to generate certificates.${Color_Off}"
     exit 1
 fi
 
@@ -68,5 +68,5 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo -e "${BGreen}[*] Self-signed certificate created.${Color_Off}"
 
 else
-    echo -e "${Yellow}[?] Remember: YOU SHOULD PUT YOUR OWN CERT AND KEY IN external/certs OR thethe WON'T WORK"
+    echo -e "${Yellow}[!] Remember: YOU SHOULD PUT YOUR OWN CERT AND KEY IN external/certs OR thethe WON'T WORK"
 fi
