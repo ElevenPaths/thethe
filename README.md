@@ -16,19 +16,40 @@ See [releases](https://github.com/ElevenPaths/thethe/releases)
 
 ### Installation
 
-First, clone this repository with:
+There is a [**install.sh**](https://raw.githubusercontent.com/ElevenPaths/thethe/master/install.sh) script to ease installation. Either download and execute it by doing:
 
 ```bash
-git clone https://github.com/ElevenPaths/thethe.git
+curl -sSL https://raw.githubusercontent.com/ElevenPaths/thethe/master/install.sh | bash
 ```
 
-Then, build the images and run the containers
+or clone this repository with:
 
 ```bash
-docker-compose up -d
+git clone https://github.com/ElevenPaths/thethe
 ```
 
-You should see **thethe** in [https://localhost](https://localhost) after a :coffee:
+and inside **thethe** directory, move the install script one level up and execute it:
+
+```bash
+mv thethe/install.sh
+./install.sh
+```
+
+---
+
+### Running thethe
+
+Inside thethe directory:
+
+```bash
+./start.sh
+```
+
+Are you a developer?
+
+```bash
+./start dev
+```
 
 ---
 
@@ -61,20 +82,22 @@ Inside **utils** folder:
 Make a backup
 
 ```bash
-backup_thethe_db.sh <mongodb_container_name>
+backup_thethe_db.sh
 ```
 
 Restore from a backup
 
 ```bash
-restore_thethe_db.sh <mongodb_container_name>
+restore_thethe_db.sh
 ```
+
+backup filename is **db.dump.gz**
 
 ---
 
 ### External storage
 
-There is a folder called **extenal** for everything theTHE should store outside a database: files, images, etc.
+There is a folder called **external** for everything theTHE should store outside a database: files, images, etc.
 
 Backup this folder according to your backup policy.
 
@@ -90,40 +113,26 @@ See [updating thethe](https://github.com/ElevenPaths/thethe/wiki/How-to-update-t
 
 If you want to collaborate with the project, a development version is provided:
 
-### Get the repositories
+Get the repositories:
 
 ```bash
-git clone https://github.com/ElevenPaths/thethe.git
+git clone --recurse-submodules https://github.com/ElevenPaths/thethe.git
 ```
 
-Inside **thethe** main repo:
-
-for the server:
-
-```bash
-git clone https://github.com/ElevenPaths/thethe_server.git
-```
-
-for the frontend:
-
-```bash
-git clone https://github.com/ElevenPaths/thethe_frontend.git
-```
-
-### Docker (don't forget your :coffee:)
-
-```bash
-docker-compose -f docker-compose_dev.yml up -d
-```
-
-### Run the frontend
-
-In develop mode the frontnd does not run inside a container, do:
+and only for the first time...
 
 ```bash
 cd thethe_frontend
 npm install
-npm run serve
+cd ..
+```
+
+Now you have a dev environment. Every time you need to code, just run thethe with:
+
+```bash
+
+./start.sh dev
+
 ```
 
 ---
