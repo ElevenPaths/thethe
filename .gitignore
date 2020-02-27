@@ -122,3 +122,4 @@ db.dump.gz
 mongodb_data/*
 thethe_server/*
 thethe_frontend/*
+utils/db.dump.gz.old_with_dot_in_keys
