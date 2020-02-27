@@ -58,19 +58,19 @@ echo -e "${Blue}[+] Updating images${Color_Off}"
 docker-compose pull
 
 echo -e "${Blue}[+] Recreating images${Color_Off}"
-docker-compose build
+docker-compose build --force-rm
 
-echo -e "${Green}[?] Do you want to remove old images? [y/n] ${Color_Off}"
-while true; do
-    read yn
-    case $yn in
-    [Yy]*)
-        docker image prune
-        break
-        ;;
-    [Nn]*) exit ;;
-    *) echo "Please answer [y]es or [n]o." ;;
-    esac
-done
+# echo -e "${Green}[?] Do you want to remove old images? [y/n] ${Color_Off}"
+# while true; do
+#     read yn
+#     case $yn in
+#     [Yy]*)
+#         docker image prune
+#         break
+#         ;;
+#     [Nn]*) exit ;;
+#     *) echo "Please answer [y]es or [n]o." ;;
+#     esac
+# done
 
 echo -e "${BBlue}[*] Process completed. Run start.sh to start thethe.${Color_Off}"
