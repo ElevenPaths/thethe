@@ -25,7 +25,7 @@ curl -sSL https://raw.githubusercontent.com/ElevenPaths/thethe/master/install.sh
 or clone this repository with:
 
 ```bash
-git clone https://github.com/ElevenPaths/thethe
+git clone --recurse-submodules https://github.com/ElevenPaths/thethe
 ```
 
 and inside **thethe** directory, move the install script one level up and execute it:
