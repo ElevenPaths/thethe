@@ -116,10 +116,12 @@ node_modules/
 
 # thethe
 external/*
+!external/.gitkeep
 utils/db.dump
 utils/db.dump.gz
 db.dump.gz
 mongodb_data/*
+!mongodb_data/.gitkeep
 thethe_server/*
 thethe_frontend/*
 utils/db.dump.gz.old_with_dot_in_keys
