@@ -117,6 +117,7 @@ node_modules/
 # thethe
 external/*
 !external/.gitkeep
+!external/phishtank/.gitkeep
 utils/db.dump
 utils/db.dump.gz
 db.dump.gz
