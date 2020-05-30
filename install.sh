@@ -95,6 +95,7 @@ git clone --recurse-submodules https://github.com/ElevenPaths/thethe >/dev/null 
 
 echo -e "${Green}[+] Entering repository${Color_Off}"
 cd thethe
+mkdir -p external/phishtank
 
 source certs.sh
 
