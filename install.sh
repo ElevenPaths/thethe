@@ -103,4 +103,4 @@ echo -e "${Green}[+] Building docker images. It will take a while.${Color_Off}"
 docker-compose build
 
 echo -e "${BGreen}[*] Installation completed.${Color_Off}"
-echo -e "${Blue}Run start.sh (inside thethe directory) if you want to launch thethe.${Color_Off}"
+echo -e "${Blue}Make sure you have a proper .env file with your desired values. Then, run start.sh (inside thethe directory).${Color_Off}"

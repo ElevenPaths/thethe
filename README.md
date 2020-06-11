@@ -35,6 +35,18 @@ mv thethe/install.sh
 ./install.sh
 ```
 
+You **MUST** have a .env file with the following structure in thethe root directory:
+
+```bash
+MONGO_INITDB_ROOT_USERNAME=
+MONGO_INITDB_ROOT_PASSWORD=
+MONGO_INITDB_DATABASE=thethe
+THETHE_SECRET=
+```
+
+- Select a **secure** user/pass/secret combination at your own for each value.
+- Leave **MONGO_INITDB_DATABASE** with "thethe" value.
+
 ---
 
 ### Running thethe
@@ -50,16 +62,6 @@ Are you a developer?
 ```bash
 ./start dev
 ```
-
----
-
-### Default user
-
-By default, there is a single user **admin** with password **admin**
-
-Change the **admin** password as soon as you log into **thethe** the very first time.
-
-_(It is planned to have a proper multiuser support)_
 
 ---
 

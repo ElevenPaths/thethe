@@ -7,13 +7,8 @@ services:
     restart: always
     ports:
       - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-      MONGO_INITDB_DATABASE: thethe
-
+    env_file: .env
     volumes:
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - ./mongodb_data:/data/db
 
   redis:
@@ -38,8 +33,7 @@ services:
   server:
     build:
       context: thethe_server/
-    environment:
-      - THETHE_SECRET
+    env_file: .env
     container_name: thethe_server
     command: >
       sh -c "python server/register_plugins.py && /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000 --reload"
