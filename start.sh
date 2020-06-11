@@ -48,11 +48,11 @@ echo "                                                                  "
 echo -e "${Blue}Welcome to The Threat Hunting Environment ${Color_Off} "
 echo "                                                                  "
 
-function set_secret() {
-    secret=$(openssl rand -hex 64)
-    echo -e "${BGreen}[*] Generating secret...${Color_Off}"
-    export THETHE_SECRET=$secret
-}
+# function set_secret() {
+#     secret=$(openssl rand -hex 64)
+#     echo -e "${BGreen}[*] Generating secret...${Color_Off}"
+#     export THETHE_SECRET=$secret
+# }
 
 function check_certs() {
     CERT_CRT=./external/certs/thethe.crt
@@ -78,7 +78,12 @@ function check_certs() {
 
 development=$1
 
-set_secret
+if [[ -f ".env" ]]; then
+    echo ".env file exists...ok"
+else
+    echo ".env file not found...go to README"
+    exit
+fi
 
 if [[ $1 == "dev" ]]; then
     echo -e "${Red}Development mode on${Color_Off}"
