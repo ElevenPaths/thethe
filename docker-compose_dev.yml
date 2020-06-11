@@ -21,6 +21,7 @@ services:
   celery:
     build:
       context: thethe_server/
+    env_file: .env
     container_name: thethe_celery
     command: /usr/local/bin/watchmedo auto-restart -d ./tasks -p '*.py' -- celery -A tasks.tasks:celery_app worker --concurrency 1 -l info
     volumes:
