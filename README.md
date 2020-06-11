@@ -84,13 +84,13 @@ Inside **utils** folder:
 Make a backup
 
 ```bash
-backup_thethe_db.sh
+backup_thethe_db.sh <mongo_user> <mongo_password>
 ```
 
 Restore from a backup
 
 ```bash
-restore_thethe_db.sh
+restore_thethe_db.sh <mongo_user> <mongo_password>
 ```
 
 backup filename is **db.dump.gz**
