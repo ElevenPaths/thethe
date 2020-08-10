@@ -54,6 +54,7 @@ function check_dependencies() {
     # docker
     if command -v docker >/dev/null 2>&1; then
         echo -e "${Green}[+] Docker is installed. Good.${Color_Off}"
+        echo -e "${Yellow}[!] Make sure your user is in docker group${Color_Off}"
     else
         echo -e "${Red}[!] Missing docker installation. Bad.${Color_Off}"
         echo "See there how to get docker: https://docs.docker.com/install/"
@@ -78,29 +79,42 @@ function check_dependencies() {
     fi
 }
 
-# If this is a git repo do nothing
-if git rev-parse >/dev/null 2>&1; then
-    echo -e "${Red}[!] Aborting. This is a git repository. Did you mean ${BRed}update.sh?${Color_Off}"
-    echo -e "${BBlue}[!] This script is meant to be ran outside thethe repository.${Color_Off}"
-    exit 1
-fi
+function check_env_file() {
+    if [[ -f ".env" ]]; then
+        echo -e "${Green}[+] .env file exists. Good.${Color_Off}"
+    else
+        echo -e "${Green}[!] .env file not detected. Creating .env file${Color_Off}"
+        touch .env
+        echo -e "${Blue}[?] Enter a username for MongoDB root: ${Color_Off}"
+        read mongo_username
+        printf '%s%s\n' "MONGO_INITDB_ROOT_USERNAME=" $mongo_username >>.env
+        echo -e "${Blue}[?] Enter a password for MongoDB root: ${Color_Off}"
+        read -s mongo_password
+        printf '%s%s\n' "MONGO_INITDB_ROOT_PASSWORD=" $mongo_password >>.env
+        printf '%s\n' "MONGO_INITDB_DATABASE=thethe" >>.env
+        echo -e "${Blue}[?] Setting up thethe secret: ${Color_Off}"
+        printf '%s%s\n' "THETHE_SECRET=" $(openssl rand -hex 32) >>.env
+    fi
+
+}
 
 echo -e "${Green}[+] Installing thethe.${Color_Off}"
 
 check_dependencies
 echo -e "${BGreen}[*] Dependencies checked.${Color_Off}"
 
-echo -e "${Green}[+] Cloning repository thethe from https://github.com/ElevenPaths/thethe...${Color_Off}"
-git clone --recurse-submodules https://github.com/ElevenPaths/thethe >/dev/null 2>&1
-
-echo -e "${Green}[+] Entering repository${Color_Off}"
-cd thethe
+echo -e "${Green}[+] Starting the environment${Color_Off}"
 mkdir -p external/phishtank
+mkdir -p external/urlscan
 
+echo -e "${Green}[+] Checking for certificates${Color_Off}"
 source certs.sh
+
+echo -e "${Green}[+] Checking for .env file${Color_Off}"
+check_env_file
 
 echo -e "${Green}[+] Building docker images. It will take a while.${Color_Off}"
 docker-compose build
 
 echo -e "${BGreen}[*] Installation completed.${Color_Off}"
-echo -e "${Blue}Make sure you have a proper .env file with your desired values. Then, run start.sh (inside thethe directory).${Color_Off}"
+echo -e "${Blue}Run start.sh (inside thethe directory) if you want to launch thethe.${Color_Off}"

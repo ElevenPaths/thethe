@@ -106,23 +106,19 @@ venv.bak/
 # mypy
 .mypy_cache/
 __pycache__/*
+thethe_venv/*
 notes.txt
 tags
 TODO
 sources
 Pipfile
 Pipfile.lock
-node_modules/
-
-# thethe
-external/*
-!external/.gitkeep
-!external/phishtank/.gitkeep
+frontend/public/static/phishtank/*
+frontend/public/static/urlscan/*
+!frontend/public/static/phishtank/.gitkeep
+!frontend/public/static/urlscan/.gitkeep
 utils/db.dump
 utils/db.dump.gz
 db.dump.gz
 mongodb_data/*
-!mongodb_data/.gitkeep
-thethe_server/*
-thethe_frontend/*
-utils/db.dump.gz.old_with_dot_in_keys
+node_modules/

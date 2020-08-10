@@ -4,7 +4,6 @@ services:
   mongo:
     image: mongo
     container_name: thethe_mongo
-    restart: always
     ports:
       - 27017:27017
     env_file: .env
@@ -14,7 +13,6 @@ services:
   redis:
     image: redis
     container_name: thethe_redis
-    restart: always
     ports:
       - 6379:6379
 
@@ -28,6 +26,7 @@ services:
       - ./thethe_server/server:/usr/src/thethe/server
       - ./thethe_server/tasks:/usr/src/thethe/tasks
       - ./external/phishtank:/temp/phishtank
+      - ./external/urlscan:/temp/urlscan
     depends_on:
       - redis
 
@@ -42,6 +41,7 @@ services:
       - ./thethe_server/server:/usr/src/thethe/server
       - ./thethe_server/tasks:/usr/src/thethe/tasks
       - ./external/phishtank:/temp/phishtank
+      - ./external/urlscan:/temp/urlscan
     ports:
       - 8000:8000
     depends_on:
