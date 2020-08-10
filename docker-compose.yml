@@ -21,6 +21,7 @@ services:
     command: /usr/local/bin/celery -A tasks.tasks:celery_app worker --concurrency 1 -l info
     volumes:
       - ./external/phishtank:/temp/phishtank
+      - ./external/urlscan:/temp/urlscan
     depends_on:
       - redis
 
@@ -31,6 +32,7 @@ services:
     volumes:
       - ./external/phishtank:/usr/share/nginx/html/static/phishtank
       - ./external/certs:/etc/nginx/certificates
+      - ./external/urlscan:/usr/share/nginx/html/static/urlscan
     ports:
       - 80:80
       - 443:443
@@ -47,6 +49,7 @@ services:
       /usr/local/bin/gunicorn server.main:app -w 4 -t 90 --log-level=info -b 0.0.0.0:8000"
     volumes:
       - ./external/phishtank:/temp/phishtank
+      - ./external/urlscan:/temp/urlscan
     depends_on:
       - mongo
       - celery
