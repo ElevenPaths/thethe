@@ -122,3 +122,5 @@ utils/db.dump.gz
 db.dump.gz
 mongodb_data/*
 node_modules/
+external/*
+!external/.gitkeep
